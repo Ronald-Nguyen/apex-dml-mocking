@@ -1,0 +1,3 @@
+
+Iteration 1 erfolgreich. Tokens: prompt=19343, completion=11427, total=30770
+Fertig. Erfolgsrate: 10.0%
