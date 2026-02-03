@@ -5,7 +5,7 @@ private class RepoFactoryMockTest {
     Account acc = new Account();
     String expectedOppName = 'Hello';
     List<SObject> opps = new List<Opportunity>{ new Opportunity(Name = expectedOppName) };
-    // can't simply do acc.Opportunities = opps - this leads to "Field is not writeable: Account.Opportunities" on deploy
+    
     Assert.areEqual(0, acc.Opportunities.size(), 'Test has started under the wrong conditions');
 
     acc = (Account) RepoFactoryMock.addChildrenToRecord(acc, Opportunity.AccountId, opps);
@@ -33,7 +33,7 @@ private class RepoFactoryMockTest {
 
     Assert.areEqual(2, cursor.getNumRecords());
     Assert.areEqual(acc.Id, cursor.fetch(0, 1)[0].Id);
-    // verify we don't overindex past the actual cursor end
+    
     Assert.areEqual(secondAccount.Id, cursor.fetch(1, 3)[0].Id);
   }
 }

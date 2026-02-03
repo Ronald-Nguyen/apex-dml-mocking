@@ -12,11 +12,11 @@ public interface IAggregateRepository extends IRepository {
     RepositorySortOrder sortOrder
   );
 
-  // always a fun one
+  
   Integer count();
   Integer count(Query query);
   Integer count(List<Query> queries);
-  // with support for sum, count, count distinct, average, max, min
+  
   List<AggregateRecord> aggregate(Aggregation aggregation);
   List<AggregateRecord> aggregate(Aggregation aggregation, Query query);
   List<AggregateRecord> aggregate(Aggregation aggregation, List<Query> queries);

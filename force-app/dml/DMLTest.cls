@@ -81,12 +81,12 @@ private class DMLTest {
     Account one = new Account(Name = 'Test1');
     Account two = new Account();
     try {
-      // this should fail because name is a required field on Account
+      
       new DML().doUpsert(new List<Account>{ one, two });
       Assert.fail('Should throw in above unit');
     } catch (Exception e) {
       Assert.isInstanceOfType(e, System.DmlException.class);
-      // do nothing, in this case
+      
     }
 
     Assert.areEqual(null, one.Id);
@@ -121,9 +121,9 @@ private class DMLTest {
 
   @IsTest
   static void shouldFakeDMLOperations() {
-    // some of these operations aren't awesome
-    // but this ensures adequate code coverage prior to
-    // being used elsewhere in the codebase for mocking
+    
+    
+    
     IDML mock = new DMLMock();
 
     List<Account> accs = new List<Account>{ new Account() };
@@ -175,8 +175,8 @@ private class DMLTest {
 
   @IsTest
   static void upsertWithDefaultSetOptionsWorks() {
-    // on some code paths, like insert, OptAllOrNone not being initialized on Database.DMLOptions is fine
-    // but on upsert (and possibly other operations), that specific value is always checked
+    
+    
     Contact con = new Contact(LastName = 'Upsert');
 
     new DML().setOptions(new Database.DMLOptions(), System.AccessLevel.SYSTEM_MODE).doUpsert(con);

@@ -169,7 +169,7 @@ public without sharing virtual class AggregateRepository extends Repository impl
         baseString += groupBy.getGroupByName() + ',';
       }
       baseString = baseString.removeEnd(',');
-      // having is only valid with a grouping
+      
       if (this.havingFields.isEmpty() == false) {
         baseString += '\nHAVING ' + String.join(this.havingFields, ',');
       }

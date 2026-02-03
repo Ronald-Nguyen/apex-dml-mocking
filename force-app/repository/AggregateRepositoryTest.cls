@@ -78,7 +78,7 @@ private class AggregateRepositoryTest {
           .aggregate(countOfAmount)[0]
         .get(countOfAmount.getAlias())
     );
-    // prove equality works
+    
     Assert.isTrue(results.get(0).equals([SELECT COUNT(Amount) wowza FROM Opportunity].get(0)));
     Assert.areEqual(results.get(0), results.get(0));
   }
@@ -138,7 +138,7 @@ private class AggregateRepositoryTest {
       new ContactPointAddress(Name = 'A', ActiveFromDate = System.today()),
       new ContactPointAddress(Name = 'B', ActiveFromDate = System.today().addYears(-2)),
       new ContactPointAddress(Name = 'C', ActiveFromDate = System.today().addYears(2)),
-      new ContactPointAddress(Name = 'D', ActiveFromDate = System.today().addYears(5)) // should be excluded through limit
+      new ContactPointAddress(Name = 'D', ActiveFromDate = System.today().addYears(5)) 
     };
 
     String nameAlias = 'name';
@@ -167,7 +167,7 @@ private class AggregateRepositoryTest {
       List<Schema.SObjectField> queryFields = new List<Schema.SObjectField>{
         Opportunity.IsWon,
         Opportunity.StageName
-        // etc ...
+        
       };
       IAggregateRepository oppRepo = this.facade.getRepo(Opportunity.SObjectType, queryFields, this);
       oppRepo.addParentFields(

@@ -272,7 +272,7 @@ private class RepositoryTest {
     List<Account> accounts = repo.getAll();
     Assert.areEqual(1, accounts.size());
     Assert.areEqual(1, accounts.get(0).Contacts.size());
-    // verify that filters can be used multiple times
+    
     accounts = repo.getAll();
     Assert.areEqual(1, accounts.size());
     Assert.areEqual(1, accounts.get(0).Contacts.size());

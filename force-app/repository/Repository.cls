@@ -28,7 +28,7 @@ public virtual without sharing class Repository implements IRepository {
     this.childToRelationshipNames = this.getChildRelationshipNames(repoType);
   }
 
-  // SOQL
+  
   public virtual Cursor getCursor(List<Query> queries) {
     String finalQuery = this.getFinalQuery(queries);
     this.logQuery('cursor query:\n' + finalQuery);
@@ -354,7 +354,7 @@ public virtual without sharing class Repository implements IRepository {
     return (limitAmount != null ? '\nLIMIT ' + limitAmount : '');
   }
 
-  // SOSL
+  
 
   public List<List<SObject>> getSosl(String searchTerm, Query queryFilter) {
     return this.getSosl(searchTerm, new List<Query>{ queryFilter });
@@ -417,7 +417,7 @@ public virtual without sharing class Repository implements IRepository {
     System.debug(System.LoggingLevel.DEBUG, logString);
   }
 
-  // DML
+  
   public Database.SaveResult doInsert(SObject record) {
     return this.dml.doInsert(record);
   }

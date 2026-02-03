@@ -31,7 +31,7 @@ public virtual without sharing class Cursor {
   }
 
   public Cursor setFetchesPerTransaction(Integer possibleFetchesPerTransaction) {
-    // Handle accidental round downs from Integer division
+    
     if (possibleFetchesPerTransaction == 0) {
       return this;
     }

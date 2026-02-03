@@ -13,7 +13,7 @@ public virtual class Query {
     LESS_THAN_OR_EQUAL,
     GREATER_THAN,
     GREATER_THAN_OR_EQUAL,
-    ALIKE, // like is a reserved word
+    ALIKE, 
     NOT_LIKE
   }
 
@@ -80,7 +80,7 @@ public virtual class Query {
     return new Query(field, Operator.GREATER_THAN_OR_EQUAL, predicate);
   }
 
-  // like is a reserved keyword
+  
   public static Query likeQuery(SObjectField field, Object predicate) {
     return new Query(field, Operator.ALIKE, predicate);
   }
@@ -89,7 +89,7 @@ public virtual class Query {
     return new Query(field, Operator.NOT_LIKE, predicate);
   }
 
-  // or is a reserved keyword
+  
   public static Query orQuery(Query innerQuery, Query secondInnerQuery) {
     return orQuery(new List<Query>{ innerQuery, secondInnerQuery });
   }
@@ -98,7 +98,7 @@ public virtual class Query {
     return new OrQuery(innerQueries);
   }
 
-  // and is a reserved keyword
+  
   public static Query andQuery(Query innerQuery, Query secondInnerQuery) {
     return andQuery(new List<Query>{ innerQuery, secondInnerQuery });
   }
@@ -225,7 +225,7 @@ public virtual class Query {
     String predicateValue = this.getPredicate(this.predicate);
     String printedValue = ' ' + (shouldPerformStrictEquals ? this.predicate : predicateValue);
     if (this.operator == Query.Operator.NOT_LIKE) {
-      // who knows why this is the format they wanted
+      
       return String.format(this.getOperator(), new List<String>{ this.field }) + printedValue;
     }
     return this.field + ' ' + this.getOperator() + printedValue;
@@ -337,7 +337,7 @@ public virtual class Query {
     if (predicate == null) {
       return 'null';
     } else if (predicate instanceof Datetime) {
-      // the most annoying one
+      
       Datetime dt = (Datetime) predicate;
       return dt.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'Greenwich Mean Time');
     } else if (predicate instanceof Iterable<Object>) {
@@ -347,7 +347,7 @@ public virtual class Query {
       }
       List<String> innerStrings = new List<String>();
       for (Object innerPred : localPredicates) {
-        // recurse for string value
+        
         String innerString = this.getSoslPredicate(innerPred);
         innerStrings.add(innerString);
       }

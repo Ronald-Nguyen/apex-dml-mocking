@@ -106,7 +106,7 @@ private class QueryTest {
   @IsTest
   static void itShouldAllowNestedAndStatements() {
     String regexExpected = '\\(LastName = :bindVar\\d OR LastName = :bindVar\\d OR \\(FirstName = :bindVar\\d AND \\(LastName != :bindVar\\d OR LastName != :bindVar\\d\\)\\)\\)';
-    // String expected = '(LastName = :bindVar0 OR LastName = :bindVar1 OR (FirstName = :bindVar2 AND (LastName != :bindVar3 OR LastName != :bindVar4)))';
+    
 
     Query output = Query.orQuery(
       new List<Query>{
@@ -120,7 +120,7 @@ private class QueryTest {
     );
 
     Assert.areEqual(true, Pattern.compile(regexExpected).matcher(output.toString()).matches());
-    // Assert.areEqual(expected, output.toString());
+    
   }
 
   @IsTest
@@ -205,10 +205,10 @@ private class QueryTest {
 
     String regex = 'AccountId IN \\(SELECT Id FROM Account WHERE \\(AnnualRevenue = :bindVar\\d AND Industry = :bindVar\\d AND \\(NumberOfEmployees = :bindVar\\d OR Site = :bindVar\\d\\)\\)\\)';
     Assert.areEqual(true, Pattern.compile(regex).matcher(subquery.toString()).matches());
-    // Assert.areEqual(
-    //   'AccountId IN (SELECT Id FROM Account WHERE (AnnualRevenue = :bindVar0 AND Industry = :bindVar1 AND (NumberOfEmployees = :bindVar2 OR Site = :bindVar3)))',
-    //   subquery.toString()
-    // );
+    
+    
+    
+    
   }
 
   @IsTest

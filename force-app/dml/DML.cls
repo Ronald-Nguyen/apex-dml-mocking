@@ -1,10 +1,5 @@
 public virtual without sharing class DML implements IDML {
-  /**
-   * To use this class properly, see the Factory class:
-   * DML should be injected as a dependency by the factory
-   * then in your tests, the Factory.withMocks method
-   * becomes your one-stop-shop signal for switching to the DMLMock in tests
-   */
+  
   @TestVisible
   private static final Integer MAX_DML_CHUNKING = 10;
 
@@ -110,8 +105,8 @@ public virtual without sharing class DML implements IDML {
   }
 
   private void sortToPreventChunkingErrors(List<SObject> records) {
-    // prevents a chunking error that can occur if SObject types are in the list out of order.
-    // no need to sort if the list size is below the limit
+    
+    
     if (records.size() >= MAX_DML_CHUNKING) {
       records.sort();
     }

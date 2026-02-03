@@ -4,10 +4,10 @@ import xml.etree.ElementTree as ET
 import re
 
 # Configuration
-PATH = "./force-app"
+PATH = "refactoring\\coc_reduktion_results_codestral-2501\\iteration_01\\code\\main\\utilities"
 RULESET_FILE = "pmd-ruleset.xml"
 REPORT_FILE = "pmd-report.xml"
-SUMMARY_FILE = "complexity-summary.txt"
+SUMMARY_FILE = "complexity-summary-test.txt"
 
 def create_ruleset_file(filename=RULESET_FILE):
     """Creates the PMD ruleset XML file."""

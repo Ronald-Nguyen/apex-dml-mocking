@@ -10,8 +10,8 @@ private class LazyFactoryTest {
     Example secondExample = (Example) extendedExampleFactory.example;
 
     Assert.areEqual(1, loadCounter);
-    // prove that even without overriding "equals" and a setter for the
-    // ExtendedLazyFactory that the instances returned are the same
+    
+    
     Assert.areEqual(firstExample, secondExample);
   }
 

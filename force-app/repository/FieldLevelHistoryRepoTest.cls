@@ -19,7 +19,7 @@ private class FieldLevelHistoryRepoTest {
 
     List<AggregateRecord> records = repo.aggregate(count);
 
-    // It's not much of an assert, but at least we know the query went through successfully
+    
     Assert.areEqual(true, records.isEmpty());
   }
 
@@ -28,8 +28,8 @@ private class FieldLevelHistoryRepoTest {
     IHistoryRepository historyRepo = new FieldLevelHistoryRepoTest.ExampleRepoFactory().getOppFieldHistoryRepo();
 
     List<FieldLevelHistory> histories = historyRepo.getAllHistory();
-    // History records can't be created during Apex unit testing, but we can at least validate the query
-    // and prove that the FieldLevelHistory decorator list is returned properly
+    
+    
     Assert.areEqual(true, histories.isEmpty());
   }
 
@@ -64,7 +64,7 @@ private class FieldLevelHistoryRepoTest {
       List<Schema.SObjectField> queryFields = new List<Schema.SObjectField>{
         Opportunity.IsWon,
         Opportunity.StageName
-        // etc ...
+        
       };
       IAggregateRepository oppRepo = this.facade.getRepo(Opportunity.SObjectType, queryFields, this);
       oppRepo.addParentFields(
