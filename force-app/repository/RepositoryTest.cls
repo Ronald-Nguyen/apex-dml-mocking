@@ -738,6 +738,7 @@ private class RepositoryTest {
     repo.doDelete(acc);
     
     List<Account> deleted = [SELECT Id, IsDeleted FROM Account WHERE Id = :acc.Id ALL ROWS];
+    Assert.areEqual(1, deleted.size(), 'Should have one deleted record');
     Assert.isTrue(deleted[0].IsDeleted);
   }
 
@@ -763,6 +764,7 @@ private class RepositoryTest {
     repo.doHardDelete(acc);
     
     List<Account> deleted = [SELECT Id, IsDeleted FROM Account WHERE Id = :acc.Id ALL ROWS];
+    Assert.areEqual(1, deleted.size(), 'Should have one deleted record');
     Assert.isTrue(deleted[0].IsDeleted);
   }
 }

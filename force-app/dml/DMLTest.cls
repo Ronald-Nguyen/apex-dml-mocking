@@ -194,7 +194,9 @@ private class DMLTest {
 
   @IsTest
   static void shouldHandleUpdateWithAccessLevel() {
-    Contact contact = [SELECT Id FROM Contact LIMIT 1];
+    Contact contact = new Contact(LastName = 'TestAccessUpdate');
+    insert contact;
+    
     contact.FirstName = 'TestFirst';
     
     new DML().setOptions(null, System.AccessLevel.USER_MODE).doUpdate(contact);
