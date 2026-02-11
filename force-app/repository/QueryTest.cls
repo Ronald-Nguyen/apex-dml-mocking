@@ -252,4 +252,73 @@ private class QueryTest {
 
     Assert.areEqual('(Id = :bindVar0)', query.toString());
   }
+
+  @IsTest
+  static void itShouldHandleGreaterThanWithDatetimes() {
+    Datetime testDate = Datetime.newInstance(2024, 1, 1);
+    Query query = Query.greaterThan(Opportunity.CloseDate, testDate);
+    
+    Assert.areEqual('CloseDate > :bindVar0', query.toString());
+    Assert.areEqual(testDate, query.getBindVars().get('bindVar0'));
+  }
+
+  @IsTest
+  static void itShouldHandleLessThanWithDatetimes() {
+    Datetime testDate = Datetime.newInstance(2024, 12, 31);
+    Query query = Query.lessThan(Opportunity.CloseDate, testDate);
+    
+    Assert.areEqual('CloseDate < :bindVar0', query.toString());
+    Assert.areEqual(testDate, query.getBindVars().get('bindVar0'));
+  }
+
+  @IsTest
+  static void itShouldHandleMultipleBindVars() {
+    Query query1 = Query.equals(Account.Name, 'Test1');
+    Query query2 = Query.equals(Account.Industry, 'Tech');
+    Query combined = Query.andQuery(query1, query2);
+    
+    Map<String, Object> bindVars = combined.getBindVars();
+    Assert.areEqual(2, bindVars.size());
+  }
+
+  @IsTest
+  static void itShouldHandleSetOfStrings() {
+    Set<String> names = new Set<String>{ 'Name1', 'Name2', 'Name3' };
+    Query query = Query.equals(Account.Name, names);
+    
+    Assert.areEqual('Name = :bindVar0', query.toString());
+    Assert.areEqual(names, query.getBindVars().get('bindVar0'));
+  }
+
+  @IsTest
+  static void itShouldHandleEmptyStringQuery() {
+    Query query = Query.equals(Account.Name, '');
+    
+    Assert.areEqual('Name = :bindVar0', query.toString());
+    Assert.areEqual('', query.getBindVars().get('bindVar0'));
+  }
+
+  @IsTest
+  static void itShouldHandleBooleanFalse() {
+    Query query = Query.equals(Opportunity.IsWon, false);
+    
+    Assert.areEqual('IsWon = false', query.toString());
+  }
+
+  @IsTest
+  static void itShouldHandleNotEqualsNull() {
+    Query query = Query.notEquals(Account.ParentId, null);
+    
+    Assert.areEqual('ParentId != null', query.toString());
+  }
+
+  @IsTest
+  static void itShouldHandleAndQueryWithTwoQueries() {
+    Query q1 = Query.equals(Account.Name, 'Test');
+    Query q2 = Query.equals(Account.Industry, 'Tech');
+    Query andQuery = Query.andQuery(q1, q2);
+    
+    Assert.isNotNull(andQuery.toString());
+    Assert.isTrue(andQuery.toString().contains('AND'));
+  }
 }

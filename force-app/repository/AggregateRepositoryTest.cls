@@ -177,4 +177,160 @@ private class AggregateRepositoryTest {
       return oppRepo;
     }
   }
+
+  @IsTest
+  static void shouldHandleAverageAggregation() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount },
+      new RepoFactory()
+    );
+    
+    Aggregation avg = Aggregation.average(Opportunity.Amount, 'avgAmount');
+    List<AggregateRecord> results = repo.aggregate(avg);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(150, results[0].get('avgAmount'));
+  }
+
+  @IsTest
+  static void shouldHandleMinAggregation() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount },
+      new RepoFactory()
+    );
+    
+    Aggregation min = Aggregation.min(Opportunity.Amount, 'minAmount');
+    List<AggregateRecord> results = repo.aggregate(min);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(100, results[0].get('minAmount'));
+  }
+
+  @IsTest
+  static void shouldHandleMaxAggregation() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount },
+      new RepoFactory()
+    );
+    
+    Aggregation max = Aggregation.max(Opportunity.Amount, 'maxAmount');
+    List<AggregateRecord> results = repo.aggregate(max);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(200, results[0].get('maxAmount'));
+  }
+
+  @IsTest
+  static void shouldHandleMultipleAggregations() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount },
+      new RepoFactory()
+    );
+    
+    List<Aggregation> aggregations = new List<Aggregation>{
+      Aggregation.sum(Opportunity.Amount, 'total'),
+      Aggregation.count(Opportunity.Id, 'count'),
+      Aggregation.average(Opportunity.Amount, 'avg')
+    };
+    
+    List<AggregateRecord> results = repo.aggregate(aggregations);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(300, results[0].get('total'));
+    Assert.areEqual(2, results[0].get('count'));
+    Assert.areEqual(150, results[0].get('avg'));
+  }
+
+  @IsTest
+  static void shouldHandleGroupByWithMultipleFields() {
+    Account acc1 = new Account(Name = 'Acc1');
+    Account acc2 = new Account(Name = 'Acc2');
+    insert new List<Account>{ acc1, acc2 };
+    
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, AccountId = acc1.Id, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, AccountId = acc1.Id, StageName = 'Lost', CloseDate = System.today()),
+      new Opportunity(Name = 'opp3', Amount = 150, AccountId = acc2.Id, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount, Opportunity.AccountId, Opportunity.StageName },
+      new RepoFactory()
+    );
+    
+    List<AggregateRecord> results = repo
+      .groupBy(new List<Schema.SObjectField>{ Opportunity.AccountId, Opportunity.StageName })
+      .aggregate(Aggregation.sum(Opportunity.Amount, 'total'));
+    
+    Assert.areEqual(3, results.size());
+  }
+
+  @IsTest
+  static void shouldHandleHavingClause() {
+    Account acc = new Account(Name = 'TestAcc');
+    insert acc;
+    
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, AccountId = acc.Id, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, AccountId = acc.Id, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount, Opportunity.AccountId },
+      new RepoFactory()
+    );
+    
+    Aggregation sum = Aggregation.sum(Opportunity.Amount, 'total');
+    List<AggregateRecord> results = repo
+      .groupBy(Opportunity.AccountId)
+      .addHaving(sum, Query.Operator.GREATER_THAN, 250)
+      .aggregate(sum);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(300, results[0].get('total'));
+  }
+
+  @IsTest
+  static void shouldCountRecordsWithNoGroupBy() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Id },
+      new RepoFactory()
+    );
+    
+    Integer count = repo.count();
+    
+    Assert.areEqual(2, count);
+  }
 }

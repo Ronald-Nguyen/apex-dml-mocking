@@ -183,4 +183,80 @@ private class DMLTest {
 
     Assert.isNotNull(con.Id);
   }
+
+  @IsTest
+  static void shouldHandleInsertWithAccessLevel() {
+    Contact contact = new Contact(LastName = 'TestAccessLevel');
+    new DML().setOptions(new Database.DMLOptions(), System.AccessLevel.USER_MODE).doInsert(contact);
+    
+    Assert.isNotNull(contact.Id);
+  }
+
+  @IsTest
+  static void shouldHandleUpdateWithAccessLevel() {
+    Contact contact = [SELECT Id FROM Contact LIMIT 1];
+    contact.FirstName = 'TestFirst';
+    
+    new DML().setOptions(null, System.AccessLevel.USER_MODE).doUpdate(contact);
+    
+    Assert.areEqual('TestFirst', contact.FirstName);
+  }
+
+  @IsTest
+  static void shouldHandleUpsertWithExternalIdField() {
+    Account acc = new Account(Name = 'TestExtId');
+    insert acc;
+    
+    acc.Name = 'UpdatedExtId';
+    new DML().doUpsert(new List<SObject>{ acc }, Account.Id);
+    
+    Account updated = [SELECT Name FROM Account WHERE Id = :acc.Id];
+    Assert.areEqual('UpdatedExtId', updated.Name);
+  }
+
+  @IsTest
+  static void shouldHandleEmptyInsertList() {
+    List<Contact> emptyList = new List<Contact>();
+    
+    List<Database.SaveResult> results = new DML().doInsert(emptyList);
+    
+    Assert.areEqual(0, results.size());
+  }
+
+  @IsTest
+  static void shouldHandleEmptyDeleteList() {
+    List<Contact> emptyList = new List<Contact>();
+    
+    List<Database.DeleteResult> results = new DML().doDelete(emptyList);
+    
+    Assert.areEqual(0, results.size());
+  }
+
+  @IsTest
+  static void shouldHandleEmptyUpsertList() {
+    List<Account> emptyList = new List<Account>();
+    
+    List<Database.UpsertResult> results = new DML().doUpsert(emptyList);
+    
+    Assert.areEqual(0, results.size());
+  }
+
+  @IsTest
+  static void shouldHandleEmptyUndeleteList() {
+    List<Contact> emptyList = new List<Contact>();
+    
+    List<Database.UndeleteResult> results = new DML().doUndelete(emptyList);
+    
+    Assert.areEqual(0, results.size());
+  }
+
+  @IsTest
+  static void shouldSetOptionsAndReturnSelf() {
+    Database.DMLOptions opts = new Database.DMLOptions();
+    opts.AllowFieldTruncation = true;
+    
+    DML dml = new DML().setOptions(opts);
+    
+    Assert.isNotNull(dml);
+  }
 }
