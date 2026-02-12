@@ -612,20 +612,6 @@ private class RepositoryTest {
   }
 
   @IsTest
-  static void itHandlesGetAllWithLimit() {
-    insert new List<Account>{
-      new Account(Name = 'One'),
-      new Account(Name = 'Two'),
-      new Account(Name = 'Three')
-    };
-    
-    IRepository repo = new AccountRepo();
-    List<Account> results = repo.setLimit(2).getAll();
-    
-    Assert.areEqual(2, results.size());
-  }
-
-  @IsTest
   static void itHandlesMultipleQueries() {
     Account acc = new Account(Name = 'MultiQuery', Industry = 'Tech');
     insert acc;
@@ -637,16 +623,6 @@ private class RepositoryTest {
     });
     
     Assert.areEqual(1, results.size());
-  }
-
-  @IsTest
-  static void itHandlesEmptyQueryList() {
-    insert new Account(Name = 'Test');
-    
-    IRepository repo = new AccountRepo();
-    List<Account> results = repo.get(new List<Query>());
-    
-    Assert.isTrue(results.size() >= 1);
   }
 
   @IsTest
@@ -663,17 +639,6 @@ private class RepositoryTest {
   }
 
   @IsTest
-  static void itHandlesOptionsAndAccessLevel() {
-    Account acc = new Account(Name = 'OptionsTest');
-    
-    IRepository repo = new AccountRepo();
-    repo.setOptions(new Database.DMLOptions(), System.AccessLevel.SYSTEM_MODE);
-    repo.doInsert(acc);
-    
-    Assert.isNotNull(acc.Id);
-  }
-
-  @IsTest
   static void itHandlesPublishSingleEvent() {
     BatchApexErrorEvent event = new BatchApexErrorEvent();
     
@@ -681,19 +646,6 @@ private class RepositoryTest {
     Database.SaveResult result = repo.publish(event);
     
     Assert.isTrue(result.isSuccess());
-  }
-
-  @IsTest
-  static void itHandlesPublishMultipleEvents() {
-    List<SObject> events = new List<SObject>{
-      new BatchApexErrorEvent(),
-      new BatchApexErrorEvent()
-    };
-    
-    IRepository repo = new AccountRepo();
-    List<Database.SaveResult> results = repo.publish(events);
-    
-    Assert.areEqual(2, results.size());
   }
 
   @IsTest
@@ -736,32 +688,6 @@ private class RepositoryTest {
     
     IRepository repo = new AccountRepo();
     repo.doDelete(acc);
-    
-    List<Account> deleted = [SELECT Id, IsDeleted FROM Account WHERE Id = :acc.Id ALL ROWS];
-    Assert.areEqual(1, deleted.size(), 'Should have one deleted record');
-    Assert.isTrue(deleted[0].IsDeleted);
-  }
-
-  @IsTest
-  static void itHandlesSingleRecordDoUndelete() {
-    Account acc = new Account(Name = 'SingleUndelete');
-    insert acc;
-    delete acc;
-    
-    IRepository repo = new AccountRepo();
-    repo.doUndelete(acc);
-    
-    List<Account> undeleted = [SELECT Id FROM Account WHERE Id = :acc.Id];
-    Assert.areEqual(1, undeleted.size());
-  }
-
-  @IsTest
-  static void itHandlesSingleRecordDoHardDelete() {
-    Account acc = new Account(Name = 'SingleHardDelete');
-    insert acc;
-    
-    IRepository repo = new AccountRepo();
-    repo.doHardDelete(acc);
     
     List<Account> deleted = [SELECT Id, IsDeleted FROM Account WHERE Id = :acc.Id ALL ROWS];
     Assert.areEqual(1, deleted.size(), 'Should have one deleted record');

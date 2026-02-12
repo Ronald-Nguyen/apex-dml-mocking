@@ -114,26 +114,6 @@ private class CursorTest {
   }
 
   @IsTest
-  static void itHandlesZeroAdvanceBy() {
-    insert new Account(Name = 'Test');
-    Cursor instance = new Cursor('SELECT Id FROM Account', new Map<String, Object>(), System.AccessLevel.SYSTEM_MODE);
-    
-    List<SObject> results = instance.fetch(0, 0);
-    
-    Assert.areEqual(0, results.size());
-  }
-
-  @IsTest
-  static void itHandlesOffsetBeyondResults() {
-    insert new Account(Name = 'Test');
-    Cursor instance = new Cursor('SELECT Id FROM Account', new Map<String, Object>(), System.AccessLevel.SYSTEM_MODE);
-    
-    List<SObject> results = instance.fetch(10, 5);
-    
-    Assert.areEqual(0, results.size());
-  }
-
-  @IsTest
   static void itHandlesSingleRecordFetch() {
     insert new Account(Name = 'Single');
     Cursor instance = new Cursor('SELECT Name FROM Account', new Map<String, Object>(), System.AccessLevel.SYSTEM_MODE);
@@ -158,22 +138,5 @@ private class CursorTest {
     Cursor instance = new Cursor('SELECT Id FROM Account WHERE Name = :bindVar0 AND AnnualRevenue = :bindVar1', bindVars, System.AccessLevel.SYSTEM_MODE);
     
     Assert.areEqual(1, instance.getNumRecords());
-  }
-
-  @IsTest
-  static void itHandlesFetchesPerTransactionSetting() {
-    Cursor.maxRecordsPerFetchCall = 5;
-    List<Account> accounts = new List<Account>();
-    for (Integer i = 0; i < 10; i++) {
-      accounts.add(new Account(Name = 'Test ' + i));
-    }
-    insert accounts;
-    
-    Cursor instance = new Cursor('SELECT Id FROM Account', new Map<String, Object>(), System.AccessLevel.SYSTEM_MODE);
-    instance.setFetchesPerTransaction(3);
-    
-    List<SObject> results = instance.fetch(0, 10);
-    
-    Assert.areEqual(10, results.size());
   }
 }

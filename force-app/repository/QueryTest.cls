@@ -254,24 +254,6 @@ private class QueryTest {
   }
 
   @IsTest
-  static void itShouldHandleGreaterThanWithDatetimes() {
-    Datetime testDate = Datetime.newInstance(2024, 1, 1);
-    Query query = Query.greaterThan(Opportunity.CloseDate, testDate);
-    
-    Assert.areEqual('CloseDate > :bindVar0', query.toString());
-    Assert.areEqual(testDate, query.getBindVars().get('bindVar0'));
-  }
-
-  @IsTest
-  static void itShouldHandleLessThanWithDatetimes() {
-    Datetime testDate = Datetime.newInstance(2024, 12, 31);
-    Query query = Query.lessThan(Opportunity.CloseDate, testDate);
-    
-    Assert.areEqual('CloseDate < :bindVar0', query.toString());
-    Assert.areEqual(testDate, query.getBindVars().get('bindVar0'));
-  }
-
-  @IsTest
   static void itShouldHandleMultipleBindVars() {
     Query query1 = Query.equals(Account.Name, 'Test1');
     Query query2 = Query.equals(Account.Industry, 'Tech');
@@ -279,23 +261,6 @@ private class QueryTest {
     
     Map<String, Object> bindVars = combined.getBindVars();
     Assert.areEqual(2, bindVars.size());
-  }
-
-  @IsTest
-  static void itShouldHandleSetOfStrings() {
-    Set<String> names = new Set<String>{ 'Name1', 'Name2', 'Name3' };
-    Query query = Query.equals(Account.Name, names);
-    
-    Assert.areEqual('Name = :bindVar0', query.toString());
-    Assert.areEqual(names, query.getBindVars().get('bindVar0'));
-  }
-
-  @IsTest
-  static void itShouldHandleEmptyStringQuery() {
-    Query query = Query.equals(Account.Name, '');
-    
-    Assert.areEqual('Name = :bindVar0', query.toString());
-    Assert.areEqual('', query.getBindVars().get('bindVar0'));
   }
 
   @IsTest

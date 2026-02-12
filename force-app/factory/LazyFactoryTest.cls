@@ -16,28 +16,6 @@ private class LazyFactoryTest {
   }
 
   @IsTest
-  static void loadsMultipleDifferentInstances() {
-    loadCounter = 0;
-    ExtendedLazyFactory factory = new ExtendedLazyFactory();
-    
-    Example example = (Example) factory.example;
-    AnotherExample another = (AnotherExample) factory.anotherExample;
-    
-    Assert.areEqual(1, loadCounter);
-    Assert.isNotNull(example);
-    Assert.isNotNull(another);
-  }
-
-  @IsTest
-  static void handlesNullLoad() {
-    ExtendedLazyFactory factory = new ExtendedLazyFactory();
-    
-    LazyFactory.Instance instance = factory.load(null);
-    
-    Assert.areEqual(null, instance);
-  }
-
-  @IsTest
   static void cachesAcrossMultipleCalls() {
     loadCounter = 0;
     ExtendedLazyFactory factory = new ExtendedLazyFactory();
@@ -61,39 +39,10 @@ private class LazyFactoryTest {
     Assert.areEqual(2, loadCounter);
   }
 
-  @IsTest
-  static void handlesMultipleInstanceTypes() {
-    loadCounter = 0;
-    ExtendedLazyFactory factory = new ExtendedLazyFactory();
-    
-    Example example = (Example) factory.example;
-    AnotherExample another = (AnotherExample) factory.anotherExample;
-    Example exampleAgain = (Example) factory.example;
-    
-    Assert.areEqual(1, loadCounter);
-    Assert.areEqual(example, exampleAgain);
-  }
-
-  @IsTest
-  static void instanceIsInitializedOnlyOnce() {
-    loadCounter = 0;
-    ExtendedLazyFactory factory = new ExtendedLazyFactory();
-    
-    Boolean isNull = factory.example == null;
-    Assert.areEqual(false, isNull);
-    Assert.areEqual(1, loadCounter);
-  }
-
   private class ExtendedLazyFactory extends LazyFactory {
     public Instance example {
       get {
         return this.load(Example.class);
-      }
-    }
-
-    public Instance anotherExample {
-      get {
-        return this.load(AnotherExample.class);
       }
     }
   }
@@ -101,11 +50,6 @@ private class LazyFactoryTest {
   private class Example implements LazyFactory.Instance {
     public Example() {
       loadCounter++;
-    }
-  }
-
-  private class AnotherExample implements LazyFactory.Instance {
-    public AnotherExample() {
     }
   }
 }

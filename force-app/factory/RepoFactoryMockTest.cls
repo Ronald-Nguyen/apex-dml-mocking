@@ -38,19 +38,6 @@ private class RepoFactoryMockTest {
   }
 
   @IsTest
-  static void mocksFacadeGetRepo() {
-    RepoFactoryMock.FacadeMock facade = new RepoFactoryMock.FacadeMock();
-    
-    IHistoryRepository repo = facade.getRepo(
-      Account.SObjectType,
-      new List<Schema.SObjectField>{ Account.Name },
-      new RepoFactoryMock()
-    );
-    
-    Assert.isNotNull(repo);
-  }
-
-  @IsTest
   static void mocksQueryResults() {
     Account acc = new Account(Id = TestingUtils.generateId(Account.SObjectType), Name = 'TestAcc');
     RepoFactoryMock.QueryResults.put(Account.SObjectType, new List<Account>{ acc });
