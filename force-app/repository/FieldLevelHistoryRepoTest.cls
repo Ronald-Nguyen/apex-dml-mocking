@@ -81,12 +81,12 @@ private class FieldLevelHistoryRepoTest {
   }
 
   @IsTest
-  static void itShouldGetHistoryByParentId() {
+  static void itShouldGetHistoryWithQuery() {
     Opportunity opp = new Opportunity(Name = 'Test', StageName = 'Prospecting', CloseDate = System.today());
     insert opp;
     
     IHistoryRepository historyRepo = new FieldLevelHistoryRepoTest.ExampleRepoFactory().getOppFieldHistoryRepo();
-    List<FieldLevelHistory> histories = historyRepo.getHistoryByParentId(opp.Id);
+    List<FieldLevelHistory> histories = historyRepo.getHistory(Query.equals(OpportunityFieldHistory.OpportunityId, opp.Id));
     
     Assert.isNotNull(histories);
   }
@@ -100,7 +100,12 @@ private class FieldLevelHistoryRepoTest {
     update opp;
     
     IHistoryRepository historyRepo = new FieldLevelHistoryRepoTest.ExampleRepoFactory().getOppFieldHistoryRepo();
-    List<FieldLevelHistory> histories = historyRepo.getHistoryByParentIdAndField(opp.Id, 'Amount');
+    List<FieldLevelHistory> histories = historyRepo.getHistory(
+      new List<Query>{
+        Query.equals(OpportunityFieldHistory.OpportunityId, opp.Id),
+        Query.equals(OpportunityFieldHistory.Field, 'Amount')
+      }
+    );
     
     Assert.isNotNull(histories);
   }
@@ -114,9 +119,9 @@ private class FieldLevelHistoryRepoTest {
       'NewValue' => 200
     });
     
-    Assert.areEqual('Amount', history.get('Field'));
-    Assert.areEqual(100, history.get('OldValue'));
-    Assert.areEqual(200, history.get('NewValue'));
+    Assert.areEqual('Amount', history.Field);
+    Assert.areEqual(100, history.OldValue);
+    Assert.areEqual(200, history.NewValue);
   }
 
   @IsTest
@@ -124,7 +129,7 @@ private class FieldLevelHistoryRepoTest {
     IHistoryRepository historyRepo = new FieldLevelHistoryRepoTest.ExampleRepoFactory().getOppFieldHistoryRepo();
     Id fakeId = TestingUtils.generateId(Opportunity.SObjectType);
     
-    List<FieldLevelHistory> histories = historyRepo.getHistoryByParentId(fakeId);
+    List<FieldLevelHistory> histories = historyRepo.getHistory(Query.equals(OpportunityFieldHistory.OpportunityId, fakeId));
     
     Assert.isNotNull(histories);
   }

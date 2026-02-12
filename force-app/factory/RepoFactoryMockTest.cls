@@ -40,7 +40,7 @@ private class RepoFactoryMockTest {
   @IsTest
   static void mocksQueryResults() {
     Account acc = new Account(Id = TestingUtils.generateId(Account.SObjectType), Name = 'TestAcc');
-    RepoFactoryMock.QueryResults.put(Account.SObjectType, new List<Account>{ acc });
+    RepoFactoryMock.QueryResults.add(acc);
     
     RepoFactoryMock.FacadeMock facade = new RepoFactoryMock.FacadeMock();
     IRepository repo = facade.getRepo(
@@ -58,7 +58,7 @@ private class RepoFactoryMockTest {
   @IsTest
   static void mocksAggregateResults() {
     AggregateRecord aggRecord = new AggregateRecord();
-    aggRecord.put('total', 100);
+    aggRecord.putAll(new Map<String, Object>{ 'total' => 100 });
     RepoFactoryMock.AggregateResults.put(Opportunity.SObjectType, new List<AggregateRecord>{ aggRecord });
     
     RepoFactoryMock.FacadeMock facade = new RepoFactoryMock.FacadeMock();
@@ -91,7 +91,7 @@ private class RepoFactoryMockTest {
     List<FieldLevelHistory> results = repo.getAllHistory();
     
     Assert.areEqual(1, results.size());
-    Assert.areEqual('Amount', results[0].get('Field'));
+    Assert.areEqual('Amount', results[0].Field);
   }
 
   @IsTest
