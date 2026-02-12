@@ -159,6 +159,14 @@ public virtual class Query {
 
     public abstract String getDelimiter();
 
+    public override Map<String, Object> getBindVars() {
+      // Ensure bind vars are collected from child queries
+      for (Query innerQuery : this.queries) {
+        this.bindVars.putAll(innerQuery.getBindVars());
+      }
+      return this.bindVars;
+    }
+
     public override String toString() {
       String baseString = '(';
       for (Query innerQuery : this.queries) {
