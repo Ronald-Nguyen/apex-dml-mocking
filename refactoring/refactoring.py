@@ -27,11 +27,11 @@ REFACTORINGS = [
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
-DEFAULT_REFACTORING = "rename" \
+DEFAULT_REFACTORING = "coc_reduktion" \
 ""
-
+RESULT_PATH_NAME = 'results'
 PATH = 'force-app'
-ITERATIONS = 10
+ITERATIONS = 1
 GEMMA = 'gemma-3-27b-it'
 GEMINI3 = 'gemini-3-pro-preview'
 GEMINI2 = 'gemini-2.5-flash'
@@ -45,7 +45,7 @@ MODEL_MISTRAL = CODESTRAL
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
-LLM_API_KEY = GEMINI_API_KEY    
+LLM_API_KEY =   MISTRAL_API_KEY    
 client = None
 MODEL = None
 
@@ -1388,7 +1388,7 @@ def main():
         REFACTORING = f"{REFACTORING_BASE_DIR}/{ref_name}"
 
         PROMPT_TEMPLATE = Path(f"{REFACTORING}.txt").read_text(encoding="utf-8")
-        RESULTS_DIR = Path(REFACTORING + "_results2_" + MODEL)
+        RESULTS_DIR = Path(REFACTORING + RESULT_PATH_NAME + MODEL)
         RESULTS_DIR.mkdir(exist_ok=True)
 
         YOUR_PROMPT = PROMPT_TEMPLATE
