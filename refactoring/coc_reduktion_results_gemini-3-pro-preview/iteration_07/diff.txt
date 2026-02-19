@@ -1,0 +1,184 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -33 +33,9 @@
+-List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(record.getSObjectType());
++List<Schema.ChildRelationship>childRelationships=getChildRelationships(record.getSObjectType());
++StringrelationshipName=getRelationshipName(childRelationships,childField);
++if(relationshipName!=null){
++returncreateRecordWithChildren(record,relationshipName,children);
++}
++returnrecord;
++}
++privatestaticList<Schema.ChildRelationship>getChildRelationships(Schema.SObjectTypesObjectType){
++List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(sObjectType);
+@@ -35 +43 @@
+-childRelationships=record.getSObjectType()
++childRelationships=sObjectType
+@@ -38,4 +46,6 @@
+-CACHED_CHILD_RELATIONSHIPS.put(record.getSObjectType(),childRelationships);
+-}
+-StringrelationshipName;
+-for(Schema.ChildRelationshipchildRelationship:childRelationships){
++CACHED_CHILD_RELATIONSHIPS.put(sObjectType,childRelationships);
++}
++returnchildRelationships;
++}
++privatestaticStringgetRelationshipName(List<Schema.ChildRelationship>relationships,Schema.SObjectFieldchildField){
++for(Schema.ChildRelationshipchildRelationship:relationships){
+@@ -43,5 +53,6 @@
+-relationshipName=childRelationship.getRelationshipName();
+-break;
+-}
+-}
+-if(relationshipName!=null){
++returnchildRelationship.getRelationshipName();
++}
++}
++returnnull;
++}
++privatestaticSObjectcreateRecordWithChildren(SObjectrecord,StringrelationshipName,List<SObject>children){
+@@ -52,2 +62,0 @@
+-}
+-returnrecord;
+@@ -72,2 +81,17 @@
+-IHistoryRepositoryrepo;
+-List<SObject>queriedResults=getResults(sObjectType);
++if(shouldCreateMockRepo(sObjectType)){
++returncreateMockRepo(sObjectType,repoFactory);
++}
++return(IHistoryRepository)fallback;
++}
++privatestaticBooleanshouldCreateMockRepo(Schema.SObjectTypesObjectType){
++if(alwaysUseMock){
++returntrue;
++}
++return!getResults(sObjectType).isEmpty()||
++AggregateResults.get(sObjectType)?.isEmpty()==false||
++HistoryResults.get(sObjectType)?.isEmpty()==false||
++CursorResults.get(sObjectType)?.isEmpty()==false;
++}
++privatestaticRepoMockcreateMockRepo(Schema.SObjectTypesObjectType,RepoFactoryrepoFactory){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(getResults(sObjectType));
+@@ -75,11 +98,0 @@
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
+-List<Cursor>cursorResults=CursorResults.get(sObjectType);
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
+-){
+-RepoMockmock=newRepoMock(sObjectType,repoFactory);
+-mock.results.addAll(queriedResults);
+@@ -88,0 +102 @@
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
+@@ -92,5 +106 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138,6 +138,2 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
+-StringpotentialOrderBy=null;
+-StringorderByKey='\nORDERBY';
+-if(baseString.contains(orderByKey)){
+-potentialOrderBy=baseString.substringAfter(orderByKey);
+-baseString=baseString.replace(orderByKey+potentialOrderBy,'');
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
+@@ -145,3 +141 @@
+-baseString+='\nGROUPBY';
+-for(GroupBygroupBy:this.groupedByFieldNames){
+-baseString+=groupBy.getGroupByName()+',';
++returnthis.buildGroupedQuery(baseString);
+@@ -149 +143,4 @@
+-baseString=baseString.removeEnd(',');
++privateStringbuildGroupedQuery(StringbaseString){
++StringpotentialOrderBy=this.extractOrderBy(baseString);
++StringqueryWithoutOrder=this.removeOrderBy(baseString);
++StringgroupedQuery=queryWithoutOrder+this.getGroupByClause();
+@@ -151 +148 @@
+-baseString+='\nHAVING'+String.join(this.havingFields,',');
++groupedQuery+='\nHAVING'+String.join(this.havingFields,',');
+@@ -154 +151 @@
+-baseString+=orderByKey+potentialOrderBy;
++groupedQuery+='\nORDERBY'+potentialOrderBy;
+@@ -155,0 +153 @@
++returngroupedQuery;
+@@ -157 +155,21 @@
+-returnbaseString;
++privateStringextractOrderBy(Stringquery){
++StringorderByKey='\nORDERBY';
++if(query.contains(orderByKey)){
++returnquery.substringAfter(orderByKey);
++}
++returnnull;
++}
++privateStringremoveOrderBy(Stringquery){
++StringorderByKey='\nORDERBY';
++if(query.contains(orderByKey)){
++StringpotentialOrderBy=query.substringAfter(orderByKey);
++returnquery.replace(orderByKey+potentialOrderBy,'');
++}
++returnquery;
++}
++privateStringgetGroupByClause(){
++Stringclause='\nGROUPBY';
++for(GroupBygroupBy:this.groupedByFieldNames){
++clause+=groupBy.getGroupByName()+',';
++}
++returnclause.removeEnd(',');
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -286,2 +286,13 @@
+-}elseif(predicateinstanceofDatetime){
+-Datetimedt=(Datetime)predicate;
++}
++if(predicateinstanceofDatetime){
++returnthis.formatSoslDatetime((Datetime)predicate);
++}
++if(predicateinstanceofIterable<Object>){
++returnthis.formatSoslIterable((Iterable<Object>)predicate);
++}
++if(predicateinstanceofString){
++returnthis.formatSoslString((String)predicate);
++}
++returnString.valueOf(predicate);
++}
++privateStringformatSoslDatetime(Datetimedt){
+@@ -289,3 +300,3 @@
+-}elseif(predicateinstanceofIterable<Object>){
+-Iterable<Object>localPredicates=(Iterable<Object>)predicate;
+-if(localPredicates.iterator().hasNext()==false){
++}
++privateStringformatSoslIterable(Iterable<Object>predicates){
++if(predicates.iterator().hasNext()==false){
+@@ -295,9 +306,6 @@
+-for(ObjectinnerPred:localPredicates){
+-StringinnerString=this.getSoslPredicate(innerPred);
+-innerStrings.add(innerString);
+-}
+-Stringstart='(';
+-Stringending=')';
+-returnstart+String.join(innerStrings,',')+ending;
+-}elseif(predicateinstanceofString){
+-Stringinput=(String)predicate;
++for(ObjectinnerPred:predicates){
++innerStrings.add(this.getSoslPredicate(innerPred));
++}
++return'('+String.join(innerStrings,',')+')';
++}
++privateStringformatSoslString(Stringinput){
+@@ -306,3 +314 @@
+-returnString.valueOf(predicate);
+-}
+-}
++}

@@ -1,0 +1,238 @@
+--- backup/dml\DML.cls
++++ refactored/dml\DML.cls
+@@ -92 +92,3 @@
+-if(records.size()>=MAX_DML_CHUNKING){
++if(records.size()<MAX_DML_CHUNKING){
++return;
++}
+@@ -94,0 +97,4 @@
++privatestaticvoidlog(OperationLoggingValueloggingValue,ObjectrecordOrRecords){
++Integersize=getRecordCount(recordOrRecords);
++Stringmessage=buildLogMessage(loggingValue,size);
++System.debug(System.LoggingLevel.FINE,message);
+@@ -96,6 +102,5 @@
+-privatestaticvoidlog(OperationLoggingValueloggingValue,ObjectrecordOrRecords){
+-Integersize=(recordOrRecordsinstanceofList<SObject>)?((List<SObject>)recordOrRecords).size():1;
+-System.debug(
+-System.LoggingLevel.FINE,
+-loggingValue.name().toLowerCase()+''+size+'record'+(size>1?'s':'')+'...'
+-);
++privatestaticIntegergetRecordCount(ObjectrecordOrRecords){
++return(recordOrRecordsinstanceofList<SObject>)?((List<SObject>)recordOrRecords).size():1;
++}
++privatestaticStringbuildLogMessage(OperationLoggingValueloggingValue,Integersize){
++returnloggingValue.name().toLowerCase()+''+size+'record'+(size>1?'s':'')+'...';
+
+--- backup/factory\RepoFactory.cls
++++ refactored/factory\RepoFactory.cls
+@@ -40,4 +40,8 @@
+-IHistoryRepositorypotentiallyCachedInstance=CACHED_REPOS.get(repoType);
+-if(potentiallyCachedInstance==null){
+-potentiallyCachedInstance=newFieldLevelHistoryRepo(repoType,queryFields,repoFactory);
+-CACHED_REPOS.put(repoType,potentiallyCachedInstance);
++IHistoryRepositoryrepo=CACHED_REPOS.get(repoType);
++if(repo!=null){
++System.debug(System.LoggingLevel.FINER,'Usingcachedrepositoryoftype:'+repoType);
++repo.setShouldPrintBindVars(repoFactory.shouldPrintBindVars);
++returnrepo;
++}
++repo=newFieldLevelHistoryRepo(repoType,queryFields,repoFactory);
++CACHED_REPOS.put(repoType,repo);
+@@ -45,5 +49,2 @@
+-}else{
+-System.debug(System.LoggingLevel.FINER,'Usingcachedrepositoryoftype:'+repoType);
+-}
+-potentiallyCachedInstance.setShouldPrintBindVars(repoFactory.shouldPrintBindVars);
+-returnpotentiallyCachedInstance;
++repo.setShouldPrintBindVars(repoFactory.shouldPrintBindVars);
++returnrepo;
+
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -33 +33,9 @@
+-List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(record.getSObjectType());
++List<Schema.ChildRelationship>childRelationships=getCachedChildRelationships(record.getSObjectType());
++StringrelationshipName=findRelationshipName(childRelationships,childField);
++if(relationshipName!=null){
++returninjectChildren(record,relationshipName,children);
++}
++returnrecord;
++}
++privatestaticList<Schema.ChildRelationship>getCachedChildRelationships(Schema.SObjectTypesObjectType){
++List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(sObjectType);
+@@ -35 +43 @@
+-childRelationships=record.getSObjectType()
++childRelationships=sObjectType
+@@ -38,3 +46,5 @@
+-CACHED_CHILD_RELATIONSHIPS.put(record.getSObjectType(),childRelationships);
+-}
+-StringrelationshipName;
++CACHED_CHILD_RELATIONSHIPS.put(sObjectType,childRelationships);
++}
++returnchildRelationships;
++}
++privatestaticStringfindRelationshipName(List<Schema.ChildRelationship>childRelationships,Schema.SObjectFieldchildField){
+@@ -43,5 +53,6 @@
+-relationshipName=childRelationship.getRelationshipName();
+-break;
+-}
+-}
+-if(relationshipName!=null){
++returnchildRelationship.getRelationshipName();
++}
++}
++returnnull;
++}
++privatestaticSObjectinjectChildren(SObjectrecord,StringrelationshipName,List<SObject>children){
+@@ -53,2 +63,0 @@
+-returnrecord;
+-}
+@@ -72 +80,0 @@
+-IHistoryRepositoryrepo;
+@@ -75 +83 @@
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
+@@ -77,7 +85 @@
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
+-){
++if(shouldUseMock(queriedResults,aggRecords,historyRecords,cursorResults)){
+@@ -92,5 +94,15 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
++}
++return(IHistoryRepository)fallback;
++}
++privatestaticBooleanshouldUseMock(
++List<SObject>queriedResults,
++List<AggregateRecord>aggRecords,
++List<FieldLevelHistory>historyRecords,
++List<Cursor>cursorResults
++){
++returnqueriedResults.size()>0||
++(aggRecords!=null&&aggRecords.size()>0)||
++(historyRecords!=null&&historyRecords.size()>0)||
++(cursorResults!=null&&cursorResults.size()>0)||
++alwaysUseMock==true;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138,2 +138,6 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
+-StringpotentialOrderBy=null;
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
++returnthis.applyGroupByLogic(baseString);
++}
++privateStringapplyGroupByLogic(StringbaseQuery){
+@@ -141,3 +145,6 @@
+-if(baseString.contains(orderByKey)){
+-potentialOrderBy=baseString.substringAfter(orderByKey);
+-baseString=baseString.replace(orderByKey+potentialOrderBy,'');
++StringorderByClause='';
++StringqueryWithoutOrder=baseQuery;
++if(baseQuery.contains(orderByKey)){
++StringpotentialOrderBy=baseQuery.substringAfter(orderByKey);
++orderByClause=orderByKey+potentialOrderBy;
++queryWithoutOrder=baseQuery.replace(orderByClause,'');
+@@ -145 +152,6 @@
+-baseString+='\nGROUPBY';
++StringgroupByClause=this.buildGroupByClause();
++StringhavingClause=this.buildHavingClause();
++returnqueryWithoutOrder+groupByClause+havingClause+orderByClause;
++}
++privateStringbuildGroupByClause(){
++List<String>groupByNames=newList<String>();
+@@ -147 +159 @@
+-baseString+=groupBy.getGroupByName()+',';
++groupByNames.add(groupBy.getGroupByName());
+@@ -149,3 +161 @@
+-baseString=baseString.removeEnd(',');
+-if(this.havingFields.isEmpty()==false){
+-baseString+='\nHAVING'+String.join(this.havingFields,',');
++return'\nGROUPBY'+String.join(groupByNames,',');
+@@ -153,2 +163,3 @@
+-if(potentialOrderBy!=null){
+-baseString+=orderByKey+potentialOrderBy;
++privateStringbuildHavingClause(){
++if(this.havingFields.isEmpty()){
++return'';
+@@ -156,2 +167,2 @@
+-}
+-returnbaseString;
++List<String>havingList=newList<String>(this.havingFields);
++return'\nHAVING'+String.join(havingList,',');
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -56,5 +56 @@
+-while(
+-localFetchesMade<this.fetchesPerTransaction&&
+-results.size()<this.getNumRecords()&&
+-localStart<start+advanceBy
+-){
++while(canContinueFetching(localFetchesMade,results.size(),localStart,start,advanceBy)){
+@@ -66,0 +63,11 @@
++}
++privateBooleancanContinueFetching(
++IntegerfetchesMade,
++IntegercurrentResultsSize,
++IntegerlocalStart,
++Integerstart,
++IntegeradvanceBy
++){
++returnfetchesMade<this.fetchesPerTransaction&&
++currentResultsSize<this.getNumRecords()&&
++localStart<start+advanceBy;
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -286,2 +286,13 @@
+-}elseif(predicateinstanceofDatetime){
+-Datetimedt=(Datetime)predicate;
++}
++if(predicateinstanceofDatetime){
++returnformatSoslDatetime((Datetime)predicate);
++}
++if(predicateinstanceofIterable<Object>){
++returnformatSoslIterable((Iterable<Object>)predicate);
++}
++if(predicateinstanceofString){
++returnformatSoslString((String)predicate);
++}
++returnString.valueOf(predicate);
++}
++privateStringformatSoslDatetime(Datetimedt){
+@@ -289,3 +300,3 @@
+-}elseif(predicateinstanceofIterable<Object>){
+-Iterable<Object>localPredicates=(Iterable<Object>)predicate;
+-if(localPredicates.iterator().hasNext()==false){
++}
++privateStringformatSoslIterable(Iterable<Object>predicates){
++if(predicates.iterator().hasNext()==false){
+@@ -295 +306 @@
+-for(ObjectinnerPred:localPredicates){
++for(ObjectinnerPred:predicates){
+@@ -299,5 +310,3 @@
+-Stringstart='(';
+-Stringending=')';
+-returnstart+String.join(innerStrings,',')+ending;
+-}elseif(predicateinstanceofString){
+-Stringinput=(String)predicate;
++return'('+String.join(innerStrings,',')+')';
++}
++privateStringformatSoslString(Stringinput){
+@@ -306,3 +315 @@
+-returnString.valueOf(predicate);
+-}
+-}
++}

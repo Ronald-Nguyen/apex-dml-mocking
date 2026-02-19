@@ -1,0 +1,1321 @@
+File `factory\RepoFactoryMock.cls`:
+```apex
+@SuppressWarnings('PMD.FieldNamingConventions')
+@IsTest
+public class RepoFactoryMock extends RepoFactory {
+  @TestVisible
+  private static final Map<Schema.SObjectType, List<AggregateRecord>> AggregateResults = new Map<Schema.SObjectType, List<AggregateRecord>>();
+  @TestVisible
+  private static final List<Aggregation> AggregatesMade = new List<Aggregation>();
+  @TestVisible
+  private static final List<SObject> QueryResults = new List<SObject>();
+  @TestVisible
+  private static final List<Query> QueriesMade = new List<Query>();
+  @TestVisible
+  private static final Map<SObjectType, List<Cursor>> CursorResults = new Map<SObjectType, List<Cursor>>();
+  @TestVisible
+  private static final Map<Schema.SObjectType, List<FieldLevelHistory>> HistoryResults = new Map<Schema.SObjectType, List<FieldLevelHistory>>();
+  @TestVisible
+  private static final Map<SObjectType, List<AggregateRepository.GroupBy>> GroupByFields = new Map<SObjectType, List<AggregateRepository.GroupBy>>();
+  @TestVisible
+  private static final Map<SObjectType, Map<String, RepositorySortOrder>> FieldToSortOrders = new Map<SObjectType, Map<String, RepositorySortOrder>>();
+
+  private static final Map<Schema.SObjectType, List<Schema.ChildRelationship>> CACHED_CHILD_RELATIONSHIPS = new Map<Schema.SObjectType, List<Schema.ChildRelationship>>();
+
+  @TestVisible
+  private static Boolean alwaysUseMock = false;
+
+  private class ChildrenSObjects {
+    public final List<SObject> records;
+    public final Boolean done = true;
+    public final Integer totalSize;
+
+    public ChildrenSObjects(List<SObject> records) {
+      this.records = records;
+      this.totalSize = records.size();
+    }
+  }
+
+  public static SObject addChildrenToRecord(SObject record, Schema.SObjectField childField, List<SObject> children) {
+    List<Schema.ChildRelationship> childRelationships = CACHED_CHILD_RELATIONSHIPS.get(record.getSObjectType());
+    if (childRelationships == null) {
+      childRelationships = record.getSObjectType()
+        .getDescribe(Schema.SObjectDescribeOptions.FULL)
+        .getChildRelationships();
+      CACHED_CHILD_RELATIONSHIPS.put(record.getSObjectType(), childRelationships);
+    }
+    String relationshipName;
+    for (Schema.ChildRelationship childRelationship : childRelationships) {
+      if (childRelationship.getField() == childField) {
+        relationshipName = childRelationship.getRelationshipName();
+        break;
+      }
+    }
+    if (relationshipName != null) {
+      String serializedMeta = JSON.serialize(record).removeEnd('}');
+      String childrenJson = '"' + relationshipName + '" : ' + JSON.serialize(new ChildrenSObjects(children));
+      serializedMeta += ',' + childrenJson + '}';
+      return (SObject) JSON.deserialize(serializedMeta, SObject.class);
+    }
+    return record;
+  }
+
+  public class FacadeMock extends RepoFactory.Facade {
+    public override IDML getDML() {
+      return new DMLMock();
+    }
+
+    public override IHistoryRepository getRepo(
+      Schema.SObjectType repoType,
+      List<Schema.SObjectField> queryFields,
+      RepoFactory repoFactory
+    ) {
+      return getRepoFromSObjectType(repoType, super.getRepo(repoType, queryFields, repoFactory), repoFactory);
+    }
+  }
+
+  private static IHistoryRepository getRepoFromSObjectType(
+    SObjectType sObjectType,
+    IAggregateRepository fallback,
+    RepoFactory repoFactory
+  ) {
+    List<SObject> queriedResults = getResults(sObjectType);
+    List<AggregateRecord> aggRecords = AggregateResults.get(sObjectType);
+    List<FieldLevelHistory> historyRecords = HistoryResults.get(sObjectType);
+    List<Cursor> cursorResults = CursorResults.get(sObjectType);
+
+    Boolean hasMockData = queriedResults.isEmpty() == false ||
+      (aggRecords != null && aggRecords.isEmpty() == false) ||
+      (historyRecords != null && historyRecords.isEmpty() == false) ||
+      (cursorResults != null && cursorResults.isEmpty() == false);
+
+    if (!hasMockData && !alwaysUseMock) {
+      return (IHistoryRepository) fallback;
+    }
+
+    RepoMock mock = new RepoMock(sObjectType, repoFactory);
+    mock.results.addAll(queriedResults);
+    if (aggRecords != null) {
+      mock.aggRecords.addAll(aggRecords);
+    }
+    if (historyRecords != null) {
+      mock.historyRecords.addAll(historyRecords);
+    }
+    return mock;
+  }
+
+  private static List<SObject> getResults(Schema.SObjectType sobjType) {
+    List<SObject> resultList = new List<SObject>();
+    for (SObject potentialResult : QueryResults) {
+      if (potentialResult.getSObjectType() == sobjType) {
+        resultList.add(potentialResult);
+      }
+    }
+    return resultList;
+  }
+
+  private class RepoMock extends FieldLevelHistoryRepo {
+    private final List<SObject> results = new List<SObject>();
+    private final List<AggregateRecord> aggRecords = new List<AggregateRecord>();
+    private final List<FieldLevelHistory> historyRecords = new List<FieldLevelHistory>();
+
+    private RepoMock(Schema.SObjectType sObjectType, RepoFactory repoFactory) {
+      super(sObjectType, new List<Schema.SObjectField>(), repoFactory);
+    }
+
+    public override Cursor getCursor(List<Query> queries) {
+      QueriesMade.addAll(queries);
+      List<Cursor> cursorResults = CursorResults.get(this.repoType);
+      return cursorResults.remove(0);
+    }
+
+    public override List<FieldLevelHistory> getHistory(List<Query> queries) {
+      QueriesMade.addAll(queries);
+      this.trackFieldToSortOrder();
+      return this.historyRecords;
+    }
+
+    public override List<SObject> getAll() {
+      return this.get(new List<Query>());
+    }
+
+    public override List<SObject> get(Query query) {
+      return this.get(new List<Query>{ query });
+    }
+
+    public override List<SObject> get(List<Query> queries) {
+      QueriesMade.addAll(queries);
+      this.trackFieldToSortOrder();
+      this.clearState();
+      return this.results;
+    }
+
+    public override List<List<SObject>> getSosl(
+      String searchTerm,
+      List<Query> queries,
+      List<AdditionalSoslObject> additionalSoslObjects
+    ) {
+      QueriesMade.addAll(queries);
+      List<List<SObject>> results = new List<List<SObject>>{ this.results };
+      for (AdditionalSoslObject additionalSoslObject : additionalSoslObjects) {
+        if (additionalSoslObject.objectType != this.repoType) {
+          results.add(getResults(additionalSoslObject.objectType));
+          QueriesMade.addAll(additionalSoslObject.queryFilters);
+        }
+      }
+      return results;
+    }
+
+    public override Integer count(List<Query> queries) {
+      QueriesMade.addAll(queries);
+      List<AggregateRecord> results = AggregateResults.get(this.repoType);
+      this.clearState();
+      if (results == null) {
+        return super.count(queries);
+      } else if (results.isEmpty() == false) {
+        return results.remove(0).getCount();
+      }
+      return null;
+    }
+
+    public override List<AggregateRecord> aggregate(List<Aggregation> aggregations, List<Query> queries) {
+      AggregatesMade.addAll(aggregations);
+      QueriesMade.addAll(queries);
+
+      List<AggregateRepository.GroupBy> fields = GroupByFields.get(this.repoType);
+      if (fields == null) {
+        fields = new List<AggregateRepository.GroupBy>();
+        GroupByFields.put(this.repoType, fields);
+      }
+      fields.addAll(this.groupedByFieldNames);
+
+      this.trackFieldToSortOrder();
+
+      return this.aggRecords;
+    }
+
+    private void trackFieldToSortOrder() {
+      Map<String, RepositorySortOrder> localFieldToSortOrders = FieldToSortOrders.get(this.repoType);
+      if (localFieldToSortOrders == null) {
+        localFieldToSortOrders = new Map<String, RepositorySortOrder>();
+        FieldToSortOrders.put(this.repoType, localFieldToSortOrders);
+      }
+      localFieldToSortOrders.putAll(this.fieldToSortOrder);
+    }
+  }
+
+  public class CursorMock extends Cursor {
+    private final List<SObject> records;
+
+    public CursorMock(List<SObject> records) {
+      this.records = records;
+    }
+
+    public override List<SObject> fetch(Integer start, Integer advanceBy) {
+      List<SObject> clonedRecords = records.deepClone();
+      clonedRecords.clear();
+      for (Integer index = start; index < this.getAdvanceBy(start, advanceBy) + start; index++) {
+        clonedRecords.add(this.records[index]);
+      }
+      return clonedRecords;
+    }
+
+    public override Integer getNumRecords() {
+      return this.records.size();
+    }
+  }
+}
+```
+
+File `repository\AggregateRepository.cls`:
+```apex
+public without sharing virtual class AggregateRepository extends Repository implements IAggregateRepository {
+  protected final Set<GroupBy> groupedByFieldNames = new Set<GroupBy>();
+  private final Set<String> havingFields = new Set<String>();
+  private List<Aggregation> aggregations;
+  private Boolean isNumberCountQuery = false;
+
+  @TestVisible
+  private class GroupBy {
+    private final String selectName;
+    private final String groupByName;
+
+    public GroupBy(String groupByName, String alias) {
+      this.selectName = groupByName + ' ' + alias;
+      this.groupByName = groupByName;
+    }
+
+    public GroupBy(String fieldName) {
+      this.selectName = fieldName;
+      this.groupByName = fieldName;
+    }
+
+    public String getSelectName() {
+      return this.selectName;
+    }
+
+    public String getGroupByName() {
+      return this.groupByName;
+    }
+
+    public Boolean equals(Object other) {
+      if (other instanceof GroupBy) {
+        GroupBy that = (GroupBy) other;
+        return this.groupByName == that.groupByName && this.selectName == that.selectName;
+      }
+      return false;
+    }
+
+    public Integer hashCode() {
+      return this.selectName.hashCode() + this.groupByName.hashCode();
+    }
+  }
+
+  public AggregateRepository(
+    Schema.SObjectType repoType,
+    List<Schema.SObjectField> queryFields,
+    RepoFactory repoFactory
+  ) {
+    super(repoType, queryFields, repoFactory);
+  }
+
+  public IAggregateRepository groupBy(DateFunction dateFunction, Schema.SObjectField fieldToken, String alias) {
+    String groupByName = this.getFormattedDateFunction(dateFunction, fieldToken);
+    this.groupedByFieldNames.add(new GroupBy(groupByName, alias));
+    return this;
+  }
+
+  public IAggregateRepository groupBy(Schema.SObjectField fieldToken) {
+    this.groupedByFieldNames.add(new GroupBy(fieldToken.getDescribe().getName()));
+    return this;
+  }
+
+  public IAggregateRepository groupBy(List<Schema.SObjectField> parentFieldChain) {
+    String parentFieldGroupBy = '';
+    while (parentFieldChain.size() > 1) {
+      parentFieldGroupBy += parentFieldChain.remove(0).getDescribe().getRelationshipName() + '.';
+    }
+    this.groupedByFieldNames.add(new GroupBy(parentFieldGroupBy + parentFieldChain.remove(0).getDescribe().getName()));
+    return this;
+  }
+
+  public IAggregateRepository addSortOrder(Aggregation aggregate, RepositorySortOrder sortOrder) {
+    this.fieldToSortOrder.put(aggregate.getBaseAggregation(), sortOrder);
+    return this;
+  }
+
+  public IAggregateRepository addSortOrder(
+    DateFunction dateFunction,
+    Schema.SObjectField fieldToken,
+    RepositorySortOrder sortOrder
+  ) {
+    this.fieldToSortOrder.put(this.getFormattedDateFunction(dateFunction, fieldToken), sortOrder);
+    return this;
+  }
+
+  public IAggregateRepository addHaving(Aggregation aggregation, Query.Operator operator, Object value) {
+    Query aggQuery = new AggregateQuery(operator, value);
+    this.havingFields.add(aggregation.getBaseAggregation() + ' ' + aggQuery);
+    this.bindVars.putAll(aggQuery.getBindVars());
+    return this;
+  }
+
+  public Integer count() {
+    return this.count(new List<Query>());
+  }
+  public Integer count(Query query) {
+    return this.count(new List<Query>{ query });
+  }
+  public virtual Integer count(List<Query> queries) {
+    this.isNumberCountQuery = true;
+    String finalQuery = this.getFinalQuery(queries);
+    this.logQuery('count query:\n' + finalQuery);
+    Integer recordCount = Database.countQueryWithBinds(finalQuery, this.bindVars, this.accessLevel);
+    System.debug(System.LoggingLevel.FINER, 'number of results: ' + recordCount);
+    this.clearState();
+    this.isNumberCountQuery = false;
+    return recordCount;
+  }
+
+  public List<AggregateRecord> aggregate(Aggregation aggregation) {
+    return this.aggregate(new List<Aggregation>{ aggregation }, new List<Query>());
+  }
+  public List<AggregateRecord> aggregate(Aggregation aggregation, Query query) {
+    return this.aggregate(new List<Aggregation>{ aggregation }, new List<Query>{ query });
+  }
+  public List<AggregateRecord> aggregate(Aggregation aggregation, List<Query> queries) {
+    return this.aggregate(new List<Aggregation>{ aggregation }, queries);
+  }
+  public List<AggregateRecord> aggregate(List<Aggregation> aggregations) {
+    return this.aggregate(aggregations, new List<Query>());
+  }
+  public List<AggregateRecord> aggregate(List<Aggregation> aggregations, Query query) {
+    return this.aggregate(aggregations, new List<Query>{ query });
+  }
+  public virtual List<AggregateRecord> aggregate(List<Aggregation> aggregations, List<Query> queries) {
+    this.aggregations = aggregations;
+
+    List<AggregateResult> results = (List<AggregateResult>) this.get(queries);
+    List<AggregateRecord> aggregateRecords = new List<AggregateRecord>();
+    for (AggregateResult result : results) {
+      AggregateRecord aggRecord = new AggregateRecord();
+      aggRecord.putAll(result.getPopulatedFieldsAsMap());
+      aggregateRecords.add(aggRecord);
+    }
+
+    this.clearState();
+    return aggregateRecords;
+  }
+
+  protected virtual override Set<String> addSelectFields() {
+    Set<String> baseFields = new Set<String>();
+    if (this.isNumberCountQuery) {
+      baseFields.add('COUNT()');
+      return baseFields;
+    }
+
+    if (this.aggregations != null) {
+      for (Aggregation agg : aggregations) {
+        baseFields.add(agg.toString());
+      }
+    }
+
+    for (GroupBy groupBy : this.groupedByFieldNames) {
+      baseFields.add(groupBy.getSelectName());
+    }
+    return baseFields.isEmpty() ? super.addSelectFields() : baseFields;
+  }
+
+  protected override String getFinalQuery(List<Query> queries) {
+    String baseString = super.getFinalQuery(queries);
+
+    if (this.groupedByFieldNames.isEmpty()) {
+      return baseString;
+    }
+
+    String potentialOrderBy = null;
+    String orderByKey = '\nORDER BY';
+    if (baseString.contains(orderByKey)) {
+      potentialOrderBy = baseString.substringAfter(orderByKey);
+      baseString = baseString.replace(orderByKey + potentialOrderBy, '');
+    }
+
+    baseString += getGroupByClause();
+
+    if (this.havingFields.isEmpty() == false) {
+      baseString += '\nHAVING ' + String.join(new List<String>(this.havingFields), ',');
+    }
+    if (potentialOrderBy != null) {
+      baseString += orderByKey + potentialOrderBy;
+    }
+
+    return baseString;
+  }
+
+  private String getGroupByClause() {
+    List<String> names = new List<String>();
+    for (GroupBy groupBy : this.groupedByFieldNames) {
+      names.add(groupBy.getGroupByName());
+    }
+    return '\nGROUP BY ' + String.join(names, ',');
+  }
+
+  protected override void clearState() {
+    super.clearState();
+    this.havingFields.clear();
+    this.groupedByFieldNames.clear();
+    this.aggregations = null;
+  }
+
+  private String getFormattedDateFunction(DateFunction dateFunction, Schema.SObjectField fieldToken) {
+    return dateFunction.name() + '(' + fieldToken + ')';
+  }
+
+  private class AggregateQuery extends Query {
+    public AggregateQuery(Query.Operator op, Object value) {
+      super('', op, value);
+    }
+  }
+}
+```
+
+File `repository\Query.cls`:
+```apex
+@SuppressWarnings(
+  'PMD.EmptyStatementBlock,PMD.ExcessivePublicCount,PMD.ExcessiveParameterList,PMD.FieldNamingConventions'
+)
+public virtual class Query {
+  private Boolean hasBeenCompared = false;
+  private Boolean isSoslEmpty = false;
+  private String predicateKey;
+
+  public enum Operator {
+    EQUALS,
+    NOT_EQUALS,
+    LESS_THAN,
+    LESS_THAN_OR_EQUAL,
+    GREATER_THAN,
+    GREATER_THAN_OR_EQUAL,
+    ALIKE, 
+    NOT_LIKE
+  }
+
+  public final Operator operator;
+  private final String field;
+  private final Schema.SObjectField fieldToken;
+  private final Object predicate;
+  private final Map<String, Object> bindVars = new Map<String, Object>();
+
+  private static final String BIND_VAR_MERGE = 'bindVar{0}';
+  private static final String EMPTYISH_STRING = '()';
+
+  private static Integer BIND_VAR_NUMBER = 0;
+  @TestVisible
+  private static Boolean shouldPerformStrictEquals = false;
+
+  public Boolean isSoslEmpty() {
+    return this.isSoslEmpty;
+  }
+
+  public Query usingParent(Schema.SObjectField parentField) {
+    return this.usingParent(new List<Schema.SObjectField>{ parentField });
+  }
+
+  public Query usingParent(List<SObjectField> parentFields) {
+    parentFields.add(this.fieldToken);
+    return new ParentQuery(parentFields, this.operator, this.predicate);
+  }
+
+  public static Query subquery(Schema.SObjectField field, Schema.SObjectField innerMatchingField, Query subcondition) {
+    return subquery(field, innerMatchingField.getDescribe().getSObjectType(), innerMatchingField, subcondition);
+  }
+
+  public static Query subquery(
+    Schema.SObjectField field,
+    Schema.SObjectType objectType,
+    Schema.SObjectField innerMatchingField,
+    Query subcondition
+  ) {
+    return new SubQuery(field, objectType, innerMatchingField, subcondition);
+  }
+
+  public static Query equals(SObjectField field, Object predicate) {
+    return new Query(field, Operator.EQUALS, predicate);
+  }
+
+  public static Query notEquals(SObjectField field, Object predicate) {
+    return new Query(field, Operator.NOT_EQUALS, predicate);
+  }
+
+  public static Query lessThan(SObjectField field, Object predicate) {
+    return new Query(field, Operator.LESS_THAN, predicate);
+  }
+
+  public static Query lessThanOrEqual(SObjectField field, Object predicate) {
+    return new Query(field, Operator.LESS_THAN_OR_EQUAL, predicate);
+  }
+
+  public static Query greaterThan(SObjectField field, Object predicate) {
+    return new Query(field, Operator.GREATER_THAN, predicate);
+  }
+
+  public static Query greaterThanOrEqual(SObjectField field, Object predicate) {
+    return new Query(field, Operator.GREATER_THAN_OR_EQUAL, predicate);
+  }
+
+  
+  public static Query likeQuery(SObjectField field, Object predicate) {
+    return new Query(field, Operator.ALIKE, predicate);
+  }
+
+  public static Query notLike(SObjectField field, Object predicate) {
+    return new Query(field, Operator.NOT_LIKE, predicate);
+  }
+
+  
+  public static Query orQuery(Query innerQuery, Query secondInnerQuery) {
+    return orQuery(new List<Query>{ innerQuery, secondInnerQuery });
+  }
+
+  public static Query orQuery(List<Query> innerQueries) {
+    return new OrQuery(innerQueries);
+  }
+
+  
+  public static Query andQuery(Query innerQuery, Query secondInnerQuery) {
+    return andQuery(new List<Query>{ innerQuery, secondInnerQuery });
+  }
+
+  public static Query andQuery(List<Query> innerQueries) {
+    return new AndQuery(innerQueries);
+  }
+
+  public static String getBuiltUpParentFieldName(List<Schema.SObjectField> parentFields) {
+    String builtUpFieldName = '';
+    for (Integer index = 0; index < parentFields.size(); index++) {
+      Schema.DescribeFieldResult parentFieldDescribe = parentFields[index].getDescribe();
+      builtUpFieldName += index == parentFields.size() - 1
+        ? parentFieldDescribe.getName()
+        : (parentFieldDescribe.getRelationshipName() ?? parentFieldDescribe.getName().replace('__c', '__r')) + '.';
+    }
+    return builtUpFieldName;
+  }
+
+  private class SubQuery extends Query {
+    private final Schema.SObjectField field;
+    private final Schema.SObjectType objectType;
+    private final Schema.SObjectField innerMatchingField;
+    private final Query subcondition;
+
+    public SubQuery(
+      Schema.SObjectField field,
+      Schema.SObjectType objectType,
+      Schema.SObjectField innerMatchingField,
+      Query subcondition
+    ) {
+      this.field = field;
+      this.objectType = objectType;
+      this.innerMatchingField = innerMatchingField;
+      this.subcondition = subcondition;
+    }
+
+    public override String toString() {
+      String whereClause = ' WHERE ' + this.subcondition.toString();
+      this.bindVars.putAll(this.subcondition.getBindVars());
+      return this.field.getDescribe().getName() +
+        ' IN (SELECT ' +
+        this.innerMatchingField +
+        ' FROM ' +
+        this.objectType +
+        whereClause +
+        ')';
+    }
+  }
+
+  private abstract class DelimitedQuery extends Query {
+    private final List<Query> queries;
+
+    public DelimitedQuery(List<Query> queries) {
+      super();
+      this.queries = queries;
+    }
+
+    public abstract String getDelimiter();
+
+    public override String toString() {
+      String baseString = '(';
+      for (Query innerQuery : this.queries) {
+        String potentialString = innerQuery.toString();
+        if (String.isNotBlank(potentialString) && potentialString != EMPTYISH_STRING) {
+          baseString += potentialString + this.getDelimiter();
+          this.bindVars.putAll(innerQuery.getBindVars());
+        }
+      }
+      String potentialFinalString = baseString.removeEnd(this.getDelimiter()) + ')';
+      return potentialFinalString == EMPTYISH_STRING ? '' : potentialFinalString;
+    }
+  }
+
+  private class AndQuery extends DelimitedQuery {
+    private final String delimiter = ' AND ';
+
+    public AndQuery(List<Query> queries) {
+      super(queries);
+    }
+
+    public override String getDelimiter() {
+      return this.delimiter;
+    }
+  }
+
+  private class OrQuery extends DelimitedQuery {
+    private final String delimiter = ' OR ';
+
+    public OrQuery(List<Query> queries) {
+      super(queries);
+    }
+
+    public override String getDelimiter() {
+      return this.delimiter;
+    }
+  }
+
+  private class ParentQuery extends Query {
+    private ParentQuery(List<SObjectField> parentFields, Operator operator, Object predicate) {
+      super(getBuiltUpParentFieldName(parentFields), operator, predicate);
+    }
+  }
+
+  protected Query() {
+  }
+
+  protected Query(String fieldName, Operator operator, Object predicate) {
+    this.field = fieldName;
+    this.operator = operator;
+    this.predicate = predicate;
+  }
+
+  private Query(SObjectField fieldToken, Operator operator, Object predicate) {
+    this(fieldToken.getDescribe().getName(), operator, predicate);
+    this.fieldToken = fieldToken;
+  }
+
+  public Map<String, Object> getBindVars() {
+    return this.bindVars;
+  }
+
+  public virtual override String toString() {
+    String predicateValue = this.getPredicate(this.predicate);
+    String printedValue = ' ' + (shouldPerformStrictEquals ? this.predicate : predicateValue);
+    if (this.operator == Query.Operator.NOT_LIKE) {
+      
+      return String.format(this.getOperator(), new List<String>{ this.field }) + printedValue;
+    }
+    return this.field + ' ' + this.getOperator() + printedValue;
+  }
+
+  public String toSoslString() {
+    String startingString = replaceBindVarsInSosl(this.toString());
+
+    if (this.predicate instanceof Iterable<Object>) {
+      startingString = handleIterableOperator(startingString);
+      if (String.isEmpty(startingString)) {
+        return '';
+      }
+    }
+
+    if (startingString.endsWith(EMPTYISH_STRING)) {
+      this.isSoslEmpty = true;
+    }
+    return startingString;
+  }
+
+  private String replaceBindVarsInSosl(String input) {
+    for (String key : this.bindVars.keySet()) {
+      input = input.replace(':' + key, this.getSoslPredicate(this.bindVars.get(key)));
+    }
+    return input;
+  }
+
+  private String handleIterableOperator(String input) {
+    Iterable<Object> localPredicate = (Iterable<Object>) this.predicate;
+    if (localPredicate.iterator().hasNext() == false) {
+      return '';
+    }
+    String operatorToReplace;
+    String newOperator;
+    switch on this.operator {
+      when EQUALS {
+        operatorToReplace = '=';
+        newOperator = 'IN';
+      }
+      when NOT_EQUALS {
+        operatorToReplace = '!=';
+        newOperator = 'NOT IN';
+      }
+    }
+    if (operatorToReplace != null) {
+      return input.replace(operatorToReplace, newOperator);
+    }
+    return input;
+  }
+
+  public Boolean equals(Object thatObject) {
+    if ((thatObject instanceof Query) == false) {
+      return false;
+    }
+    Query that = (Query) thatObject;
+    if (this.hasBeenCompared == false && that.hasBeenCompared == false) {
+      that.toString();
+      this.toString();
+    }
+    this.hasBeenCompared = true;
+    that.hasBeenCompared = true;
+
+    Boolean areEqual =
+      this.field == that.field &&
+      this.operator == that.operator &&
+      this.bindVars.values() == that.bindVars.values();
+    if (areEqual == false) {
+      shouldPerformStrictEquals = true;
+    }
+
+    return areEqual;
+  }
+
+  public Integer hashCode() {
+    return this.toString().hashCode();
+  }
+
+  private String getOperator() {
+    String returnVal = '';
+    switch on this.operator {
+      when EQUALS {
+        returnVal = '=';
+      }
+      when NOT_EQUALS {
+        returnVal = '!=';
+      }
+      when LESS_THAN {
+        returnVal = '<';
+      }
+      when LESS_THAN_OR_EQUAL {
+        returnVal = '<=';
+      }
+      when GREATER_THAN {
+        returnVal = '>';
+      }
+      when GREATER_THAN_OR_EQUAL {
+        returnVal = '>=';
+      }
+      when ALIKE {
+        returnVal = 'LIKE';
+      }
+      when NOT_LIKE {
+        returnVal = 'NOT {0} LIKE';
+      }
+    }
+    return returnVal;
+  }
+
+  private String getPredicate(Object predicate) {
+    if (predicate == null || predicate instanceof Boolean) {
+      return '' + predicate;
+    }
+    if (this.predicateKey == null) {
+      this.predicateKey = String.format(BIND_VAR_MERGE, new List<String>{ BIND_VAR_NUMBER.format() });
+      BIND_VAR_NUMBER++;
+      this.bindVars.put(this.predicateKey, predicate);
+    }
+    return ':' + this.predicateKey;
+  }
+
+  private String getSoslPredicate(Object predicate) {
+    if (predicate == null) {
+      return 'null';
+    }
+    if (predicate instanceof Datetime) {
+      return ((Datetime) predicate).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'', 'Greenwich Mean Time');
+    }
+    if (predicate instanceof Iterable<Object>) {
+      return formatIterableSosl((Iterable<Object>) predicate);
+    }
+    if (predicate instanceof String) {
+      return '\'' + String.escapeSingleQuotes((String) predicate) + '\'';
+    }
+    return String.valueOf(predicate);
+  }
+
+  private String formatIterableSosl(Iterable<Object> predicates) {
+    if (predicates.iterator().hasNext() == false) {
+      return EMPTYISH_STRING;
+    }
+    List<String> innerStrings = new List<String>();
+    for (Object innerPred : predicates) {
+      innerStrings.add(this.getSoslPredicate(innerPred));
+    }
+    return '(' + String.join(innerStrings, ',') + ')';
+  }
+}
+```
+
+File `repository\Repository.cls`:
+```apex
+@SuppressWarnings('PMD.AvoidBooleanMethodParameters,PMD.ExcessiveParameterList,PMD.ExcessivePublicCount,PMD.TooManyFields')
+public virtual without sharing class Repository implements IRepository {
+  private final Map<Schema.SObjectField, String> childToRelationshipNames;
+  private final Map<String, String> relationshipNameToChildQuery = new Map<String, String>();
+  private final IDML dml;
+  @TestVisible
+  private final List<Schema.SObjectField> queryFields;
+  private final Set<String> selectFields = new Set<String>();
+  private final Set<String> childBindVarKeys = new Set<String>();
+
+  protected final Schema.SObjectType repoType;
+  protected final Map<String, Object> bindVars = new Map<String, Object>();
+
+  protected System.AccessLevel accessLevel = System.AccessLevel.SYSTEM_MODE;
+  protected final Map<String, RepositorySortOrder> fieldToSortOrder = new Map<String, RepositorySortOrder>();
+
+  private Boolean shouldPrintBindVars = false;
+  private Boolean baseSelectUsed = false;
+  private Boolean isSosl = false;
+  private Boolean shouldAddChildFields = true;
+  private Integer limitAmount;
+  private SearchGroup soslSearchGroup = SearchGroup.ALL_FIELDS;
+
+  public Repository(Schema.SObjectType repoType, List<Schema.SObjectField> queryFields, RepoFactory repoFactory) {
+    this.dml = repoFactory.getDml();
+    this.queryFields = queryFields;
+    this.repoType = repoType;
+    this.childToRelationshipNames = this.getChildRelationshipNames(repoType);
+  }
+
+  
+  public virtual Cursor getCursor(List<Query> queries) {
+    String finalQuery = this.getFinalQuery(queries);
+    this.logQuery('cursor query:\n' + finalQuery);
+    Cursor cursor = new Cursor(finalQuery, this.bindVars, this.accessLevel);
+    this.clearState();
+    System.debug(System.LoggingLevel.FINER, 'number of results: ' + cursor.getNumRecords());
+    return cursor;
+  }
+
+  public Database.QueryLocator getQueryLocator(List<Query> queries) {
+    return this.getQueryLocator(queries, this.shouldAddChildFields);
+  }
+
+  public Database.QueryLocator getQueryLocator(List<Query> queries, Boolean shouldAddChildFields) {
+    Boolean originalValue = this.shouldAddChildFields;
+    this.shouldAddChildFields = shouldAddChildFields;
+    String finalQuery = this.getFinalQuery(queries);
+    this.logQuery('query locator query:\n' + finalQuery);
+    Database.QueryLocator locator = Database.getQueryLocatorWithBinds(
+      this.getFinalQuery(queries),
+      this.bindVars,
+      this.accessLevel
+    );
+    this.clearState();
+    this.shouldAddChildFields = originalValue;
+
+    return locator;
+  }
+
+  public virtual List<SObject> get(Query query) {
+    return this.get(new List<Query>{ query });
+  }
+
+  public virtual List<SObject> get(List<Query> queries) {
+    String finalQuery = this.getFinalQuery(queries);
+    return this.performQuery(finalQuery);
+  }
+
+  public virtual List<SObject> getAll() {
+    return this.get(new List<Query>());
+  }
+
+  public Repository setLimit(Integer limitAmount) {
+    this.limitAmount = limitAmount;
+    return this;
+  }
+
+  public Repository addSortOrder(Schema.SObjectField fieldToken, RepositorySortOrder sortOrder) {
+    this.fieldToSortOrder.put(fieldToken.getDescribe().getName(), sortOrder);
+    return this;
+  }
+
+  public Repository addSortOrder(List<Schema.SObjectField> parentFieldChain, RepositorySortOrder sortOrder) {
+    this.fieldToSortOrder.put(Query.getBuiltUpParentFieldName(parentFieldChain), sortOrder);
+    return this;
+  }
+
+  public Repository addBaseFields(List<Schema.SObjectField> fields) {
+    Set<Schema.SObjectField> uniqueFields = new Set<Schema.SObjectField>(this.queryFields);
+    uniqueFields.addAll(fields);
+    this.queryFields.clear();
+    this.queryFields.addAll(uniqueFields);
+    return this;
+  }
+
+  public Repository addFunctionBaseField(SelectFunction selectFunction, Schema.SObjectField field) {
+    return this.addFunctionBaseFields(selectFunction, new List<Schema.SObjectField>{ field });
+  }
+
+  public Repository addFunctionBaseFields(SelectFunction selectFunction, List<Schema.SObjectField> fields) {
+    Map<Schema.SObjectField, String> fieldsToAliases = new Map<Schema.SObjectfield, String>();
+    for (Schema.SObjectField field : fields) {
+      fieldsToAliases.put(
+        field,
+        this.queryFields.contains(field) ? field.getDescribe().getName() + '_' + selectFunction.name() : null
+      );
+    }
+    return this.addFunctionBaseFields(selectFunction, fieldsToAliases);
+  }
+
+  public Repository addFunctionBaseFields(
+    SelectFunction selectFunction,
+    Map<Schema.SObjectField, String> fieldsToAliases
+  ) {
+    Map<String, String> fieldNamesToAliases = new Map<String, String>();
+    for (Schema.SObjectField field : fieldsToAliases.keySet()) {
+      fieldNamesToAliases.put(field.getDescribe().getName(), fieldsToAliases.get(field));
+    }
+    this.selectFields.addAll(this.getFunctionBaseFields(selectFunction, fieldNamesToAliases));
+    return this;
+  }
+
+  public Repository addParentFields(Schema.SObjectField parentType, List<Schema.SObjectField> parentFields) {
+    return this.addParentFields(new List<Schema.SObjectField>{ parentType }, parentFields);
+  }
+
+  public Repository addParentFields(List<Schema.SObjectField> parentTypes, List<Schema.SObjectField> parentFields) {
+    this.selectFields.addAll(this.getParentFields(parentTypes, parentFields));
+    return this;
+  }
+
+  public Repository addChildFields(Schema.SObjectField childFieldToken, List<Schema.SObjectField> childFields) {
+    return this.addChildFields(
+      childFieldToken,
+      childFields,
+      new List<Query>(),
+      new Map<String, RepositorySortOrder>(),
+      null
+    );
+  }
+
+  public Repository addChildFields(Schema.SObjectField childFieldToken, IRepository childRepo) {
+    return this.addChildFields(
+      childFieldToken,
+      childRepo,
+      new List<Query>(),
+      new Map<String, RepositorySortOrder>(),
+      null
+    );
+  }
+
+  public Repository addChildFields(
+    Schema.SObjectField childFieldToken,
+    List<Schema.SObjectField> childFields,
+    List<Query> optionalWhereFilters,
+    Map<String, RepositorySortOrder> fieldToSortOrder,
+    Integer limitBy
+  ) {
+    return this.addChildFields(
+      childFieldToken,
+      new List<QueryField>{ new QueryField(childFields) },
+      optionalWhereFilters,
+      fieldToSortOrder,
+      limitBy
+    );
+  }
+
+  public Repository addChildFields(
+    Schema.SObjectField childFieldToken,
+    IRepository childRepo,
+    List<Query> optionalWhereFilters,
+    Map<String, RepositorySortOrder> fieldToSortOrder,
+    Integer limitBy
+  ) {
+    Repository cr = (Repository) childRepo;
+    cr.selectFields.addAll(cr.addSelectFields());
+    cr.selectFields.addAll(cr.relationshipNameToChildQuery.values());
+    Set<String> localSelectFields = cr.selectFields;
+    localSelectFields.remove('Id');
+
+    return this.addChildFields(
+      childFieldToken,
+      new List<QueryField>{ new QueryField(new List<String>(localSelectFields)) },
+      optionalWhereFilters,
+      fieldToSortOrder,
+      limitBy
+    );
+  }
+
+  public Repository addChildFields(
+    Schema.SObjectField childFieldToken,
+    List<QueryField> childFields,
+    List<Query> optionalWhereFilters,
+    Map<String, RepositorySortOrder> fieldToSortOrder,
+    Integer limitBy
+  ) {
+    if (this.childToRelationshipNames.containsKey(childFieldToken) == false || this.shouldAddChildFields == false) {
+      return this;
+    }
+
+    for (Query query : optionalWhereFilters) {
+      this.childBindVarKeys.addAll(query.getBindVars().keySet());
+    }
+
+    String relationshipName = this.childToRelationshipNames.get(childFieldToken);
+    String childFieldsToAdd = buildChildQuery(
+      childFieldToken,
+      childFields,
+      optionalWhereFilters,
+      fieldToSortOrder,
+      limitBy
+    );
+    this.relationshipNameToChildQuery.put(relationshipName, childFieldsToAdd);
+    return this;
+  }
+
+  private String buildChildQuery(
+    Schema.SObjectField childFieldToken,
+    List<QueryField> childFields,
+    List<Query> optionalWhereFilters,
+    Map<String, RepositorySortOrder> fieldToSortOrder,
+    Integer limitBy
+  ) {
+    String baseSubselect =
+      '(SELECT {0} FROM {1}' +
+      this.addWheres(optionalWhereFilters) +
+      this.getOrderBys(fieldToSortOrder) +
+      this.getLimitAmount(limitBy) +
+      ')';
+
+    Set<String> childFieldNames = new Set<String>{ 'Id' };
+    for (QueryField childField : childFields) {
+      childFieldNames.add(childField.toString());
+    }
+
+    return String.format(
+      baseSubselect,
+      new List<String>{ String.join(new List<String>(childFieldNames), ','), this.childToRelationshipNames.get(childFieldToken) }
+    );
+  }
+
+  public Repository setAccessLevel(System.AccessLevel accessLevel) {
+    this.setOptions(null, accessLevel);
+    return this;
+  }
+
+  public Repository clearBindVars() {
+    for (String key : this.bindVars.keySet()) {
+      if (this.childBindVarKeys.contains(key) == false) {
+        this.bindVars.remove(key);
+      }
+    }
+    return this;
+  }
+
+  public Repository setShouldPrintBindVars(Boolean shouldPrintBindVars) {
+    this.shouldPrintBindVars = shouldPrintBindVars;
+    return this;
+  }
+
+  protected virtual Set<String> addSelectFields() {
+    this.baseSelectUsed = true;
+    return this.addSelectFields(this.queryFields);
+  }
+
+  protected virtual String getFinalQuery(List<Query> queries) {
+    return this.getSelectAndFrom() +
+      this.addWheres(queries) +
+      this.getOrderBys(this.fieldToSortOrder) +
+      this.getLimitAmount(this.limitAmount);
+  }
+
+  protected virtual void clearState() {
+    this.clearBindVars();
+    this.fieldToSortOrder.clear();
+    this.limitAmount = null;
+  }
+
+  private List<String> getFunctionBaseFields(SelectFunction selectFunction, Map<String, String> fieldsToAliases) {
+    List<String> functionBaseFields = new List<String>();
+    for (String field : fieldsToAliases.keySet()) {
+      Object alias = fieldsToAliases.get(field);
+      functionBaseFields.add(
+        String.format(selectFunction.name() + '({0}){1}', new List<Object>{ field, alias == null ? '' : ' ' + alias })
+      );
+    }
+    return functionBaseFields;
+  }
+
+  private List<String> getParentFields(
+    List<Schema.SObjectField> parentTypes,
+    List<Schema.SObjectField> parentFieldTokens
+  ) {
+    List<String> parentFields = new List<String>();
+    String parentBase = '';
+    for (Schema.SObjectField parentToken : parentTypes) {
+      String parentName = parentToken.getDescribe().getRelationshipName() ??
+        parentToken.toString().replace('__c', '__r');
+      parentBase += parentName + '.';
+    }
+    for (Schema.SObjectField parentField : parentFieldTokens) {
+      parentFields.add(parentBase + parentField.getDescribe().getName());
+    }
+    return parentFields;
+  }
+
+  private Map<Schema.SObjectField, String> getChildRelationshipNames(Schema.SObjectType repoType) {
+    Map<Schema.SObjectField, String> localChildToRelationshipNames = new Map<Schema.SObjectField, String>();
+    for (Schema.ChildRelationship childRelationship : repoType.getDescribe().getChildRelationships()) {
+      localChildToRelationshipNames.put(childRelationship.getField(), childRelationship.getRelationshipName());
+    }
+    return localChildToRelationshipNames;
+  }
+
+  private String getSelectAndFrom() {
+    Set<String> localSelectFields = this.addSelectFields();
+    if (this.baseSelectUsed) {
+      localSelectFields.addAll(this.selectFields);
+      this.baseSelectUsed = false;
+    }
+    localSelectFields.addAll(this.relationshipNameToChildQuery.values());
+    return 'SELECT ' + String.join(new List<String>(localSelectFields), ', ') + '\nFROM ' + this.repoType;
+  }
+
+  private Set<String> addSelectFields(List<Schema.SObjectField> fields) {
+    Set<String> fieldStrings = new Set<String>{ 'Id' };
+    for (SObjectField field : fields) {
+      fieldStrings.add(field.getDescribe().getName());
+    }
+    return fieldStrings;
+  }
+
+  private String addWheres(List<Query> queries) {
+    List<String> wheres = new List<String>();
+    for (Query qry : queries) {
+      String possibleWhere = this.isSosl ? qry.toSoslString() : qry.toString();
+      if (qry.isSoslEmpty() == false && String.isNotBlank(possibleWhere)) {
+        wheres.add(possibleWhere);
+        this.bindVars.putAll(qry.getBindVars());
+      }
+    }
+
+    String whereClause = String.join(wheres, '\nAND ');
+    return wheres.isEmpty() || String.isBlank(whereClause) ? '' : '\nWHERE ' + whereClause;
+  }
+
+  private List<SObject> performQuery(String finalQuery) {
+    this.logQuery('performQuery query:\n' + finalQuery);
+    List<SObject> results = Database.queryWithBinds(finalQuery, this.bindVars, this.accessLevel);
+    this.clearState();
+    System.debug(System.LoggingLevel.FINER, 'number of results: ' + results.size() + '\nresults: \n' + results);
+    return results;
+  }
+
+  private String getOrderBys(Map<String, RepositorySortOrder> sortOrders) {
+    String orderByString = '';
+    if (sortOrders.isEmpty() == false) {
+      orderByString += ' \nORDER BY ';
+      String separator = ', ';
+      for (String field : sortOrders.keySet()) {
+        orderByString += field + ' ' + sortOrders.get(field).toString() + separator;
+      }
+      orderByString = orderByString.removeEnd(separator);
+    }
+    return orderByString;
+  }
+
+  private String getLimitAmount(Integer limitAmount) {
+    return (limitAmount != null ? '\nLIMIT ' + limitAmount : '');
+  }
+
+  
+
+  public List<List<SObject>> getSosl(String searchTerm, Query queryFilter) {
+    return this.getSosl(searchTerm, new List<Query>{ queryFilter });
+  }
+
+  public virtual List<List<SObject>> getSosl(String searchTerm, List<Query> queryFilters) {
+    return this.getSosl(searchTerm, queryFilters, new List<AdditionalSoslObject>());
+  }
+
+  public virtual List<List<SObject>> getSosl(
+    String searchTerm,
+    List<Query> queryFilters,
+    List<AdditionalSoslObject> additionalSoslObjects
+  ) {
+    this.isSosl = true;
+    List<AdditionalSoslObject> orderedSearchObjects = new List<AdditionalSoslObject>{
+      new AdditionalSoslObject(this.repoType, this.queryFields, queryFilters, this.limitAmount)
+    };
+    orderedSearchObjects.addAll(additionalSoslObjects);
+    String searchQuery =
+      'FIND \'' +
+      String.escapeSingleQuotes(searchTerm) +
+      '\' IN ' +
+      this.soslSearchGroup.name().replace('_', ' ') +
+      ' RETURNING ' +
+      this.formatAdditionalSoslObjects(orderedSearchObjects);
+
+    this.logQuery('search query:\n' + searchQuery);
+    List<List<SObject>> results = Search.query(searchQuery, this.accessLevel);
+    System.debug(System.LoggingLevel.FINER, 'number of results: ' + results.size() + '\nresults: \n' + results);
+    this.clearState();
+    this.isSosl = false;
+    return results;
+  }
+
+  public Repository setSearchGroup(SearchGroup searchGroup) {
+    this.soslSearchGroup = searchGroup;
+    return this;
+  }
+
+  private String formatAdditionalSoslObjects(List<AdditionalSoslObject> soslObjects) {
+    List<String> objectsPreJoin = new List<String>();
+    for (AdditionalSoslObject soslObject : soslObjects) {
+      objectsPreJoin.add(
+        soslObject.objectType +
+          '(' +
+          String.join(new List<String>(this.addSelectFields(soslObject.selectFields)), ',') +
+          this.addWheres(soslObject.queryFilters) +
+          this.getLimitAmount(soslObject.queryLimit) +
+          ')'
+      );
+    }
+    return String.join(objectsPreJoin, ',');
+  }
+
+  protected void logQuery(String logString) {
+    if (this.shouldPrintBindVars) {
+      logString += '\n\nBind vars: ' + JSON.serializePretty(this.bindVars);
+    }
+    System.debug(System.LoggingLevel.DEBUG, logString);
+  }
+
+  
+  public Database.SaveResult doInsert(SObject record) {
+    return this.dml.doInsert(record);
+  }
+  public List<Database.SaveResult> doInsert(List<SObject> records) {
+    return this.dml.doInsert(records);
+  }
+
+  public Database.SaveResult doUpdate(SObject record) {
+    return this.dml.doUpdate(record);
+  }
+  public List<Database.SaveResult> doUpdate(List<SObject> records) {
+    return this.dml.doUpdate(records);
+  }
+
+  public Database.UpsertResult doUpsert(SObject record) {
+    return this.dml.doUpsert(record);
+  }
+  public List<Database.UpsertResult> doUpsert(List<SObject> records) {
+    return this.dml.doUpsert(records);
+  }
+  public List<Database.UpsertResult> doUpsert(List<SObject> records, Schema.SObjectField field) {
+    return this.dml.doUpsert(records, field);
+  }
+
+  public Database.UndeleteResult doUndelete(SObject record) {
+    return this.dml.doUnDelete(record);
+  }
+  public List<Database.UndeleteResult> doUndelete(List<SObject> records) {
+    return this.dml.doUndelete(records);
+  }
+
+  public Database.DeleteResult doDelete(SObject record) {
+    return this.dml.doDelete(record);
+  }
+  public List<Database.DeleteResult> doDelete(List<SObject> records) {
+    return this.dml.doDelete(records);
+  }
+
+  public Database.DeleteResult doHardDelete(SObject record) {
+    return this.dml.doHardDelete(record);
+  }
+  public List<Database.DeleteResult> doHardDelete(List<SObject> records) {
+    return this.dml.doHardDelete(records);
+  }
+
+  public Database.SaveResult publish(SObject event) {
+    return this.dml.publish(event);
+  }
+  public List<Database.SaveResult> publish(List<SObject> events) {
+    return this.dml.publish(events);
+  }
+
+  public IDML setOptions(Database.DMLOptions options) {
+    return this.setOptions(options, this.accessLevel);
+  }
+
+  public IDML setOptions(Database.DMLOptions options, System.AccessLevel accessLevel) {
+    this.accessLevel = accessLevel;
+    return this.dml.setOptions(options, accessLevel);
+  }
+}
+```

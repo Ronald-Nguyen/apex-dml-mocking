@@ -1,0 +1,127 @@
+public virtual without sharing class DML implements IDML {
+  
+  @TestVisible
+  private static final Integer MAX_DML_CHUNKING = 10;
+
+  private System.AccessLevel accessLevel = System.AccessLevel.SYSTEM_MODE;
+
+  private Database.DMLOptions options {
+    get {
+      if (this.options == null) {
+        this.options = new Database.DMLOptions();
+      }
+      this.options.OptAllOrNone = this.options.OptAllOrNone ?? true;
+      return this.options;
+    }
+    set;
+  }
+
+  private enum OperationLoggingValue {
+    INSERTING,
+    UPDATING,
+    UPSERTING,
+    DELETING,
+    UNDELETING,
+    PUBLISHING
+  }
+
+  public virtual Database.SaveResult doInsert(SObject record) {
+    return this.doInsert(new List<SObject>{ record })[0];
+  }
+  public virtual List<Database.SaveResult> doInsert(List<SObject> records) {
+    this.sortToPreventChunkingErrors(records);
+    log(OperationLoggingValue.INSERTING, records);
+    return Database.insert(records, this.options, this.accessLevel);
+  }
+
+  public virtual Database.SaveResult doUpdate(SObject record) {
+    return this.doUpdate(new List<SObject>{ record })[0];
+  }
+  public virtual List<Database.SaveResult> doUpdate(List<SObject> records) {
+    this.sortToPreventChunkingErrors(records);
+    log(OperationLoggingValue.UPDATING, records);
+    return Database.update(records, this.options, this.accessLevel);
+  }
+
+  public virtual Database.UpsertResult doUpsert(SObject record) {
+    return this.doUpsert(new List<SObject>{ record })[0];
+  }
+
+  public virtual List<Database.UpsertResult> doUpsert(List<SObject> records) {
+    this.sortToPreventChunkingErrors(records);
+    log(OperationLoggingValue.UPSERTING, records);
+    return Database.upsert(records, this.options.OptAllOrNone, this.accessLevel);
+  }
+
+  public virtual List<Database.UpsertResult> doUpsert(List<SObject> records, Schema.SObjectField externalIdField) {
+    this.sortToPreventChunkingErrors(records);
+    log(OperationLoggingValue.UPSERTING, records);
+    return Database.upsert(records, externalIdField, this.options.OptAllOrNone, this.accessLevel);
+  }
+
+  public virtual Database.UndeleteResult doUndelete(SObject record) {
+    return this.doUndelete(new List<SObject>{ record })[0];
+  }
+  public virtual List<Database.UndeleteResult> doUndelete(List<SObject> records) {
+    log(OperationLoggingValue.UNDELETING, records);
+    return Database.undelete(records, this.options.OptAllOrNone, this.accessLevel);
+  }
+
+  public virtual Database.DeleteResult doDelete(SObject record) {
+    return this.doDelete(new List<SObject>{ record })[0];
+  }
+  public virtual List<Database.DeleteResult> doDelete(List<SObject> records) {
+    log(OperationLoggingValue.DELETING, records);
+    return Database.delete(records, this.options.OptAllOrNone, this.accessLevel);
+  }
+
+  public virtual Database.DeleteResult doHardDelete(SObject record) {
+    return this.doHardDelete(new List<SObject>{ record })[0];
+  }
+  public virtual List<Database.DeleteResult> doHardDelete(List<SObject> records) {
+    List<Database.DeleteResult> results = this.doDelete(records);
+    System.debug(System.LoggingLevel.FINE, 'emptying recycling bin...');
+    Database.emptyRecycleBin(records);
+    return results;
+  }
+
+  public virtual Database.SaveResult publish(SObject event) {
+    log(OperationLoggingValue.PUBLISHING, event);
+    return EventBus.publish(event);
+  }
+  public virtual List<Database.SaveResult> publish(List<SObject> events) {
+    log(OperationLoggingValue.PUBLISHING, events);
+    return EventBus.publish(events);
+  }
+
+  public DML setOptions(Database.DMLOptions options) {
+    return this.setOptions(options, this.accessLevel);
+  }
+
+  public DML setOptions(Database.DMLOptions options, System.AccessLevel accessLevel) {
+    this.options = options ?? this.options;
+    this.accessLevel = accessLevel;
+    return this;
+  }
+
+  private void sortToPreventChunkingErrors(List<SObject> records) {
+    if (records.size() < MAX_DML_CHUNKING) {
+      return;
+    }
+    records.sort();
+  }
+
+  private static void log(OperationLoggingValue loggingValue, Object recordOrRecords) {
+    Integer size = getRecordCount(recordOrRecords);
+    String message = buildLogMessage(loggingValue, size);
+    System.debug(System.LoggingLevel.FINE, message);
+  }
+
+  private static Integer getRecordCount(Object recordOrRecords) {
+    return (recordOrRecords instanceof List<SObject>) ? ((List<SObject>) recordOrRecords).size() : 1;
+  }
+
+  private static String buildLogMessage(OperationLoggingValue loggingValue, Integer size) {
+    return loggingValue.name().toLowerCase() + ' ' + size + ' record' + (size > 1 ? 's' : '') + '...';
+  }
+}

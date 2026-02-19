@@ -1,0 +1,285 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -32,0 +33,19 @@
++StringrelationshipName=findRelationshipName(record,childField);
++if(relationshipName!=null){
++StringserializedMeta=JSON.serialize(record).removeEnd('}');
++StringchildrenJson='"'+relationshipName+'":'+JSON.serialize(newChildrenSObjects(children));
++serializedMeta+=','+childrenJson+'}';
++return(SObject)JSON.deserialize(serializedMeta,SObject.class);
++}
++returnrecord;
++}
++privatestaticStringfindRelationshipName(SObjectrecord,Schema.SObjectFieldchildField){
++List<Schema.ChildRelationship>childRelationships=getChildRelationships(record);
++for(Schema.ChildRelationshipchildRelationship:childRelationships){
++if(childRelationship.getField()==childField){
++returnchildRelationship.getRelationshipName();
++}
++}
++returnnull;
++}
++privatestaticList<Schema.ChildRelationship>getChildRelationships(SObjectrecord){
+@@ -40,14 +59 @@
+-StringrelationshipName;
+-for(Schema.ChildRelationshipchildRelationship:childRelationships){
+-if(childRelationship.getField()==childField){
+-relationshipName=childRelationship.getRelationshipName();
+-break;
+-}
+-}
+-if(relationshipName!=null){
+-StringserializedMeta=JSON.serialize(record).removeEnd('}');
+-StringchildrenJson='"'+relationshipName+'":'+JSON.serialize(newChildrenSObjects(children));
+-serializedMeta+=','+childrenJson+'}';
+-return(SObject)JSON.deserialize(serializedMeta,SObject.class);
+-}
+-returnrecord;
++returnchildRelationships;
+@@ -72 +77,0 @@
+-IHistoryRepositoryrepo;
+@@ -74,10 +79,6 @@
+-List<AggregateRecord>aggRecords=AggregateResults.get(sObjectType);
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
+-List<Cursor>cursorResults=CursorResults.get(sObjectType);
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
+-){
++BooleanuseMock=alwaysUseMock||
++!queriedResults.isEmpty()||
++(AggregateResults.get(sObjectType)?.isEmpty()==false)||
++(HistoryResults.get(sObjectType)?.isEmpty()==false)||
++(CursorResults.get(sObjectType)?.isEmpty()==false);
++if(useMock){
+@@ -86,2 +87,2 @@
+-if(aggRecords!=null){
+-mock.aggRecords.addAll(aggRecords);
++if(AggregateResults.containsKey(sObjectType)){
++mock.aggRecords.addAll(AggregateResults.get(sObjectType));
+@@ -89,2 +90,2 @@
+-if(historyRecords!=null){
+-mock.historyRecords.addAll(historyRecords);
++if(HistoryResults.containsKey(sObjectType)){
++mock.historyRecords.addAll(HistoryResults.get(sObjectType));
+@@ -92,3 +93 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
++returnmock;
+@@ -96 +95 @@
+-returnrepo;
++return(IHistoryRepository)fallback;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,6 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
++returnbuildGroupedQuery(baseString);
++}
++privateStringbuildGroupedQuery(StringbaseString){
+@@ -145,5 +150 @@
+-baseString+='\nGROUPBY';
+-for(GroupBygroupBy:this.groupedByFieldNames){
+-baseString+=groupBy.getGroupByName()+',';
+-}
+-baseString=baseString.removeEnd(',');
++baseString+='\nGROUPBY'+getGroupByClause();
+@@ -155,0 +157 @@
++returnbaseString;
+@@ -157 +159,6 @@
+-returnbaseString;
++privateStringgetGroupByClause(){
++List<String>groups=newList<String>();
++for(GroupBygroupBy:this.groupedByFieldNames){
++groups.add(groupBy.getGroupByName());
++}
++returnString.join(groups,',');
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -56,5 +56 @@
+-while(
+-localFetchesMade<this.fetchesPerTransaction&&
+-results.size()<this.getNumRecords()&&
+-localStart<start+advanceBy
+-){
++while(shouldFetchMore(results.size(),localStart,start,advanceBy)){
+@@ -66,0 +63,5 @@
++}
++privateBooleanshouldFetchMore(IntegercurrentSize,IntegercurrentStart,IntegeroriginalStart,IntegeradvanceBy){
++returnlocalFetchesMade<this.fetchesPerTransaction&&
++currentSize<this.getNumRecords()&&
++currentStart<originalStart+advanceBy;
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -192,0 +193,7 @@
++startingString=handleIterableOperator(startingString);
++if(startingString.endsWith(EMPTYISH_STRING)){
++this.isSoslEmpty=true;
++}
++returnstartingString;
++}
++privateStringhandleIterableOperator(StringstartingString){
+@@ -198,18 +205,5 @@
+-StringoperatorToReplace;
+-StringnewOperator;
+-switchonthis.operator{
+-whenEQUALS{
+-operatorToReplace='=';
+-newOperator='IN';
+-}
+-whenNOT_EQUALS{
+-operatorToReplace='!=';
+-newOperator='NOTIN';
+-}
+-}
+-if(operatorToReplace!=null){
+-startingString=startingString.replace(operatorToReplace,newOperator);
+-}
+-}
+-if(startingString.endsWith(EMPTYISH_STRING)){
+-this.isSoslEmpty=true;
++if(this.operator==Operator.EQUALS){
++returnstartingString.replace('=','IN');
++}elseif(this.operator==Operator.NOT_EQUALS){
++returnstartingString.replace('!=','NOTIN');
++}
+@@ -286,6 +280,14 @@
+-}elseif(predicateinstanceofDatetime){
+-Datetimedt=(Datetime)predicate;
+-returndt.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'','GreenwichMeanTime');
+-}elseif(predicateinstanceofIterable<Object>){
+-Iterable<Object>localPredicates=(Iterable<Object>)predicate;
+-if(localPredicates.iterator().hasNext()==false){
++}
++if(predicateinstanceofDatetime){
++return((Datetime)predicate).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'','GreenwichMeanTime');
++}
++if(predicateinstanceofString){
++return'\''+String.escapeSingleQuotes((String)predicate)+'\'';
++}
++if(predicateinstanceofIterable<Object>){
++returnformatIterablePredicate((Iterable<Object>)predicate);
++}
++returnString.valueOf(predicate);
++}
++privateStringformatIterablePredicate(Iterable<Object>predicates){
++if(predicates.iterator().hasNext()==false){
+@@ -295,14 +297,6 @@
+-for(ObjectinnerPred:localPredicates){
+-StringinnerString=this.getSoslPredicate(innerPred);
+-innerStrings.add(innerString);
+-}
+-Stringstart='(';
+-Stringending=')';
+-returnstart+String.join(innerStrings,',')+ending;
+-}elseif(predicateinstanceofString){
+-Stringinput=(String)predicate;
+-return'\''+String.escapeSingleQuotes(input)+'\'';
+-}
+-returnString.valueOf(predicate);
+-}
+-}
++for(ObjectinnerPred:predicates){
++innerStrings.add(this.getSoslPredicate(innerPred));
++}
++return'('+String.join(innerStrings,',')+')';
++}
++}
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -171,5 +171,31 @@
+-if(this.childToRelationshipNames.containsKey(childFieldToken)==false||this.shouldAddChildFields==false){
+-returnthis;
+-}
+-StringbaseSubselect=
+-'(SELECT{0}FROM{1}'+
++if(!canAddChildFields(childFieldToken)){
++returnthis;
++}
++collectBindVars(optionalWhereFilters);
++StringrelationshipName=this.childToRelationshipNames.get(childFieldToken);
++Stringsubquery=buildChildSubquery(
++childFields,
++relationshipName,
++optionalWhereFilters,
++fieldToSortOrder,
++limitBy
++);
++this.relationshipNameToChildQuery.put(relationshipName,subquery);
++returnthis;
++}
++privateBooleancanAddChildFields(Schema.SObjectFieldchildFieldToken){
++returnthis.childToRelationshipNames.containsKey(childFieldToken)&&this.shouldAddChildFields;
++}
++privatevoidcollectBindVars(List<Query>optionalWhereFilters){
++for(Queryquery:optionalWhereFilters){
++this.childBindVarKeys.addAll(query.getBindVars().keySet());
++}
++}
++privateStringbuildChildSubquery(
++List<QueryField>childFields,
++StringrelationshipName,
++List<Query>optionalWhereFilters,
++Map<String,RepositorySortOrder>fieldToSortOrder,
++IntegerlimitBy
++){
++StringbaseSubselect='(SELECT{0}FROM{1}'+
+@@ -184,5 +210 @@
+-for(Queryquery:optionalWhereFilters){
+-this.childBindVarKeys.addAll(query.getBindVars().keySet());
+-}
+-StringrelationshipName=this.childToRelationshipNames.get(childFieldToken);
+-StringchildFieldsToAdd=String.format(
++returnString.format(
+@@ -190,4 +212,2 @@
+-newList<String>{String.join(childFieldNames,','),this.childToRelationshipNames.get(childFieldToken)}
+-);
+-this.relationshipNameToChildQuery.put(relationshipName,childFieldsToAdd);
+-returnthis;
++newList<String>{String.join(childFieldNames,','),relationshipName}
++);
+@@ -284,2 +304,4 @@
+-StringwhereClause=String.join(wheres,'\nAND');
+-returnwheres.isEmpty()||String.isBlank(whereClause)?'':'\nWHERE'+whereClause;
++if(wheres.isEmpty()){
++return'';
++}
++return'\nWHERE'+String.join(wheres,'\nAND');
+@@ -320,0 +343,16 @@
++try{
++StringsearchQuery=buildSoslQuery(searchTerm,queryFilters,additionalSoslObjects);
++this.logQuery('searchquery:\n'+searchQuery);
++List<List<SObject>>results=Search.query(searchQuery,this.accessLevel);
++System.debug(System.LoggingLevel.FINER,'numberofresults:'+results.size()+'\nresults:\n'+results);
++returnresults;
++}finally{
++this.clearState();
++this.isSosl=false;
++}
++}
++privateStringbuildSoslQuery(
++StringsearchTerm,
++List<Query>queryFilters,
++List<AdditionalSoslObject>additionalSoslObjects
++){
+@@ -325,2 +363 @@
+-StringsearchQuery=
+-'FIND\''+
++return'FIND\''+
+@@ -332,6 +368,0 @@
+-this.logQuery('searchquery:\n'+searchQuery);
+-List<List<SObject>>results=Search.query(searchQuery,this.accessLevel);
+-System.debug(System.LoggingLevel.FINER,'numberofresults:'+results.size()+'\nresults:\n'+results);
+-this.clearState();
+-this.isSosl=false;
+-returnresults;

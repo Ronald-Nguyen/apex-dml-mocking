@@ -1,0 +1,114 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -32,0 +33,10 @@
++StringrelationshipName=getRelationshipName(record,childField);
++if(relationshipName!=null){
++StringserializedMeta=JSON.serialize(record).removeEnd('}');
++StringchildrenJson='"'+relationshipName+'":'+JSON.serialize(newChildrenSObjects(children));
++serializedMeta+=','+childrenJson+'}';
++return(SObject)JSON.deserialize(serializedMeta,SObject.class);
++}
++returnrecord;
++}
++privatestaticStringgetRelationshipName(SObjectrecord,Schema.SObjectFieldchildField){
+@@ -40 +49,0 @@
+-StringrelationshipName;
+@@ -43,2 +52 @@
+-relationshipName=childRelationship.getRelationshipName();
+-break;
++returnchildRelationship.getRelationshipName();
+@@ -47,7 +55 @@
+-if(relationshipName!=null){
+-StringserializedMeta=JSON.serialize(record).removeEnd('}');
+-StringchildrenJson='"'+relationshipName+'":'+JSON.serialize(newChildrenSObjects(children));
+-serializedMeta+=','+childrenJson+'}';
+-return(SObject)JSON.deserialize(serializedMeta,SObject.class);
+-}
+-returnrecord;
++returnnull;
+@@ -72 +73,0 @@
+-IHistoryRepositoryrepo;
+@@ -77 +78 @@
+-if(
++BooleanhasMockData=
+@@ -82,2 +83,4 @@
+-alwaysUseMock==true
+-){
++alwaysUseMock==true;
++if(!hasMockData){
++return(IHistoryRepository)fallback;
++}
+@@ -92,5 +95 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,3 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -155 +156,0 @@
+-}
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -83,3 +83 @@
+-possibleFetchSize=maxRecordsPerFetchCall;
+-}elseif(possibleFetchSize<0){
+-possibleFetchSize=0;
++returnmaxRecordsPerFetchCall;
+@@ -87 +85 @@
+-returnpossibleFetchSize;
++returnMath.max(possibleFetchSize,0);
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -286 +286,2 @@
+-}elseif(predicateinstanceofDatetime){
++}
++if(predicateinstanceofDatetime){
+@@ -289,3 +290,12 @@
+-}elseif(predicateinstanceofIterable<Object>){
+-Iterable<Object>localPredicates=(Iterable<Object>)predicate;
+-if(localPredicates.iterator().hasNext()==false){
++}
++if(predicateinstanceofIterable<Object>){
++returnformatIterableSoslPredicate((Iterable<Object>)predicate);
++}
++if(predicateinstanceofString){
++Stringinput=(String)predicate;
++return'\''+String.escapeSingleQuotes(input)+'\'';
++}
++returnString.valueOf(predicate);
++}
++privateStringformatIterableSoslPredicate(Iterable<Object>predicates){
++if(predicates.iterator().hasNext()==false){
+@@ -295 +305 @@
+-for(ObjectinnerPred:localPredicates){
++for(ObjectinnerPred:predicates){
+@@ -302,7 +312,2 @@
+-}elseif(predicateinstanceofString){
+-Stringinput=(String)predicate;
+-return'\''+String.escapeSingleQuotes(input)+'\'';
+-}
+-returnString.valueOf(predicate);
+-}
+-}
++}
++}
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -279 +279,3 @@
+-if(qry.isSoslEmpty()==false&&String.isNotBlank(possibleWhere)){
++if(qry.isSoslEmpty()||String.isBlank(possibleWhere)){
++continue;
++}
+@@ -282 +283,0 @@
+-}

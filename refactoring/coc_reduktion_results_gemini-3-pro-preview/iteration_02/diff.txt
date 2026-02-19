@@ -1,0 +1,162 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -33,14 +33 @@
+-List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(record.getSObjectType());
+-if(childRelationships==null){
+-childRelationships=record.getSObjectType()
+-.getDescribe(Schema.SObjectDescribeOptions.FULL)
+-.getChildRelationships();
+-CACHED_CHILD_RELATIONSHIPS.put(record.getSObjectType(),childRelationships);
+-}
+-StringrelationshipName;
+-for(Schema.ChildRelationshipchildRelationship:childRelationships){
+-if(childRelationship.getField()==childField){
+-relationshipName=childRelationship.getRelationshipName();
+-break;
+-}
+-}
++StringrelationshipName=getRelationshipName(record.getSObjectType(),childField);
+@@ -48,4 +35 @@
+-StringserializedMeta=JSON.serialize(record).removeEnd('}');
+-StringchildrenJson='"'+relationshipName+'":'+JSON.serialize(newChildrenSObjects(children));
+-serializedMeta+=','+childrenJson+'}';
+-return(SObject)JSON.deserialize(serializedMeta,SObject.class);
++returnaddChildrenJson(record,relationshipName,children);
+@@ -72 +55,0 @@
+-IHistoryRepositoryrepo;
+@@ -74,9 +57,16 @@
+-List<AggregateRecord>aggRecords=AggregateResults.get(sObjectType);
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
+-List<Cursor>cursorResults=CursorResults.get(sObjectType);
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
++if(shouldUseMock(sObjectType,queriedResults)){
++returncreateMockRepo(sObjectType,repoFactory,queriedResults);
++}
++return(IHistoryRepository)fallback;
++}
++privatestaticBooleanshouldUseMock(Schema.SObjectTypesObjectType,List<SObject>queriedResults){
++returnqueriedResults.isEmpty()==false||
++AggregateResults.get(sObjectType)?.isEmpty()==false||
++HistoryResults.get(sObjectType)?.isEmpty()==false||
++CursorResults.get(sObjectType)?.isEmpty()==false||
++alwaysUseMock==true;
++}
++privatestaticRepoMockcreateMockRepo(
++Schema.SObjectTypesObjectType,
++RepoFactoryrepoFactory,
++List<SObject>queriedResults
+@@ -85,0 +76 @@
++List<AggregateRecord>aggRecords=AggregateResults.get(sObjectType);
+@@ -88,0 +80 @@
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
+@@ -92,5 +84 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
+@@ -105,0 +94,23 @@
++}
++privatestaticStringgetRelationshipName(Schema.SObjectTypesObjectType,Schema.SObjectFieldchildField){
++List<Schema.ChildRelationship>childRelationships=getCachedChildRelationships(sObjectType);
++for(Schema.ChildRelationshipchildRelationship:childRelationships){
++if(childRelationship.getField()==childField){
++returnchildRelationship.getRelationshipName();
++}
++}
++returnnull;
++}
++privatestaticList<Schema.ChildRelationship>getCachedChildRelationships(Schema.SObjectTypesObjectType){
++List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(sObjectType);
++if(childRelationships==null){
++childRelationships=sObjectType.getDescribe(Schema.SObjectDescribeOptions.FULL).getChildRelationships();
++CACHED_CHILD_RELATIONSHIPS.put(sObjectType,childRelationships);
++}
++returnchildRelationships;
++}
++privatestaticSObjectaddChildrenJson(SObjectrecord,StringrelationshipName,List<SObject>children){
++StringserializedMeta=JSON.serialize(record).removeEnd('}');
++StringchildrenJson='"'+relationshipName+'":'+JSON.serialize(newChildrenSObjects(children));
++serializedMeta+=','+childrenJson+'}';
++return(SObject)JSON.deserialize(serializedMeta,SObject.class);
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,6 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
++returnthis.appendGroupByClause(baseString);
++}
++privateStringappendGroupByClause(StringbaseString){
+@@ -145,5 +150 @@
+-baseString+='\nGROUPBY';
+-for(GroupBygroupBy:this.groupedByFieldNames){
+-baseString+=groupBy.getGroupByName()+',';
+-}
+-baseString=baseString.removeEnd(',');
++baseString+='\nGROUPBY'+this.getGroupByString();
+@@ -155,0 +157 @@
++returnbaseString;
+@@ -157 +159,6 @@
+-returnbaseString;
++privateStringgetGroupByString(){
++StringgroupByString='';
++for(GroupBygroupBy:this.groupedByFieldNames){
++groupByString+=groupBy.getGroupByName()+',';
++}
++returngroupByString.removeEnd(',');
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -171,3 +171,25 @@
+-if(this.childToRelationshipNames.containsKey(childFieldToken)==false||this.shouldAddChildFields==false){
+-returnthis;
+-}
++if(!this.canAddChildField(childFieldToken)){
++returnthis;
++}
++Stringsubquery=this.buildChildSubquery(
++childFields,
++optionalWhereFilters,
++fieldToSortOrder,
++limitBy,
++childFieldToken
++);
++this.collectChildBindVars(optionalWhereFilters);
++StringrelationshipName=this.childToRelationshipNames.get(childFieldToken);
++this.relationshipNameToChildQuery.put(relationshipName,subquery);
++returnthis;
++}
++privateBooleancanAddChildField(Schema.SObjectFieldchildFieldToken){
++returnthis.childToRelationshipNames.containsKey(childFieldToken)&&this.shouldAddChildFields;
++}
++privateStringbuildChildSubquery(
++List<QueryField>childFields,
++List<Query>optionalWhereFilters,
++Map<String,RepositorySortOrder>fieldToSortOrder,
++IntegerlimitBy,
++Schema.SObjectFieldchildFieldToken
++){
+@@ -184,5 +206 @@
+-for(Queryquery:optionalWhereFilters){
+-this.childBindVarKeys.addAll(query.getBindVars().keySet());
+-}
+-StringrelationshipName=this.childToRelationshipNames.get(childFieldToken);
+-StringchildFieldsToAdd=String.format(
++returnString.format(
+@@ -192,2 +210,5 @@
+-this.relationshipNameToChildQuery.put(relationshipName,childFieldsToAdd);
+-returnthis;
++}
++privatevoidcollectChildBindVars(List<Query>queries){
++for(Queryquery:queries){
++this.childBindVarKeys.addAll(query.getBindVars().keySet());
++}

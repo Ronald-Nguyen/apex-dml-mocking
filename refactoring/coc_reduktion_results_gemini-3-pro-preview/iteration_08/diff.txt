@@ -1,0 +1,210 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -33,14 +33 @@
+-List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(record.getSObjectType());
+-if(childRelationships==null){
+-childRelationships=record.getSObjectType()
+-.getDescribe(Schema.SObjectDescribeOptions.FULL)
+-.getChildRelationships();
+-CACHED_CHILD_RELATIONSHIPS.put(record.getSObjectType(),childRelationships);
+-}
+-StringrelationshipName;
+-for(Schema.ChildRelationshipchildRelationship:childRelationships){
+-if(childRelationship.getField()==childField){
+-relationshipName=childRelationship.getRelationshipName();
+-break;
+-}
+-}
++StringrelationshipName=getRelationshipName(record.getSObjectType(),childField);
+@@ -47,0 +35,22 @@
++returnappendChildren(record,relationshipName,children);
++}
++returnrecord;
++}
++privatestaticStringgetRelationshipName(Schema.SObjectTypesObjectType,Schema.SObjectFieldchildField){
++List<Schema.ChildRelationship>relationships=getCachedRelationships(sObjectType);
++for(Schema.ChildRelationshiprel:relationships){
++if(rel.getField()==childField){
++returnrel.getRelationshipName();
++}
++}
++returnnull;
++}
++privatestaticList<Schema.ChildRelationship>getCachedRelationships(Schema.SObjectTypesObjectType){
++List<Schema.ChildRelationship>relationships=CACHED_CHILD_RELATIONSHIPS.get(sObjectType);
++if(relationships==null){
++relationships=sObjectType.getDescribe(Schema.SObjectDescribeOptions.FULL).getChildRelationships();
++CACHED_CHILD_RELATIONSHIPS.put(sObjectType,relationships);
++}
++returnrelationships;
++}
++privatestaticSObjectappendChildren(SObjectrecord,StringrelationshipName,List<SObject>children){
+@@ -53,2 +61,0 @@
+-returnrecord;
+-}
+@@ -72 +78,0 @@
+-IHistoryRepositoryrepo;
+@@ -75 +81 @@
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
+@@ -77,6 +83,23 @@
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
++if(shouldUseMock(queriedResults,aggRecords,historyRecords,cursorResults)){
++returncreateMockRepo(sObjectType,repoFactory,queriedResults,aggRecords,historyRecords);
++}
++return(IHistoryRepository)fallback;
++}
++privatestaticBooleanshouldUseMock(
++List<SObject>queriedResults,
++List<AggregateRecord>aggRecords,
++List<FieldLevelHistory>historyRecords,
++List<Cursor>cursorResults
++){
++return!queriedResults.isEmpty()||
++(aggRecords!=null&&!aggRecords.isEmpty())||
++(historyRecords!=null&&!historyRecords.isEmpty())||
++(cursorResults!=null&&!cursorResults.isEmpty())||
++alwaysUseMock;
++}
++privatestaticRepoMockcreateMockRepo(
++SObjectTypesObjectType,
++RepoFactoryrepoFactory,
++List<SObject>queriedResults,
++List<AggregateRecord>aggRecords,
++List<FieldLevelHistory>historyRecords
+@@ -92,5 +115 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138,2 +138,3 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
+-StringpotentialOrderBy=null;
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -140,0 +142 @@
++StringpotentialOrderBy;
+@@ -145,5 +147 @@
+-baseString+='\nGROUPBY';
+-for(GroupBygroupBy:this.groupedByFieldNames){
+-baseString+=groupBy.getGroupByName()+',';
+-}
+-baseString=baseString.removeEnd(',');
++baseString+=this.buildGroupByClause();
+@@ -155,0 +154 @@
++returnbaseString;
+@@ -157 +156,6 @@
+-returnbaseString;
++privateStringbuildGroupByClause(){
++List<String>groups=newList<String>();
++for(GroupBygroupBy:this.groupedByFieldNames){
++groups.add(groupBy.getGroupByName());
++}
++return'\nGROUPBY'+String.join(groups,',');
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -189,0 +190,11 @@
++startingString=this.injectBindVars(startingString);
++if(this.predicateinstanceofIterable<Object>){
++startingString=this.handleIterableSosl(startingString);
++}
++if(startingString.endsWith(EMPTYISH_STRING)){
++this.isSoslEmpty=true;
++}
++returnstartingString;
++}
++privateStringinjectBindVars(StringqueryStr){
++Stringresult=queryStr;
+@@ -191,3 +202,5 @@
+-startingString=startingString.replace(':'+key,this.getSoslPredicate(this.bindVars.get(key)));
+-}
+-if(this.predicateinstanceofIterable<Object>){
++result=result.replace(':'+key,this.getSoslPredicate(this.bindVars.get(key)));
++}
++returnresult;
++}
++privateStringhandleIterableSosl(StringqueryStr){
+@@ -195 +208 @@
+-if(localPredicate.iterator().hasNext()==false){
++if(!localPredicate.iterator().hasNext()){
+@@ -197,0 +211 @@
++StringnewOperator;
+@@ -199,3 +213 @@
+-StringnewOperator;
+-switchonthis.operator{
+-whenEQUALS{
++if(this.operator==Operator.EQUALS){
+@@ -204,2 +216 @@
+-}
+-whenNOT_EQUALS{
++}elseif(this.operator==Operator.NOT_EQUALS){
+@@ -209,9 +220,4 @@
+-}
+-if(operatorToReplace!=null){
+-startingString=startingString.replace(operatorToReplace,newOperator);
+-}
+-}
+-if(startingString.endsWith(EMPTYISH_STRING)){
+-this.isSoslEmpty=true;
+-}
+-returnstartingString;
++if(newOperator!=null){
++returnqueryStr.replace(operatorToReplace,newOperator);
++}
++returnqueryStr;
+@@ -286,6 +292,14 @@
+-}elseif(predicateinstanceofDatetime){
+-Datetimedt=(Datetime)predicate;
+-returndt.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'','GreenwichMeanTime');
+-}elseif(predicateinstanceofIterable<Object>){
+-Iterable<Object>localPredicates=(Iterable<Object>)predicate;
+-if(localPredicates.iterator().hasNext()==false){
++}
++if(predicateinstanceofDatetime){
++return((Datetime)predicate).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'','GreenwichMeanTime');
++}
++if(predicateinstanceofIterable<Object>){
++returnthis.formatIterablePredicate((Iterable<Object>)predicate);
++}
++if(predicateinstanceofString){
++return'\''+String.escapeSingleQuotes((String)predicate)+'\'';
++}
++returnString.valueOf(predicate);
++}
++privateStringformatIterablePredicate(Iterable<Object>predicates){
++if(!predicates.iterator().hasNext()){
+@@ -294,15 +308,7 @@
+-List<String>innerStrings=newList<String>();
+-for(ObjectinnerPred:localPredicates){
+-StringinnerString=this.getSoslPredicate(innerPred);
+-innerStrings.add(innerString);
+-}
+-Stringstart='(';
+-Stringending=')';
+-returnstart+String.join(innerStrings,',')+ending;
+-}elseif(predicateinstanceofString){
+-Stringinput=(String)predicate;
+-return'\''+String.escapeSingleQuotes(input)+'\'';
+-}
+-returnString.valueOf(predicate);
+-}
+-}
++List<String>items=newList<String>();
++for(Objectitem:predicates){
++items.add(this.getSoslPredicate(item));
++}
++return'('+String.join(items,',')+')';
++}
++}

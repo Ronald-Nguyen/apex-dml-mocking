@@ -1,0 +1,159 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -33 +33,8 @@
+-List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(record.getSObjectType());
++StringrelationshipName=getRelationshipName(record.getSObjectType(),childField);
++if(relationshipName!=null){
++returninjectChildren(record,relationshipName,children);
++}
++returnrecord;
++}
++privatestaticStringgetRelationshipName(SObjectTypesObjectType,Schema.SObjectFieldchildField){
++List<Schema.ChildRelationship>childRelationships=CACHED_CHILD_RELATIONSHIPS.get(sObjectType);
+@@ -35 +42 @@
+-childRelationships=record.getSObjectType()
++childRelationships=sObjectType
+@@ -38,3 +45,2 @@
+-CACHED_CHILD_RELATIONSHIPS.put(record.getSObjectType(),childRelationships);
+-}
+-StringrelationshipName;
++CACHED_CHILD_RELATIONSHIPS.put(sObjectType,childRelationships);
++}
+@@ -43,5 +49,6 @@
+-relationshipName=childRelationship.getRelationshipName();
+-break;
+-}
+-}
+-if(relationshipName!=null){
++returnchildRelationship.getRelationshipName();
++}
++}
++returnnull;
++}
++privatestaticSObjectinjectChildren(SObjectrecord,StringrelationshipName,List<SObject>children){
+@@ -52,2 +58,0 @@
+-}
+-returnrecord;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,7 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
++returnthis.appendGroupBy(baseString);
++}
++privateStringappendGroupBy(StringbaseString){
++StringworkingString=baseString;
+@@ -141,3 +147,3 @@
+-if(baseString.contains(orderByKey)){
+-potentialOrderBy=baseString.substringAfter(orderByKey);
+-baseString=baseString.replace(orderByKey+potentialOrderBy,'');
++if(workingString.contains(orderByKey)){
++potentialOrderBy=workingString.substringAfter(orderByKey);
++workingString=workingString.replace(orderByKey+potentialOrderBy,'');
+@@ -145,5 +151 @@
+-baseString+='\nGROUPBY';
+-for(GroupBygroupBy:this.groupedByFieldNames){
+-baseString+=groupBy.getGroupByName()+',';
+-}
+-baseString=baseString.removeEnd(',');
++workingString+='\nGROUPBY'+this.getGroupByClause();
+@@ -151 +153 @@
+-baseString+='\nHAVING'+String.join(this.havingFields,',');
++workingString+='\nHAVING'+String.join(this.havingFields,',');
+@@ -154 +156 @@
+-baseString+=orderByKey+potentialOrderBy;
++workingString+=orderByKey+potentialOrderBy;
+@@ -155,0 +158 @@
++returnworkingString;
+@@ -157 +160,6 @@
+-returnbaseString;
++privateStringgetGroupByClause(){
++List<String>groups=newList<String>();
++for(GroupBygroupBy:this.groupedByFieldNames){
++groups.add(groupBy.getGroupByName());
++}
++returnString.join(groups,',');
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -189 +189,11 @@
+-StringstartingString=this.toString();
++StringstartingString=this.injectBindVars(this.toString());
++if(this.predicateinstanceofIterable<Object>){
++startingString=this.handleIterableOperators(startingString);
++}
++if(startingString.endsWith(EMPTYISH_STRING)){
++this.isSoslEmpty=true;
++}
++returnstartingString;
++}
++privateStringinjectBindVars(Stringinput){
++Stringresult=input;
+@@ -191,3 +201,5 @@
+-startingString=startingString.replace(':'+key,this.getSoslPredicate(this.bindVars.get(key)));
+-}
+-if(this.predicateinstanceofIterable<Object>){
++result=result.replace(':'+key,this.getSoslPredicate(this.bindVars.get(key)));
++}
++returnresult;
++}
++privateStringhandleIterableOperators(Stringinput){
+@@ -211,7 +223,3 @@
+-startingString=startingString.replace(operatorToReplace,newOperator);
+-}
+-}
+-if(startingString.endsWith(EMPTYISH_STRING)){
+-this.isSoslEmpty=true;
+-}
+-returnstartingString;
++returninput.replace(operatorToReplace,newOperator);
++}
++returninput;
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -171,3 +171,19 @@
+-if(this.childToRelationshipNames.containsKey(childFieldToken)==false||this.shouldAddChildFields==false){
+-returnthis;
+-}
++if(!this.canAddChildFields(childFieldToken)){
++returnthis;
++}
++StringsubQuery=this.buildChildQuery(childFieldToken,childFields,optionalWhereFilters,fieldToSortOrder,limitBy);
++StringrelationshipName=this.childToRelationshipNames.get(childFieldToken);
++this.collectChildBindVars(optionalWhereFilters);
++this.relationshipNameToChildQuery.put(relationshipName,subQuery);
++returnthis;
++}
++privateBooleancanAddChildFields(Schema.SObjectFieldchildFieldToken){
++returnthis.childToRelationshipNames.containsKey(childFieldToken)&&this.shouldAddChildFields;
++}
++privateStringbuildChildQuery(
++Schema.SObjectFieldchildFieldToken,
++List<QueryField>childFields,
++List<Query>optionalWhereFilters,
++Map<String,RepositorySortOrder>fieldToSortOrder,
++IntegerlimitBy
++){
+@@ -179,0 +196,6 @@
++returnString.format(
++baseSubselect,
++newList<String>{this.getChildFieldNamesCsv(childFields),this.childToRelationshipNames.get(childFieldToken)}
++);
++}
++privateStringgetChildFieldNamesCsv(List<QueryField>childFields){
+@@ -183,0 +206,3 @@
++returnString.join(newList<String>(childFieldNames),',');
++}
++privatevoidcollectChildBindVars(List<Query>optionalWhereFilters){
+@@ -187,7 +211,0 @@
+-StringrelationshipName=this.childToRelationshipNames.get(childFieldToken);
+-StringchildFieldsToAdd=String.format(
+-baseSubselect,
+-newList<String>{String.join(childFieldNames,','),this.childToRelationshipNames.get(childFieldToken)}
+-);
+-this.relationshipNameToChildQuery.put(relationshipName,childFieldsToAdd);
+-returnthis;

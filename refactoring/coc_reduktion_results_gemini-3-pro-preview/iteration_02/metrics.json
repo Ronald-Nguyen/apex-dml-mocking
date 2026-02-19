@@ -1,0 +1,119 @@
+{
+  "iteration": 2,
+  "timestamp": "2026-02-19T19:09:11.077414",
+  "refactoring": "refactoring/coc_reduktion",
+  "changed_files_scope": [
+    "factory\\RepoFactoryMock.cls",
+    "repository\\AggregateRepository.cls",
+    "repository\\Repository.cls"
+  ],
+  "test": {
+    "status": "passed",
+    "success": true,
+    "level": 2
+  },
+  "diff": {
+    "status": "passed",
+    "has_diff": true
+  },
+  "tokens": "Tokens: prompt=22464, completion=9284, total=38433",
+  "pmd_before": {
+    "ok": true,
+    "timestamp": "2026-02-19T19:08:33.305753",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results2_gemini-3-pro-preview\\iteration_02\\pmd_before\\subset_src",
+      "files": [
+        "factory/RepoFactoryMock.cls",
+        "repository/AggregateRepository.cls",
+        "repository/Repository.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results2_gemini-3-pro-preview\\iteration_02\\pmd_before\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results2_gemini-3-pro-preview\\iteration_02\\pmd_before\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 1012,
+        "loc": 908,
+        "count": 3
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 1012,
+        "loc": 908,
+        "count": 3
+      }
+    }
+  },
+  "pmd_after": {
+    "ok": true,
+    "timestamp": "2026-02-19T19:08:35.481306",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results2_gemini-3-pro-preview\\iteration_02\\pmd_after\\subset_src",
+      "files": [
+        "factory/RepoFactoryMock.cls",
+        "repository/AggregateRepository.cls",
+        "repository/Repository.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results2_gemini-3-pro-preview\\iteration_02\\pmd_after\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results2_gemini-3-pro-preview\\iteration_02\\pmd_after\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 1004,
+        "loc": 959,
+        "count": 3
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 1004,
+        "loc": 959,
+        "count": 3
+      }
+    }
+  },
+  "pmd_delta": {
+    "prod": {
+      "complexity": -8,
+      "loc": 51,
+      "count": 0
+    },
+    "test": {
+      "complexity": 0,
+      "loc": 0,
+      "count": 0
+    },
+    "total": {
+      "complexity": -8,
+      "loc": 51,
+      "count": 0
+    }
+  },
+  "refactoring_check": {
+    "type": "coc_reduktion",
+    "targets": {},
+    "ok": true,
+    "checks": {
+      "coc_reduktion": {
+        "passed": true,
+        "pmd_delta_total_complexity": -8,
+        "rule": "delta<=0"
+      }
+    }
+  }
+}

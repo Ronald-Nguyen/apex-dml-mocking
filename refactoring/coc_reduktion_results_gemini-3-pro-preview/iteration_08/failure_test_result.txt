@@ -1,0 +1,49 @@
+Iteration 8
+Timestamp: 2026-02-19T19:37:04.102080
+Success: False
+
+============================================================
+STDOUT:
+───── Deploying Metadata ─────
+Stages:
+1. Preparing
+2. Waiting for the org to respond
+3. Deploying Metadata
+4. Running Tests
+5. Updating Source Tracking
+6. Done
+
+▶ Preparing…
+   Deploying v64.0 metadata to test-werg43zs55tn@example.com using the v65.0 SOAP API.
+   Deploy ID: 0AfAs00000UA7VBKA1
+   Target Org: test-werg43zs55tn@example.com
+✔ Preparing (265ms)
+◯ Waiting for the org to respond - Skipped
+▶ Deploying Metadata…
+   Components: 0/3 (0%)
+✘ Deploying Metadata (610ms)
+   Components: 0/4 (0%)
+
+Deploying v64.0 metadata to test-werg43zs55tn@example.com using the v65.0 SOAP API.
+Status: Failed
+Deploy ID: 0AfAs00000UA7VBKA1
+Target Org: test-werg43zs55tn@example.com
+
+Elapsed time: 876ms
+
+[1m[31mComponent Failures [4][39m[22m
+ Type       Name                 Problem                                                                                                                   Line:Column 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ApexClass  AggregateRepository  Dependent class is invalid and needs recompilation:                                                                       265:35      
+                                 Class Query : Static field cannot be referenced from a non static context: EQUALS from the type Query.Operator (265:35)               
+ ApexClass  Query                Static field cannot be referenced from a non static context: EQUALS from the type Query.Operator (265:35)                 265:35      
+ ApexClass  Query                Static field cannot be referenced from a non static context: NOT_EQUALS from the type Query.Operator (268:42)             268:42      
+ ApexClass  RepoFactoryMock      Dependent class is invalid and needs recompilation:                                                                       265:35      
+                                 Class AggregateRepository : Dependent class is invalid and needs recompilation:                                                       
+                                 Class Query : Static field cannot be referenced from a non static context: EQUALS from the type Query.Operator (265:35)               
+
+
+
+============================================================
+STDERR:
+DEPLOY FAILED (Level 0):

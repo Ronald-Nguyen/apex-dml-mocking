@@ -29,9 +29,9 @@ REFACTORINGS = [
 REFACTORING_BASE_DIR = "refactoring"
 DEFAULT_REFACTORING = "coc_reduktion" \
 ""
-RESULT_PATH_NAME = '__results__'
+RESULT_PATH_NAME = '_results2_'
 PATH = 'force-app'
-ITERATIONS = 1
+ITERATIONS = 9
 GEMMA = 'gemma-3-27b-it'
 GEMINI3 = 'gemini-3-pro-preview'
 GEMINI2 = 'gemini-2.5-flash'
@@ -46,11 +46,11 @@ GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
 MISTRAL_API_KEY2 = os.environ.get('MISTRAL_API_KEY2')
-LLM_API_KEY = MISTRAL_API_KEY
+LLM_API_KEY = GEMINI_API_KEY
 client = None
 MODEL = None
 
-if LLM_API_KEY == MISTRAL_API_KEY or MISTRAL_API_KEY2:
+if LLM_API_KEY == MISTRAL_API_KEY:
     from mistralai import Mistral
     MODEL = MODEL_MISTRAL
     try:
