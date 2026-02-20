@@ -79,4 +79,58 @@ private class FieldLevelHistoryRepoTest {
         .setParentField(OpportunityFieldHistory.OpportunityId);
     }
   }
+
+  @IsTest
+  static void itShouldGetHistoryWithQuery() {
+    Opportunity opp = new Opportunity(Name = 'Test', StageName = 'Prospecting', CloseDate = System.today());
+    insert opp;
+    
+    IHistoryRepository historyRepo = new FieldLevelHistoryRepoTest.ExampleRepoFactory().getOppFieldHistoryRepo();
+    List<FieldLevelHistory> histories = historyRepo.getHistory(Query.equals(OpportunityFieldHistory.OpportunityId, opp.Id));
+    
+    Assert.isNotNull(histories);
+  }
+
+  @IsTest
+  static void itShouldGetHistoryForSpecificField() {
+    Opportunity opp = new Opportunity(Name = 'Test', StageName = 'Prospecting', CloseDate = System.today(), Amount = 1000);
+    insert opp;
+    
+    opp.Amount = 2000;
+    update opp;
+    
+    IHistoryRepository historyRepo = new FieldLevelHistoryRepoTest.ExampleRepoFactory().getOppFieldHistoryRepo();
+    List<FieldLevelHistory> histories = historyRepo.getHistory(
+      new List<Query>{
+        Query.equals(OpportunityFieldHistory.OpportunityId, opp.Id),
+        Query.equals(OpportunityFieldHistory.Field, 'Amount')
+      }
+    );
+    
+    Assert.isNotNull(histories);
+  }
+
+  @IsTest
+  static void itShouldHandleFieldLevelHistoryValues() {
+    FieldLevelHistory history = new FieldLevelHistory();
+    history.setValues(new Map<String, Object>{
+      'Field' => 'Amount',
+      'OldValue' => 100,
+      'NewValue' => 200
+    });
+    
+    Assert.areEqual('Amount', history.Field);
+    Assert.areEqual(100, history.OldValue);
+    Assert.areEqual(200, history.NewValue);
+  }
+
+  @IsTest
+  static void itShouldHandleEmptyHistoryResults() {
+    IHistoryRepository historyRepo = new FieldLevelHistoryRepoTest.ExampleRepoFactory().getOppFieldHistoryRepo();
+    Id fakeId = TestingUtils.generateId(Opportunity.SObjectType);
+    
+    List<FieldLevelHistory> histories = historyRepo.getHistory(Query.equals(OpportunityFieldHistory.OpportunityId, fakeId));
+    
+    Assert.isNotNull(histories);
+  }
 }

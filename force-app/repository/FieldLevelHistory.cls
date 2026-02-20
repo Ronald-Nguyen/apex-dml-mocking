@@ -16,7 +16,9 @@ public class FieldLevelHistory {
   public FieldLevelHistory setValues(Map<String, Object> values) {
     this.CreatedById = (Id) values.get('CreatedById');
     Object possibleCreatedDate = values.get('CreatedDate');
-    this.CreatedDate = Datetime.valueOfGmt(String.valueOf(possibleCreatedDate).replace('T', ' ').remove('"'));
+    if (possibleCreatedDate != null) {
+      this.CreatedDate = Datetime.valueOfGmt(String.valueOf(possibleCreatedDate).replace('T', ' ').remove('"'));
+    }
     this.Field = (String) values.get('Field');
     this.NewValue = values.get('NewValue');
     this.OldValue = values.get('OldValue');

@@ -252,4 +252,38 @@ private class QueryTest {
 
     Assert.areEqual('(Id = :bindVar0)', query.toString());
   }
+
+  @IsTest
+  static void itShouldHandleMultipleBindVars() {
+    Query query1 = Query.equals(Account.Name, 'Test1');
+    Query query2 = Query.equals(Account.Industry, 'Tech');
+    Query combined = Query.andQuery(query1, query2);
+    
+    Map<String, Object> bindVars = combined.getBindVars();
+    Assert.areEqual(2, bindVars.size());
+  }
+
+  @IsTest
+  static void itShouldHandleBooleanFalse() {
+    Query query = Query.equals(Opportunity.IsWon, false);
+    
+    Assert.areEqual('IsWon = false', query.toString());
+  }
+
+  @IsTest
+  static void itShouldHandleNotEqualsNull() {
+    Query query = Query.notEquals(Account.ParentId, null);
+    
+    Assert.areEqual('ParentId != null', query.toString());
+  }
+
+  @IsTest
+  static void itShouldHandleAndQueryWithTwoQueries() {
+    Query q1 = Query.equals(Account.Name, 'Test');
+    Query q2 = Query.equals(Account.Industry, 'Tech');
+    Query andQuery = Query.andQuery(q1, q2);
+    
+    Assert.isNotNull(andQuery.toString());
+    Assert.isTrue(andQuery.toString().contains('AND'));
+  }
 }

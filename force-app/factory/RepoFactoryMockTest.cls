@@ -36,4 +36,75 @@ private class RepoFactoryMockTest {
     
     Assert.areEqual(secondAccount.Id, cursor.fetch(1, 3)[0].Id);
   }
+
+  @IsTest
+  static void mocksQueryResults() {
+    Account acc = new Account(Id = TestingUtils.generateId(Account.SObjectType), Name = 'TestAcc');
+    RepoFactoryMock.QueryResults.add(acc);
+    
+    RepoFactoryMock.FacadeMock facade = new RepoFactoryMock.FacadeMock();
+    IRepository repo = facade.getRepo(
+      Account.SObjectType,
+      new List<Schema.SObjectField>{ Account.Name },
+      new RepoFactoryMock()
+    );
+    
+    List<Account> results = repo.getAll();
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(acc.Id, results[0].Id);
+  }
+
+  @IsTest
+  static void mocksAggregateResults() {
+    AggregateRecord aggRecord = new AggregateRecord();
+    aggRecord.putAll(new Map<String, Object>{ 'total' => 100 });
+    RepoFactoryMock.AggregateResults.put(Opportunity.SObjectType, new List<AggregateRecord>{ aggRecord });
+    
+    RepoFactoryMock.FacadeMock facade = new RepoFactoryMock.FacadeMock();
+    IAggregateRepository repo = facade.getRepo(
+      Opportunity.SObjectType,
+      new List<Schema.SObjectField>{ Opportunity.Amount },
+      new RepoFactoryMock()
+    );
+    
+    List<AggregateRecord> results = repo.aggregate(Aggregation.sum(Opportunity.Amount, 'total'));
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(100, results[0].get('total'));
+  }
+
+  @IsTest
+  static void mocksHistoryResults() {
+    FieldLevelHistory history = new FieldLevelHistory();
+    history.setValues(new Map<String, Object>{ 'Field' => 'Amount', 'OldValue' => 100, 'NewValue' => 200 });
+    RepoFactoryMock.HistoryResults.put(OpportunityFieldHistory.SObjectType, new List<FieldLevelHistory>{ history });
+    
+    RepoFactoryMock.FacadeMock facade = new RepoFactoryMock.FacadeMock();
+    IHistoryRepository repo = facade.getRepo(
+      OpportunityFieldHistory.SObjectType,
+      new List<Schema.SObjectField>(),
+      new RepoFactoryMock()
+    );
+    repo.setParentField(OpportunityFieldHistory.OpportunityId);
+    
+    List<FieldLevelHistory> results = repo.getAllHistory();
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual('Amount', results[0].Field);
+  }
+
+  @IsTest
+  static void handlesCursorMockFetch() {
+    List<Account> accounts = new List<Account>{
+      new Account(Id = TestingUtils.generateId(Account.SObjectType)),
+      new Account(Id = TestingUtils.generateId(Account.SObjectType)),
+      new Account(Id = TestingUtils.generateId(Account.SObjectType))
+    };
+    
+    RepoFactoryMock.CursorMock cursor = new RepoFactoryMock.CursorMock(accounts);
+    
+    Assert.areEqual(3, cursor.getNumRecords());
+    Assert.areEqual(2, cursor.fetch(1, 2).size());
+  }
 }
