@@ -1,0 +1,44 @@
+Iteration 9
+Timestamp: 2026-02-22T20:25:48.052306
+Success: False
+
+============================================================
+STDOUT:
+───── Deploying Metadata ─────
+Stages:
+1. Preparing
+2. Waiting for the org to respond
+3. Deploying Metadata
+4. Running Tests
+5. Updating Source Tracking
+6. Done
+
+▶ Preparing…
+   Deploying v64.0 metadata to test-ro6ze2sjqb6r@example.com using the v66.0 SOAP API.
+   Deploy ID: 0AfG100000JQiSHKA1
+   Target Org: test-ro6ze2sjqb6r@example.com
+✔ Preparing (170ms)
+◯ Waiting for the org to respond - Skipped
+▶ Deploying Metadata…
+   Components: 0/2 (0%)
+✘ Deploying Metadata (284ms)
+
+Deploying v64.0 metadata to test-ro6ze2sjqb6r@example.com using the v66.0 SOAP API.
+Status: Failed
+Deploy ID: 0AfG100000JQiSHKA1
+Target Org: test-ro6ze2sjqb6r@example.com
+
+Elapsed time: 456ms
+
+[1m[31mComponent Failures [2][39m[22m
+ Type       Name                 Problem                                                                                                              Line:Column 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ApexClass  AggregateRepository  Dependent class is invalid and needs recompilation:                                                                  225:34      
+                                 Class Query : Method does not exist or incorrect signature: void getPredicate(Object) from the type Query (225:34)               
+ ApexClass  Query                Method does not exist or incorrect signature: void getPredicate(Object) from the type Query (225:34)                 225:34      
+
+
+
+============================================================
+STDERR:
+DEPLOY FAILED (Level 0):

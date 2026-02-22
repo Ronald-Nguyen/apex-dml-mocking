@@ -1,0 +1,34 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -72 +71,0 @@
+-IHistoryRepositoryrepo;
+@@ -75 +74 @@
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
+@@ -77 +76 @@
+-if(
++BooleanshouldUseMock=
+@@ -82,2 +81,4 @@
+-alwaysUseMock==true
+-){
++alwaysUseMock==true;
++if(!shouldUseMock){
++return(IHistoryRepository)fallback;
++}
+@@ -92,5 +93 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,3 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -155 +156,0 @@
+-}

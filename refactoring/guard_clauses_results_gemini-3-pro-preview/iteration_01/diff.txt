@@ -1,0 +1,22 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -72 +71,0 @@
+-IHistoryRepositoryrepo;
+@@ -92,3 +91 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
++returnmock;
+@@ -96 +93 @@
+-returnrepo;
++return(IHistoryRepository)fallback;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,3 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -155 +156,0 @@
+-}

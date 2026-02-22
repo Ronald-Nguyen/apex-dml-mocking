@@ -1,0 +1,36 @@
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,3 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -155 +156,0 @@
+-}
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -272,11 +271,0 @@
+-privateStringgetPredicate(Objectpredicate){
+-if(predicate==null||predicateinstanceofBoolean){
+-return''+predicate;
+-}
+-if(this.predicateKey==null){
+-this.predicateKey=String.format(BIND_VAR_MERGE,newList<String>{BIND_VAR_NUMBER.format()});
+-BIND_VAR_NUMBER++;
+-this.bindVars.put(this.predicateKey,predicate);
+-}
+-return':'+this.predicateKey;
+-}
+@@ -286 +275,2 @@
+-}elseif(predicateinstanceofDatetime){
++}
++if(predicateinstanceofDatetime){
+@@ -289 +279,2 @@
+-}elseif(predicateinstanceofIterable<Object>){
++}
++if(predicateinstanceofIterable<Object>){
+@@ -302 +293,2 @@
+-}elseif(predicateinstanceofString){
++}
++if(predicateinstanceofString){

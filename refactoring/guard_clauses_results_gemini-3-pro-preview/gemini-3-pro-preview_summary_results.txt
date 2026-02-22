@@ -1,0 +1,11 @@
+iteration 1 failed test passed diff passed Tokens: prompt=22744, completion=4047, total=38947 PMD:ok CoCΔ(total=-10, prod=-10, test=0) REF:fail(guard_clauses)
+iteration 2 passed test passed diff passed Tokens: prompt=22744, completion=4054, total=34310 PMD:ok CoCΔ(total=-14, prod=-14, test=0) REF:ok
+iteration 3 passed test passed diff passed Tokens: prompt=22744, completion=4057, total=35394 PMD:ok CoCΔ(total=-14, prod=-14, test=0) REF:ok
+iteration 4 passed test passed diff passed Tokens: prompt=22744, completion=4070, total=33829 PMD:ok CoCΔ(total=-8, prod=-8, test=0) REF:ok
+iteration 5 failed test passed diff passed Tokens: prompt=22744, completion=4870, total=41765 PMD:ok CoCΔ(total=15, prod=15, test=0) REF:fail(guard_clauses)
+iteration 6 failed test passed diff passed Tokens: prompt=22744, completion=4879, total=33400 PMD:ok CoCΔ(total=15, prod=15, test=0) REF:fail(guard_clauses)
+iteration 7 passed test passed diff passed Tokens: prompt=22744, completion=4051, total=36407 PMD:ok CoCΔ(total=-14, prod=-14, test=0) REF:ok
+iteration 8 failed test passed diff passed Tokens: prompt=22744, completion=4958, total=30479 PMD:ok CoCΔ(total=15, prod=15, test=0) REF:fail(guard_clauses)
+iteration 9 failed test failed diff passed Tokens: prompt=22744, completion=4753, total=31795 PMD:ok CoCΔ(total=-5, prod=-5, test=0) REF:fail(guard_clauses)
+iteration 10 passed test passed diff passed Tokens: prompt=22744, completion=4051, total=31625 PMD:ok CoCΔ(total=-14, prod=-14, test=0) REF:ok
+Fertig. Erfolgsrate: 50.0% (5/10)

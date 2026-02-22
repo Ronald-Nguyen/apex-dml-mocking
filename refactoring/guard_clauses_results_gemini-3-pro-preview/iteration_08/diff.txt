@@ -1,0 +1,31 @@
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,5 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++//GuardClause:Iftherearenogroupbyfields,returnthebasequeryimmediately
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
++//Flattenedlogicforhandlinggroupby,having,andorderbymodifications
+@@ -155 +158,0 @@
+-}
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -283,0 +284 @@
++//GuardClause1:Handlenulls
+@@ -286 +287,3 @@
+-}elseif(predicateinstanceofDatetime){
++}
++//GuardClause2:HandleDatetimeformatting
++if(predicateinstanceofDatetime){
+@@ -289 +292,3 @@
+-}elseif(predicateinstanceofIterable<Object>){
++}
++//GuardClause3:HandleIterables
++if(predicateinstanceofIterable<Object>){
+@@ -302 +307,3 @@
+-}elseif(predicateinstanceofString){
++}
++//GuardClause4:HandleStrings
++if(predicateinstanceofString){

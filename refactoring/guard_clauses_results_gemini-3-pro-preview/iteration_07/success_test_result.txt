@@ -1,0 +1,192 @@
+Iteration 7
+Timestamp: 2026-02-22T20:22:55.298114
+Success: True
+
+============================================================
+STDOUT:
+=== Test Results
+TEST NAME                                                                OUTCOME  MESSAGE  RUNTIME (MS)
+───────────────────────────────────────────────────────────────────────  ───────  ───────  ────────────
+QueryFieldTest.concatenatesFieldsProperly                                Pass              49          
+QueryFieldTest.parentFieldChainsConcatenatedProperly                     Pass              32          
+RepoFactoryMockTest.addsChildrenInMemory                                 Pass              100         
+RepoFactoryMockTest.addsMockCursor                                       Pass              58          
+SObjectRepositoryTest.queriesWithGenericRepo                             Pass              865         
+LazyFactoryTest.properlyCachesLazyLoadedInstances                        Pass              59          
+TestingUtils.generatesFakeHistoryIds                                     Pass              9           
+TestingUtils.generatesFakeShareRecords                                   Pass              2           
+AggregationTest.shouldCorrectlyFormatCountDistinct                       Pass              53          
+AggregationTest.shouldCorrectlyFormatSum                                 Pass              39          
+CursorTest.fetchesCorrectAmountOfRecords                                 Pass              251         
+CursorTest.itCapsAdvanceByArgument                                       Pass              42          
+CursorTest.itCapsmaxRecordsPerFetchCall                                  Pass              87          
+CursorTest.itFetchesMultipleTimesPerTransaction                          Pass              45          
+CursorTest.itFetchesMultipleTimesPerTransactionWhenMoreThanMaxFetch      Pass              89          
+RepositoryTest.itAddsBaseFieldAndFunctionFieldWithAutomaticAlias         Pass              212         
+RepositoryTest.itAddsBaseFieldAndFunctionFieldWithManualAlias            Pass              36          
+RepositoryTest.itAddsChildFieldsWithFilters                              Pass              320         
+RepositoryTest.itAddsChildFieldsWithFiltersFromRepo                      Pass              289         
+RepositoryTest.itAddsFunctionFieldWithoutAlias                           Pass              63          
+RepositoryTest.itHandlesEmptySoslSearches                                Pass              148         
+RepositoryTest.itPerformsSoslQueries                                     Pass              52          
+RepositoryTest.itSearchesForAdditionalObjects                            Pass              48          
+RepositoryTest.itShouldAddChildFields                                    Pass              126         
+RepositoryTest.itShouldAddChildFieldsFromRepo                            Pass              288         
+RepositoryTest.itShouldAddParentFields                                   Pass              96          
+RepositoryTest.itShouldDecorateDmlMethods                                Pass              42          
+RepositoryTest.itShouldHandleListsAndSetsOfIdsOrStrings                  Pass              24          
+RepositoryTest.itShouldQueryWithEmptyCollections                         Pass              14          
+RepositoryTest.itShouldRespectNotLikeSyntaxForMultipleValues             Pass              44          
+RepositoryTest.itShouldRespectOrStatementsInQueries                      Pass              45          
+RepositoryTest.itShouldReturnACursor                                     Pass              100         
+RepositoryTest.itShouldReturnAnEmptyCursor                               Pass              73          
+RepositoryTest.itShouldSearchWithEmptyCollections                        Pass              29          
+RepositoryTest.itShouldSortAndLimitCorrectly                             Pass              72          
+RepositoryTest.itShouldTakeInAQuery                                      Pass              15          
+RepositoryTest.itSortsByParentFields                                     Pass              129         
+RepositoryTest.itSupportsCallingAddChildFieldsWithSameArgumentsTwice     Pass              146         
+FieldLevelHistoryRepoTest.itShouldAllowMockingOfHistoryRecords           Pass              73          
+FieldLevelHistoryRepoTest.itShouldContinueToActAsAggregateRepo           Pass              16          
+FieldLevelHistoryRepoTest.itShouldContinueToActAsBaseRepo                Pass              9           
+FieldLevelHistoryRepoTest.itShouldQueryHistoryRecords                    Pass              6           
+TriggerHandler_Tests.itShouldPerformAfterDelete                          Pass              32          
+TriggerHandler_Tests.itShouldPerformAfterInsert                          Pass              4           
+TriggerHandler_Tests.itShouldPerformAfterUndelete                        Pass              4           
+TriggerHandler_Tests.itShouldPerformAfterUpdate                          Pass              4           
+TriggerHandler_Tests.itShouldPerformBeforeDelete                         Pass              4           
+TriggerHandler_Tests.itShouldPerformBeforeInsert                         Pass              4           
+TriggerHandler_Tests.itShouldPerformBeforeUpdate                         Pass              4           
+DMLTest.publishesEvents                                                  Pass              50          
+DMLTest.shouldFakeDMLOperations                                          Pass              58          
+DMLTest.shouldNotFailDueToChunkingError                                  Pass              257         
+DMLTest.shouldNotFailWhileUpdatingEmptyList                              Pass              2           
+DMLTest.shouldPassNonNullValueOnOperatonThatDoesNotUseDmlOptions         Pass              33          
+DMLTest.shouldPerformDelete                                              Pass              759         
+DMLTest.shouldPerformHardDelete                                          Pass              113         
+DMLTest.shouldPerformInsert                                              Pass              41          
+DMLTest.shouldPerformUndelete                                            Pass              133         
+DMLTest.shouldPerformUpdate                                              Pass              23          
+DMLTest.shouldPerformUpsert                                              Pass              25          
+DMLTest.shouldRollbackUpsertOnError                                      Pass              39          
+DMLTest.upsertWithDefaultSetOptionsWorks                                 Pass              32          
+ExampleSObjectTest.correctlyReturnsCustomObjectChildren                  Pass              1072        
+ExampleSObjectTest.correctlyReturnsCustomObjectParents                   Pass              142         
+AccountHandlerTests.itShouldInsertNewOppsWhenAccountsAreInserted         Pass              136         
+AdditionalCoreTests.aggregateRecordEqualsOtherRecord                     Pass              41          
+AdditionalCoreTests.aggregateRecordGetReturnsValue                       Pass              4           
+AdditionalCoreTests.aggregateRecordHashCodeMatches                       Pass              5           
+AdditionalCoreTests.aggregateRecordSetAndGetCount                        Pass              4           
+AdditionalCoreTests.aggregationBaseAggregation                           Pass              20          
+AdditionalCoreTests.aggregationEqualsSameValues                          Pass              5           
+AdditionalCoreTests.aggregationHashCodeSameValues                        Pass              5           
+AdditionalCoreTests.dmlMockFirstOrDefaultReturnsNullForEmpty             Pass              10          
+AdditionalCoreTests.dmlMockSingleOrDefaultThrowsWithMultiple             Pass              17          
+AdditionalCoreTests.lazyFactoryLoadsByTypeCaches                         Pass              7           
+AdditionalCoreTests.queryAndEmptyListReturnsBlank                        Pass              8           
+AdditionalCoreTests.queryBuildsParentFieldChain                          Pass              13          
+AdditionalCoreTests.queryNotLikeFormatsBindVar                           Pass              5           
+AdditionalCoreTests.queryOrEmptyListReturnsBlank                         Pass              4           
+AdditionalCoreTests.querySoslStringListOfStringsIn                       Pass              6           
+AdditionalCoreTests.querySoslStringListOfStringsNotIn                    Pass              5           
+AdditionalCoreTests.querySubqueryBindVarsPropagate                       Pass              5           
+AdditionalCoreTests.queryToSoslEmptyIterableMarksEmpty                   Pass              5           
+AdditionalCoreTests.queryToSoslEscapesQuotes                             Pass              5           
+AdditionalCoreTests.queryToSoslFormatsDatetime                           Pass              5           
+AdditionalCoreTests.queryToStringBooleanFalse                            Pass              5           
+AdditionalCoreTests.queryUsingParentListUsesRelationships                Pass              11          
+AdditionalCoreTests.repoFactoryCachesReposByType                         Pass              32          
+AdditionalCoreTests.repoFactoryMockAddChildrenNoRelationshipReturnsSame  Pass              144         
+AdditionalCoreTests.repoFactoryMockCursorMockFetchesSlice                Pass              7           
+AdditionalCoreTests.repoFactoryMockSoslAdditionalObjectsAddsQueries      Pass              70          
+AdditionalCoreTests.repoFactoryMockTracksSortOrdersOnAggregate           Pass              26          
+AdditionalCoreTests.repoFactoryMockUsesMockWhenAlwaysUseMock             Pass              10          
+AdditionalCoreTests.repoFactorySetFacadeReturnsSelf                      Pass              4           
+AdditionalCoreTests.repoSortOrderAscendingToString                       Pass              4           
+AdditionalCoreTests.repoSortOrderDescendingNullsFirstToString            Pass              4           
+AdditionalCoreTests.repoSortOrderEqualsSame                              Pass              4           
+AdditionalCoreTests.repoSortOrderHashCodeMatchesToString                 Pass              4           
+AdditionalCoreTests.repoSortOrderNotEqualsDifferent                      Pass              4           
+AdditionalCoreTests.repositorySetSearchGroupChainable                    Pass              7           
+AdditionalCoreTests.testingUtilsGenerateIdLength15                       Pass              4           
+AdditionalCoreTests.testingUtilsGenerateIdsAssignsId                     Pass              5           
+QueryTest.itAllowsEmptyCollectionsForNotEquals                           Pass              44          
+QueryTest.itAllowsSubqueries                                             Pass              14          
+QueryTest.itDoesNotAddEmptyParenthesisToTheEnd                           Pass              5           
+QueryTest.itShouldAllowLikeStatements                                    Pass              5           
+QueryTest.itShouldAllowNestedAndStatements                               Pass              6           
+QueryTest.itShouldAllowNotLikeStatements                                 Pass              5           
+QueryTest.itShouldAllowNotLikeWithLists                                  Pass              5           
+QueryTest.itShouldAllowOrStatements                                      Pass              4           
+QueryTest.itShouldAllowParentFieldsForFiltering                          Pass              54          
+QueryTest.itShouldEncapsulateSobjectFieldsAndValues                      Pass              5           
+QueryTest.itShouldEqualAnotherQueryWithTheSameStringValues               Pass              4           
+QueryTest.itShouldEqualAnotherQueryWithTheSameValues                     Pass              4           
+QueryTest.itShouldNotEqualAnotherQueryWithDifferentStringValues          Pass              5           
+QueryTest.itShouldProperlyFormatComparisonQueries                        Pass              6           
+QueryTest.itShouldProperlyHandleNulls                                    Pass              4           
+QueryTest.itShouldProperlyHandleNumbers                                  Pass              5           
+QueryTest.itWorksForSingularValueInCollections                           Pass              8           
+QueryTest.itWorksWithCollectionsForSoslQueriesIn                         Pass              5           
+QueryTest.itWorksWithCollectionsForSoslQueriesNotIn                      Pass              5           
+QueryTest.itWorksWithDatetimes                                           Pass              5           
+AggregateRepositoryTest.mocksAggregateResultsSuccessfully                Pass              143         
+AggregateRepositoryTest.shouldAggregateSum                               Pass              184         
+AggregateRepositoryTest.shouldOrderByDateFunction                        Pass              64          
+AggregateRepositoryTest.shouldReturnCountAsInteger                       Pass              56          
+AggregateRepositoryTest.shouldReturnCountOnFieldNameCorrectly            Pass              69          
+
+
+=== Apex Code Coverage by Class
+CLASSES                PERCENT  UNCOVERED LINES    
+─────────────────────  ───────  ───────────────────
+DateFunction           0%                          
+DML                    94%      56,57,58,59        
+Query                  97%      261,268,289,290,338
+ExampleFactory         100%                        
+SelectFunction         0%                          
+RepoFactory            85%      16,17,18,31        
+RepositorySortOrder    96%      58                 
+AggregateRepository    91%      30,31,32,33,35,... 
+AggregateRecord        95%      30                 
+TriggerHandler         5%       4,8,9,10,11,...    
+QueryField             100%                        
+Aggregation            79%      33,34,41,42,49,... 
+FieldLevelHistoryRepo  73%      20,21,29,34,35,... 
+AdditionalSoslObject   100%                        
+Cursor                 84%      2,4,5,25,36,...    
+Factory                22%      12,15,16,19,26,... 
+SObjectRepository      100%                        
+AccountHandler         100%                        
+LazyFactory            54%      7,8,11,12,24,...   
+ExampleRepoFactory     70%      18,19,20           
+SearchGroup            0%                          
+FieldLevelHistory      75%      12,13,27,28,29,... 
+Repository             92%      41,42,45,46,47,... 
+
+
+=== Test Setup Time by Test Class for Run 707G10000123fPw
+TEST SETUP METHOD NAME    SETUP TIME
+────────────────────────  ──────────
+DMLTest.setup             245       
+ExampleSObjectTest.setup  241       
+
+
+=== Test Summary
+NAME                 VALUE                        
+───────────────────  ─────────────────────────────
+Outcome              Passed                       
+Tests Ran            129                          
+Pass Rate            100%                         
+Fail Rate            0%                           
+Skip Rate            0%                           
+Test Run Id          707G10000123fPw              
+Test Setup Time      486 ms                       
+Test Execution Time  8445 ms                      
+Test Total Time      8931 ms                      
+Org Id               00DG100000AYsJjMAL           
+Username             test-ro6ze2sjqb6r@example.com
+Org Wide Coverage    87%                          
+
+
+============================================================
+STDERR:

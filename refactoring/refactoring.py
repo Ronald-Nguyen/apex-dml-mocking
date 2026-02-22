@@ -29,7 +29,7 @@ REFACTORINGS = [
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
-DEFAULT_REFACTORING = "inline_variable" \
+DEFAULT_REFACTORING = "guard_clauses" \
 ""
 RESULT_PATH_NAME = '_results_'
 PATH = 'force-app'
@@ -49,7 +49,7 @@ GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 #MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
 MISTRAL_API_KEY = os.environ["MISTRAL_API_KEY2"]
-LLM_API_KEY = MISTRAL_API_KEY
+LLM_API_KEY = GEMINI_API_KEY
 client = None
 MODEL = None
 
@@ -894,6 +894,7 @@ def build_refactoring_check(
             overall_ok = False
 
     # ---- rename ----
+    # Only works when there is no method with the same name in another file or class
     if ref_type == "rename":
         old_m = targets.get("old_method")
         new_m = targets.get("new_method")
@@ -983,6 +984,7 @@ def build_refactoring_check(
 
 
    # ---- inline_variable ----
+   # not working because sometimes the variable name cannot be found if the Type is something the regex cannot find
     if ref_type == "inline_variable":
         var_name = targets.get("var")
         method_name = targets.get("method")
@@ -1191,6 +1193,7 @@ def build_refactoring_check(
 
 
     # ---- guard_clauses ----
+    # only works for nested if's and early exits
     if ref_type == "guard_clauses":
         # Guard clauses are about EARLY EXITS (return/continue/break/throw) to reduce nesting.
         # Nesting reduction is helpful but not required in all valid refactors (e.g., single-level `if` -> `if(!cond) return;`).
@@ -1257,6 +1260,7 @@ def build_refactoring_check(
         )
 
     # ---- strategy_pattern ----
+    # isn't fully working, can only be used for one type of strategy pattern
     if ref_type == "strategy_pattern":
         method_name = targets.get("method")
         file_hint = targets.get("file")

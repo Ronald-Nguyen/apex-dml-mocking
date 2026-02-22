@@ -1,0 +1,23 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -1 +1 @@
+-@SuppressWarnings('PMD.FieldNamingConventions')
++@SuppressWarnings('PMD.FieldNamingConventions,PMD.PropertyNamingConventions')
+@@ -47 +47,3 @@
+-if(relationshipName!=null){
++if(relationshipName==null){
++returnrecord;
++}
+@@ -52,2 +53,0 @@
+-}
+-returnrecord;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,3 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -155 +156,0 @@
+-}

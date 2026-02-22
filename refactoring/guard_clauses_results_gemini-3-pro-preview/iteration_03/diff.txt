@@ -1,0 +1,43 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -47 +47,3 @@
+-if(relationshipName!=null){
++if(relationshipName==null){
++returnrecord;
++}
+@@ -52,2 +53,0 @@
+-}
+-returnrecord;
+@@ -72 +71,0 @@
+-IHistoryRepositoryrepo;
+@@ -75 +74 @@
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
+@@ -77,2 +76 @@
+-if(
+-queriedResults.size()>0||
++BooleanhasMockData=queriedResults.size()>0||
+@@ -82,2 +80,4 @@
+-alwaysUseMock==true
+-){
++alwaysUseMock==true;
++if(!hasMockData){
++return(IHistoryRepository)fallback;
++}
+@@ -92,5 +92 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,3 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -155 +156,0 @@
+-}
