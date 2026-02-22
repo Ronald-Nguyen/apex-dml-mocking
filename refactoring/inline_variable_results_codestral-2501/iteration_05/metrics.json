@@ -1,0 +1,127 @@
+{
+  "iteration": 5,
+  "timestamp": "2026-02-22T19:15:40.896213",
+  "refactoring": "refactoring/inline_variable",
+  "changed_files_scope": [
+    "repository\\Query.cls"
+  ],
+  "test": {
+    "status": "passed",
+    "success": true,
+    "level": 2
+  },
+  "diff": {
+    "status": "passed",
+    "has_diff": true
+  },
+  "tokens": "Tokens: prompt=19307, completion=2618, total=21925",
+  "pmd_before": {
+    "ok": true,
+    "timestamp": "2026-02-22T19:15:09.673650",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_codestral-2501\\iteration_05\\pmd_before\\subset_src",
+      "files": [
+        "repository/Query.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_codestral-2501\\iteration_05\\pmd_before\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_codestral-2501\\iteration_05\\pmd_before\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 249,
+        "loc": 364,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 249,
+        "loc": 364,
+        "count": 1
+      }
+    }
+  },
+  "pmd_after": {
+    "ok": true,
+    "timestamp": "2026-02-22T19:15:11.494826",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_codestral-2501\\iteration_05\\pmd_after\\subset_src",
+      "files": [
+        "repository/Query.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_codestral-2501\\iteration_05\\pmd_after\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_codestral-2501\\iteration_05\\pmd_after\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 249,
+        "loc": 358,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 249,
+        "loc": 358,
+        "count": 1
+      }
+    }
+  },
+  "pmd_delta": {
+    "prod": {
+      "complexity": 0,
+      "loc": -6,
+      "count": 0
+    },
+    "test": {
+      "complexity": 0,
+      "loc": 0,
+      "count": 0
+    },
+    "total": {
+      "complexity": 0,
+      "loc": -6,
+      "count": 0
+    }
+  },
+  "refactoring_check": {
+    "type": "inline_variable",
+    "targets": {
+      "var": "dt",
+      "method": "getSoslPredicate",
+      "file": "Query.cls"
+    },
+    "ok": false,
+    "checks": {
+      "inline_variable": {
+        "passed": false,
+        "file": "repository/Query.cls",
+        "file_hint": "Query.cls",
+        "method": "getSoslPredicate",
+        "var": "dt",
+        "had_declaration_before": false,
+        "reasons": [
+          "var_declaration_not_found_before"
+        ],
+        "debug": {
+          "decl_regex": "\\b(?:final\\s+)?(?:[\\w\\.]+(?:\\s*<[^>]+>)?(?:\\[\\])?)\\s+dt\\s*=",
+          "before_body_snippet": "{\n      Iterable<Object> localPredicate = (Iterable<Object>) this.predicate;\n      if (localPredicate.iterator().hasNext() == false) {\n        return '';\n      }\n      String operatorToReplace;\n      String newOperator;\n      switch on this.operator {\n        when EQUALS {\n          operatorToReplace = '=';\n          newOperator = 'IN';\n        }\n        when NOT_EQUALS {\n          operatorToRepla"
+        }
+      }
+    }
+  }
+}

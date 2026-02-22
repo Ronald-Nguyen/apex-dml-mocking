@@ -1,0 +1,15 @@
+iteration 1 passed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:ok
+iteration 2 failed test passed diff failed Tokens: prompt=19307, completion=2591, total=21898 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:ok
+iteration 1 failed test passed diff failed Tokens: prompt=19307, completion=2591, total=21898 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+Fertig. Erfolgsrate: 0.0% (0/1)
+iteration 1 failed test passed diff failed Tokens: prompt=19307, completion=2591, total=21898 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 2 failed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 3 failed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 4 failed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 5 failed test passed diff passed Tokens: prompt=19307, completion=2618, total=21925 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 6 failed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 7 failed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 8 failed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 9 failed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+iteration 10 failed test passed diff passed Tokens: prompt=19307, completion=2624, total=21931 PMD:ok CoCΔ(total=0, prod=0, test=0) REF:fail(inline_variable)
+Fertig. Erfolgsrate: 0.0% (0/10)

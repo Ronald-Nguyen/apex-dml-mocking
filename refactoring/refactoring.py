@@ -29,7 +29,7 @@ REFACTORINGS = [
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
-DEFAULT_REFACTORING = "strategy_pattern" \
+DEFAULT_REFACTORING = "inline_variable" \
 ""
 RESULT_PATH_NAME = '_results_'
 PATH = 'force-app'
@@ -38,6 +38,7 @@ GEMMA = 'gemma-3-27b-it'
 GEMINI3 = 'gemini-3-pro-preview'
 GEMINI2 = 'gemini-2.5-flash'
 LLAMA = 'llama-3.3-70b-versatile'
+
 MISTRAL = 'mistral-large-2512'
 CODESTRAL = 'codestral-2501'
 MODEL_OLLAMA = 'devstral-2_123b-cloud'
@@ -981,7 +982,7 @@ def build_refactoring_check(
 
 
 
-    # ---- inline_variable ----
+   # ---- inline_variable ----
     if ref_type == "inline_variable":
         var_name = targets.get("var")
         method_name = targets.get("method")
@@ -1003,43 +1004,88 @@ def build_refactoring_check(
                 after_body = _extract_method_body_apex(after_nc, method_name)
                 before_body = _extract_method_body_apex(before_nc, method_name)
 
-                decl_rx = re.compile(r"\b\w+\s+" + re.escape(var_name) + r"\s*=")
-                return_rx = re.compile(r"\breturn\s+" + re.escape(var_name) + r"\s*;")
-
                 passed = True
                 reasons: list[str] = []
 
+                # Wenn Methode nicht extrahiert werden kann -> fail
                 if before_body is None or after_body is None:
                     passed = False
                     reasons.append("method_not_found")
 
-                if after_body is not None:
+                    _record(
+                        "inline_variable",
+                        passed,
+                        {
+                            "file": resolved,
+                            "file_hint": file_hint,
+                            "method": method_name,
+                            "var": var_name,
+                            "had_declaration_before": False,
+                            "reasons": reasons,
+                            "debug": {
+                                "before_body_found": before_body is not None,
+                                "after_body_found": after_body is not None,
+                            },
+                        },
+                    )
+                else:
+                    # ---- robust: Apex/Java-type patterns incl. namespaces + generics + arrays ----
+                    # Matches e.g.:
+                    #   Datetime dt =
+                    #   System.Datetime dt =
+                    #   List<String> dt =
+                    #   Map<String, Object> dt =
+                    #   Set<Id> dt =
+                    #   MyType[] dt =
+                    # Allows optional modifiers like final.
+                    type_pattern = r"(?:final\s+)?(?:[\w\.]+(?:\s*<[^>]+>)?(?:\[\])?)"
+                    decl_pattern = r"\b" + type_pattern + r"\s+" + re.escape(var_name) + r"\s*="
+
+                    decl_rx = re.compile(decl_pattern, flags=re.IGNORECASE)
+
+                    # return dt;
+                    return_rx = re.compile(r"\breturn\s+" + re.escape(var_name) + r"\s*;", flags=re.IGNORECASE)
+
+                    # any usage of dt as identifier (not part of another name)
+                    use_rx = re.compile(r"(?<![A-Za-z0-9_])" + re.escape(var_name) + r"(?![A-Za-z0-9_])")
+
+                    # 1) MUSS vorher deklariert gewesen sein, sonst ist "inline" nicht nachweisbar
+                    had_decl_before = bool(decl_rx.search(before_body))
+                    if not had_decl_before:
+                        passed = False
+                        reasons.append("var_declaration_not_found_before")
+
+                    # 2) Nachher darf Deklaration nicht mehr existieren
                     if decl_rx.search(after_body):
                         passed = False
                         reasons.append("var_declaration_still_present")
-                    if return_rx.search(after_body):
+
+                    # 3) Nachher darf Variable nicht mehr vorkommen
+                    if use_rx.search(after_body):
                         passed = False
+                        reasons.append("var_usage_still_present")
+
+                    # 4) Optionales Signal (nicht zwingend, aber nützlich)
+                    if return_rx.search(after_body):
                         reasons.append("return_var_still_present")
 
-                had_decl_before = bool(before_body and decl_rx.search(before_body))
-                use_rx = re.compile(r"\b" + re.escape(var_name) + r"\b")
-                if after_body is not None and use_rx.search(after_body):
-                    passed = False
-                    reasons.append("var_usage_still_present")
-
-
-                _record(
-                    "inline_variable",
-                    passed,
-                    {
-                        "file": resolved,  # <-- wichtig
-                        "file_hint": file_hint,
-                        "method": method_name,
-                        "var": var_name,
-                        "had_declaration_before": had_decl_before,
-                        "reasons": reasons,
-                    },
-                )
+                    _record(
+                        "inline_variable",
+                        passed,
+                        {
+                            "file": resolved,
+                            "file_hint": file_hint,
+                            "method": method_name,
+                            "var": var_name,
+                            "had_declaration_before": had_decl_before,
+                            "reasons": reasons,
+                            "debug": {
+                                "decl_regex": decl_pattern,
+                                # hilft dir sofort zu sehen, was im Body wirklich drin war
+                                "before_body_snippet": before_body[:400],
+                            },
+                        },
+                    )
 
 
     # ---- getter_setter ----
