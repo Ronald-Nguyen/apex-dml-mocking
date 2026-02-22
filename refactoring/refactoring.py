@@ -29,7 +29,7 @@ REFACTORINGS = [
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
-DEFAULT_REFACTORING = "coc_reduktion" \
+DEFAULT_REFACTORING = "strategy_pattern" \
 ""
 RESULT_PATH_NAME = '_results_'
 PATH = 'force-app'
