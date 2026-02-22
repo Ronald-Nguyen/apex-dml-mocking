@@ -1,0 +1,6 @@
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -287,2 +287 @@
+-Datetimedt=(Datetime)predicate;
+-returndt.format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'','GreenwichMeanTime');
++return((Datetime)predicate).format('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'','GreenwichMeanTime');

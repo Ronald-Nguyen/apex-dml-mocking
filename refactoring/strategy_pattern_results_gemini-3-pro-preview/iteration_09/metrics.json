@@ -1,0 +1,134 @@
+{
+  "iteration": 9,
+  "timestamp": "2026-02-22T22:55:15.771288",
+  "refactoring": "refactoring/strategy_pattern",
+  "changed_files_scope": [
+    "repository\\Query.cls"
+  ],
+  "test": {
+    "status": "passed",
+    "success": true,
+    "level": 2
+  },
+  "diff": {
+    "status": "passed",
+    "has_diff": true
+  },
+  "tokens": "Tokens: prompt=22686, completion=3279, total=33296",
+  "pmd_before": {
+    "ok": true,
+    "timestamp": "2026-02-22T22:54:45.627523",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\strategy_pattern_results_gemini-3-pro-preview\\iteration_09\\pmd_before\\subset_src",
+      "files": [
+        "repository/Query.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\strategy_pattern_results_gemini-3-pro-preview\\iteration_09\\pmd_before\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\strategy_pattern_results_gemini-3-pro-preview\\iteration_09\\pmd_before\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 249,
+        "loc": 364,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 249,
+        "loc": 364,
+        "count": 1
+      }
+    }
+  },
+  "pmd_after": {
+    "ok": true,
+    "timestamp": "2026-02-22T22:54:47.418188",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\strategy_pattern_results_gemini-3-pro-preview\\iteration_09\\pmd_after\\subset_src",
+      "files": [
+        "repository/Query.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\strategy_pattern_results_gemini-3-pro-preview\\iteration_09\\pmd_after\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\strategy_pattern_results_gemini-3-pro-preview\\iteration_09\\pmd_after\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 249,
+        "loc": 403,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 249,
+        "loc": 403,
+        "count": 1
+      }
+    }
+  },
+  "pmd_delta": {
+    "prod": {
+      "complexity": 0,
+      "loc": 39,
+      "count": 0
+    },
+    "test": {
+      "complexity": 0,
+      "loc": 0,
+      "count": 0
+    },
+    "total": {
+      "complexity": 0,
+      "loc": 39,
+      "count": 0
+    }
+  },
+  "refactoring_check": {
+    "type": "strategy_pattern",
+    "targets": {
+      "method": "getOperator",
+      "file": "Query.cls"
+    },
+    "ok": false,
+    "checks": {
+      "strategy_pattern": {
+        "passed": false,
+        "file": "repository/Query.cls",
+        "file_hint": "Query.cls",
+        "method": "getOperator",
+        "else_if_before": 0,
+        "else_if_after": 0,
+        "has_map": true,
+        "has_containsKey": true,
+        "variant": "map_dispatch",
+        "interfaces_found": [
+          "OperatorStrategy"
+        ],
+        "implements_interfaces": [
+          "OperatorStrategy"
+        ],
+        "has_delegation_call": false,
+        "has_new_assignment_in_method": false,
+        "reasons": [
+          "no_delegation_call_in_method"
+        ],
+        "note": "heuristic_strategy_interface_impl_delegation"
+      }
+    }
+  }
+}

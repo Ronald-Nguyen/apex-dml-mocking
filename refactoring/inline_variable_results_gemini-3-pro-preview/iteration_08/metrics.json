@@ -1,0 +1,127 @@
+{
+  "iteration": 8,
+  "timestamp": "2026-02-22T21:19:56.426252",
+  "refactoring": "refactoring/inline_variable",
+  "changed_files_scope": [
+    "repository\\Query.cls"
+  ],
+  "test": {
+    "status": "passed",
+    "success": true,
+    "level": 2
+  },
+  "diff": {
+    "status": "passed",
+    "has_diff": true
+  },
+  "tokens": "Tokens: prompt=22079, completion=3012, total=30311",
+  "pmd_before": {
+    "ok": true,
+    "timestamp": "2026-02-22T21:19:30.304511",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_gemini-3-pro-preview\\iteration_08\\pmd_before\\subset_src",
+      "files": [
+        "repository/Query.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_gemini-3-pro-preview\\iteration_08\\pmd_before\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_gemini-3-pro-preview\\iteration_08\\pmd_before\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 249,
+        "loc": 364,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 249,
+        "loc": 364,
+        "count": 1
+      }
+    }
+  },
+  "pmd_after": {
+    "ok": true,
+    "timestamp": "2026-02-22T21:19:32.098618",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_gemini-3-pro-preview\\iteration_08\\pmd_after\\subset_src",
+      "files": [
+        "repository/Query.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_gemini-3-pro-preview\\iteration_08\\pmd_after\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\inline_variable_results_gemini-3-pro-preview\\iteration_08\\pmd_after\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 249,
+        "loc": 363,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 249,
+        "loc": 363,
+        "count": 1
+      }
+    }
+  },
+  "pmd_delta": {
+    "prod": {
+      "complexity": 0,
+      "loc": -1,
+      "count": 0
+    },
+    "test": {
+      "complexity": 0,
+      "loc": 0,
+      "count": 0
+    },
+    "total": {
+      "complexity": 0,
+      "loc": -1,
+      "count": 0
+    }
+  },
+  "refactoring_check": {
+    "type": "inline_variable",
+    "targets": {
+      "var": "dt",
+      "method": "getSoslPredicate",
+      "file": "Query.cls"
+    },
+    "ok": false,
+    "checks": {
+      "inline_variable": {
+        "passed": false,
+        "file": "repository/Query.cls",
+        "file_hint": "Query.cls",
+        "method": "getSoslPredicate",
+        "var": "dt",
+        "had_declaration_before": false,
+        "reasons": [
+          "var_declaration_not_found_before"
+        ],
+        "debug": {
+          "decl_regex": "\\b(?:final\\s+)?(?:[\\w\\.]+(?:\\s*<[^>]+>)?(?:\\[\\])?)\\s+dt\\s*=",
+          "before_body_snippet": "{\n      Iterable<Object> localPredicate = (Iterable<Object>) this.predicate;\n      if (localPredicate.iterator().hasNext() == false) {\n        return '';\n      }\n      String operatorToReplace;\n      String newOperator;\n      switch on this.operator {\n        when EQUALS {\n          operatorToReplace = '=';\n          newOperator = 'IN';\n        }\n        when NOT_EQUALS {\n          operatorToRepla"
+        }
+      }
+    }
+  }
+}
