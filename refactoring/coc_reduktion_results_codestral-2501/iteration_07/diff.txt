@@ -1,0 +1,125 @@
+--- backup/dml\DML.cls
++++ refactored/dml\DML.cls
+@@ -26,0 +27,3 @@
++if(records.isEmpty()){
++returnnewList<Database.SaveResult>();
++}
+@@ -34,0 +38,3 @@
++if(records.isEmpty()){
++returnnewList<Database.SaveResult>();
++}
+@@ -42,0 +49,3 @@
++if(records.isEmpty()){
++returnnewList<Database.UpsertResult>();
++}
+@@ -47,0 +57,3 @@
++if(records.isEmpty()){
++returnnewList<Database.UpsertResult>();
++}
+@@ -55,0 +68,3 @@
++if(records.isEmpty()){
++returnnewList<Database.UndeleteResult>();
++}
+@@ -62,0 +78,3 @@
++if(records.isEmpty()){
++returnnewList<Database.DeleteResult>();
++}
+@@ -69,0 +88,3 @@
++if(records.isEmpty()){
++returnnewList<Database.DeleteResult>();
++}
+@@ -79,0 +101,3 @@
++if(events.isEmpty()){
++returnnewList<Database.SaveResult>();
++}
+
+--- backup/factory\RepoFactory.cls
++++ refactored/factory\RepoFactory.cls
+@@ -25 +25 @@
+-if(Test.isRunningTest()==false){
++if(!Test.isRunningTest()){
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -83,0 +84,3 @@
++if(queries.isEmpty()){
++return0;
++}
+@@ -108,0 +112,3 @@
++if(aggregations.isEmpty()){
++returnnewList<AggregateRecord>();
++}
+@@ -138 +144,3 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -150 +158 @@
+-if(this.havingFields.isEmpty()==false){
++if(!this.havingFields.isEmpty()){
+@@ -155 +162,0 @@
+-}
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -56,2 +56 @@
+-while(
+-localFetchesMade<this.fetchesPerTransaction&&
++while(localFetchesMade<this.fetchesPerTransaction&&
+@@ -59,2 +58 @@
+-localStart<start+advanceBy
+-){
++localStart<start+advanceBy){
+@@ -62 +60,2 @@
+-results.addAll(this.cursor?.fetch(localStart,actualAdvanceBy)??newList<SObject>());
++List<SObject>fetchedRecords=this.cursor?.fetch(localStart,actualAdvanceBy)??newList<SObject>();
++results.addAll(fetchedRecords);
+
+--- backup/repository\FieldLevelHistoryRepo.cls
++++ refactored/repository\FieldLevelHistoryRepo.cls
+@@ -19,0 +20,3 @@
++if(queries.isEmpty()){
++returnnewList<FieldLevelHistory>();
++}
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -195 +195 @@
+-if(localPredicate.iterator().hasNext()==false){
++if(!localPredicate.iterator().hasNext()){
+@@ -224 +224 @@
+-if(this.hasBeenCompared==false&&that.hasBeenCompared==false){
++if(!this.hasBeenCompared&&!that.hasBeenCompared){
+@@ -234 +234 @@
+-if(areEqual==false){
++if(!areEqual){
+@@ -291 +291 @@
+-if(localPredicates.iterator().hasNext()==false){
++if(!localPredicates.iterator().hasNext()){
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -26,0 +27,3 @@
++if(queries.isEmpty()){
++returnnewCursor();
++}
+@@ -54,0 +58,3 @@
++if(queries.isEmpty()){
++returnnewList<SObject>();
++}
+@@ -171 +177 @@
+-if(this.childToRelationshipNames.containsKey(childFieldToken)==false||this.shouldAddChildFields==false){
++if(!this.childToRelationshipNames.containsKey(childFieldToken)||!this.shouldAddChildFields){
+@@ -201 +207 @@
+-if(this.childBindVarKeys.contains(key)==false){
++if(!this.childBindVarKeys.contains(key)){
+@@ -279 +285 @@
+-if(qry.isSoslEmpty()==false&&String.isNotBlank(possibleWhere)){
++if(!qry.isSoslEmpty()&&String.isNotBlank(possibleWhere)){
+@@ -296 +302 @@
+-if(sortOrders.isEmpty()==false){
++if(!sortOrders.isEmpty()){
+@@ -319,0 +326,3 @@
++if(String.isBlank(searchTerm)){
++returnnewList<List<SObject>>();
++}

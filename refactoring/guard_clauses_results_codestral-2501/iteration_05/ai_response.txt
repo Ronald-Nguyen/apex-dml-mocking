@@ -1,0 +1,390 @@
+I'll analyze the codebase and identify methods with deeply nested conditional logic. Based on the analysis, I'll select the two methods with the highest cognitive complexity and apply the "Replace Nested Conditional with Guard Clauses" pattern.
+
+Looking at the codebase, I've identified the following candidates:
+
+1. `RepoFactoryMock.getRepoFromSObjectType()` in `factory\RepoFactoryMock.cls` - This method has multiple nested conditions checking different types of results.
+2. `Cursor.fetch()` in `repository\Cursor.cls` - This method has a complex while loop with multiple conditions.
+
+Let's refactor these two methods:
+
+File `factory\RepoFactoryMock.cls`:
+```apex
+@SuppressWarnings('PMD.FieldNamingConventions')
+@IsTest
+public class RepoFactoryMock extends RepoFactory {
+  @TestVisible
+  private static final Map<Schema.SObjectType, List<AggregateRecord>> AggregateResults = new Map<Schema.SObjectType, List<AggregateRecord>>();
+  @TestVisible
+  private static final List<Aggregation> AggregatesMade = new List<Aggregation>();
+  @TestVisible
+  private static final List<SObject> QueryResults = new List<SObject>();
+  @TestVisible
+  private static final List<Query> QueriesMade = new List<Query>();
+  @TestVisible
+  private static final Map<SObjectType, List<Cursor>> CursorResults = new Map<SObjectType, List<Cursor>>();
+  @TestVisible
+  private static final Map<Schema.SObjectType, List<FieldLevelHistory>> HistoryResults = new Map<Schema.SObjectType, List<FieldLevelHistory>>();
+  @TestVisible
+  private static final Map<SObjectType, List<AggregateRepository.GroupBy>> GroupByFields = new Map<SObjectType, List<AggregateRepository.GroupBy>>();
+  @TestVisible
+  private static final Map<SObjectType, Map<String, RepositorySortOrder>> FieldToSortOrders = new Map<SObjectType, Map<String, RepositorySortOrder>>();
+
+  private static final Map<Schema.SObjectType, List<Schema.ChildRelationship>> CACHED_CHILD_RELATIONSHIPS = new Map<Schema.SObjectType, List<Schema.ChildRelationship>>();
+
+  @TestVisible
+  private static Boolean alwaysUseMock = false;
+
+  private class ChildrenSObjects {
+    public final List<SObject> records;
+    public final Boolean done = true;
+    public final Integer totalSize;
+
+    public ChildrenSObjects(List<SObject> records) {
+      this.records = records;
+      this.totalSize = records.size();
+    }
+  }
+
+  public static SObject addChildrenToRecord(SObject record, Schema.SObjectField childField, List<SObject> children) {
+    List<Schema.ChildRelationship> childRelationships = CACHED_CHILD_RELATIONSHIPS.get(record.getSObjectType());
+    if (childRelationships == null) {
+      childRelationships = record.getSObjectType()
+        .getDescribe(Schema.SObjectDescribeOptions.FULL)
+        .getChildRelationships();
+      CACHED_CHILD_RELATIONSHIPS.put(record.getSObjectType(), childRelationships);
+    }
+    String relationshipName;
+    for (Schema.ChildRelationship childRelationship : childRelationships) {
+      if (childRelationship.getField() == childField) {
+        relationshipName = childRelationship.getRelationshipName();
+        break;
+      }
+    }
+    if (relationshipName != null) {
+      String serializedMeta = JSON.serialize(record).removeEnd('}');
+      String childrenJson = '"' + relationshipName + '" : ' + JSON.serialize(new ChildrenSObjects(children));
+      serializedMeta += ',' + childrenJson + '}';
+      return (SObject) JSON.deserialize(serializedMeta, SObject.class);
+    }
+    return record;
+  }
+
+  public class FacadeMock extends RepoFactory.Facade {
+    public override IDML getDML() {
+      return new DMLMock();
+    }
+
+    public override IHistoryRepository getRepo(
+      Schema.SObjectType repoType,
+      List<Schema.SObjectField> queryFields,
+      RepoFactory repoFactory
+    ) {
+      return getRepoFromSObjectType(repoType, super.getRepo(repoType, queryFields, repoFactory), repoFactory);
+    }
+  }
+
+  private static IHistoryRepository getRepoFromSObjectType(
+    SObjectType sObjectType,
+    IAggregateRepository fallback,
+    RepoFactory repoFactory
+  ) {
+    IHistoryRepository repo;
+    List<SObject> queriedResults = getResults(sObjectType);
+    List<AggregateRecord> aggRecords = AggregateResults.get(sObjectType);
+    List<FieldLevelHistory> historyRecords = HistoryResults.get(SObjectType);
+    List<Cursor> cursorResults = CursorResults.get(sObjectType);
+
+    // Guard Clause 1: Check if we should always use mock
+    if (alwaysUseMock) {
+      RepoMock mock = new RepoMock(sObjectType, repoFactory);
+      mock.results.addAll(queriedResults);
+      if (aggRecords != null) {
+        mock.aggRecords.addAll(aggRecords);
+      }
+      if (historyRecords != null) {
+        mock.historyRecords.addAll(historyRecords);
+      }
+      return mock;
+    }
+
+    // Guard Clause 2: Check if there are queried results
+    if (!queriedResults.isEmpty()) {
+      RepoMock mock = new RepoMock(sObjectType, repoFactory);
+      mock.results.addAll(queriedResults);
+      if (aggRecords != null) {
+        mock.aggRecords.addAll(aggRecords);
+      }
+      if (historyRecords != null) {
+        mock.historyRecords.addAll(historyRecords);
+      }
+      return mock;
+    }
+
+    // Guard Clause 3: Check if there are aggregate records
+    if (aggRecords != null && !aggRecords.isEmpty()) {
+      RepoMock mock = new RepoMock(sObjectType, repoFactory);
+      mock.aggRecords.addAll(aggRecords);
+      if (historyRecords != null) {
+        mock.historyRecords.addAll(historyRecords);
+      }
+      return mock;
+    }
+
+    // Guard Clause 4: Check if there are history records
+    if (historyRecords != null && !historyRecords.isEmpty()) {
+      RepoMock mock = new RepoMock(sObjectType, repoFactory);
+      mock.historyRecords.addAll(historyRecords);
+      return mock;
+    }
+
+    // Guard Clause 5: Check if there are cursor results
+    if (cursorResults != null && !cursorResults.isEmpty()) {
+      RepoMock mock = new RepoMock(sObjectType, repoFactory);
+      return mock;
+    }
+
+    // Default case: Use fallback repository
+    return (IHistoryRepository) fallback;
+  }
+
+  private static List<SObject> getResults(Schema.SObjectType sobjType) {
+    List<SObject> resultList = new List<SObject>();
+    for (SObject potentialResult : QueryResults) {
+      if (potentialResult.getSObjectType() == sobjType) {
+        resultList.add(potentialResult);
+      }
+    }
+    return resultList;
+  }
+
+  private class RepoMock extends FieldLevelHistoryRepo {
+    private final List<SObject> results = new List<SObject>();
+    private final List<AggregateRecord> aggRecords = new List<AggregateRecord>();
+    private final List<FieldLevelHistory> historyRecords = new List<FieldLevelHistory>();
+
+    private RepoMock(Schema.SObjectType sObjectType, RepoFactory repoFactory) {
+      super(sObjectType, new List<Schema.SObjectField>(), repoFactory);
+    }
+
+    public override Cursor getCursor(List<Query> queries) {
+      QueriesMade.addAll(queries);
+      List<Cursor> cursorResults = CursorResults.get(this.repoType);
+      return cursorResults.remove(0);
+    }
+
+    public override List<FieldLevelHistory> getHistory(List<Query> queries) {
+      QueriesMade.addAll(queries);
+      this.trackFieldToSortOrder();
+      return this.historyRecords;
+    }
+
+    public override List<SObject> getAll() {
+      return this.get(new List<Query>());
+    }
+
+    public override List<SObject> get(Query query) {
+      return this.get(new List<Query>{ query });
+    }
+
+    public override List<SObject> get(List<Query> queries) {
+      QueriesMade.addAll(queries);
+      this.trackFieldToSortOrder();
+      this.clearState();
+      return this.results;
+    }
+
+    public override List<List<SObject>> getSosl(
+      String searchTerm,
+      List<Query> queries,
+      List<AdditionalSoslObject> additionalSoslObjects
+    ) {
+      QueriesMade.addAll(queries);
+      List<List<SObject>> results = new List<List<SObject>>{ this.results };
+      for (AdditionalSoslObject additionalSoslObject : additionalSoslObjects) {
+        if (additionalSoslObject.objectType != this.repoType) {
+          results.add(getResults(additionalSoslObject.objectType));
+          QueriesMade.addAll(additionalSoslObject.queryFilters);
+        }
+      }
+      return results;
+    }
+
+    public override Integer count(List<Query> queries) {
+      QueriesMade.addAll(queries);
+      List<AggregateRecord> results = AggregateResults.get(this.repoType);
+      this.clearState();
+      if (results == null) {
+        return super.count(queries);
+      } else if (results.isEmpty() == false) {
+        return results.remove(0).getCount();
+      }
+      return null;
+    }
+
+    public override List<AggregateRecord> aggregate(List<Aggregation> aggregations, List<Query> queries) {
+      AggregatesMade.addAll(aggregations);
+      QueriesMade.addAll(queries);
+
+      List<AggregateRepository.GroupBy> fields = GroupByFields.get(this.repoType);
+      if (fields == null) {
+        fields = new List<AggregateRepository.GroupBy>();
+        GroupByFields.put(this.repoType, fields);
+      }
+      fields.addAll(this.groupedByFieldNames);
+
+      this.trackFieldToSortOrder();
+
+      return this.aggRecords;
+    }
+
+    private void trackFieldToSortOrder() {
+      Map<String, RepositorySortOrder> localFieldToSortOrders = FieldToSortOrders.get(this.repoType);
+      if (localFieldToSortOrders == null) {
+        localFieldToSortOrders = new Map<String, RepositorySortOrder>();
+        FieldToSortOrders.put(this.repoType, localFieldToSortOrders);
+      }
+      localFieldToSortOrders.putAll(this.fieldToSortOrder);
+    }
+  }
+
+  public class CursorMock extends Cursor {
+    private final List<SObject> records;
+
+    public CursorMock(List<SObject> records) {
+      this.records = records;
+    }
+
+    public override List<SObject> fetch(Integer start, Integer advanceBy) {
+      List<SObject> clonedRecords = records.deepClone();
+      clonedRecords.clear();
+      for (Integer index = start; index < this.getAdvanceBy(start, advanceBy) + start; index++) {
+        clonedRecords.add(this.records[index]);
+      }
+      return clonedRecords;
+    }
+
+    public override Integer getNumRecords() {
+      return this.records.size();
+    }
+  }
+}
+```
+
+File `repository\Cursor.cls`:
+```apex
+public virtual without sharing class Cursor {
+  public static final Integer MAX_FETCH_SIZE {
+    get {
+      MAX_FETCH_SIZE = MAX_FETCH_SIZE ?? maxRecordsPerFetchCall;
+      return MAX_FETCH_SIZE;
+    }
+    private set;
+  }
+
+  private static final Integer MAX_FETCHES_PER_TRANSACTION = Limits.getLimitFetchCallsOnApexCursor();
+
+  @TestVisible
+  private static Integer maxRecordsPerFetchCall = 2000;
+
+  @TestVisible
+  private static Integer localFetchesMade;
+
+  private Integer cursorNumRecords;
+  private Integer fetchesPerTransaction = MAX_FETCHES_PER_TRANSACTION;
+  private final Database.Cursor cursor;
+
+  public Cursor(String finalQuery, Map<String, Object> bindVars, System.AccessLevel accessLevel) {
+    try {
+      this.cursor = Database.getCursorWithBinds(finalQuery, bindVars, accessLevel);
+    } catch (FatalCursorException e) {
+      System.debug(
+        System.LoggingLevel.WARN,
+        'Error creating cursor. This can happen if there are no records returned by the query: ' + e.getMessage()
+      );
+    }
+  }
+
+  public Cursor setFetchesPerTransaction(Integer possibleFetchesPerTransaction) {
+
+    // Guard Clause 1: Handle zero fetches per transaction
+    if (possibleFetchesPerTransaction == 0) {
+      return this;
+    }
+
+    // Guard Clause 2: Handle exceeding maximum fetches per transaction
+    if (possibleFetchesPerTransaction > MAX_FETCHES_PER_TRANSACTION) {
+      System.debug(
+        System.LoggingLevel.DEBUG,
+        'Fetches per transaction: ' +
+          possibleFetchesPerTransaction +
+          ' exceeded platform max fetches per transaction: ' +
+          MAX_FETCHES_PER_TRANSACTION +
+          ', defaulting to platform max'
+      );
+      possibleFetchesPerTransaction = MAX_FETCHES_PER_TRANSACTION;
+    }
+
+    // Happy Path: Set the fetches per transaction
+    this.fetchesPerTransaction = possibleFetchesPerTransaction;
+    return this;
+  }
+
+  @SuppressWarnings('PMD.EmptyStatementBlock')
+  protected Cursor() {
+  }
+
+  public virtual List<SObject> fetch(Integer start, Integer advanceBy) {
+    // Guard Clause 1: Handle no records to fetch
+    if (this.getNumRecords() == 0) {
+      System.debug(System.LoggingLevel.DEBUG, 'Bypassing fetch call, no records to fetch');
+      return new List<SObject>();
+    }
+
+    localFetchesMade = localFetchesMade ?? 0;
+    Integer localStart = start;
+    List<SObject> results = new List<SObject>();
+
+    // Happy Path: Perform the fetch operations
+    while (
+      localFetchesMade < this.fetchesPerTransaction &&
+      results.size() < this.getNumRecords() &&
+      localStart < start + advanceBy
+    ) {
+      Integer actualAdvanceBy = this.getAdvanceBy(localStart, advanceBy);
+      results.addAll(this.cursor?.fetch(localStart, actualAdvanceBy) ?? new List<SObject>());
+      localStart += actualAdvanceBy;
+      localFetchesMade++;
+    }
+
+    return results;
+  }
+
+  public virtual Integer getNumRecords() {
+    this.cursorNumRecords = this.cursorNumRecords ?? this.cursor?.getNumRecords() ?? 0;
+    return this.cursorNumRecords;
+  }
+
+  protected Integer getAdvanceBy(Integer start, Integer advanceBy) {
+    Integer possibleFetchSize = Math.min(advanceBy, this.getNumRecords() - start);
+
+    // Guard Clause 1: Handle exceeding maximum fetch size
+    if (possibleFetchSize > maxRecordsPerFetchCall) {
+      System.debug(
+        System.LoggingLevel.DEBUG,
+        'Fetch size: ' +
+          possibleFetchSize +
+          ' exceeded platform max fetch size of ' +
+          maxRecordsPerFetchCall +
+          ', defaulting to max fetch size'
+      );
+      possibleFetchSize = maxRecordsPerFetchCall;
+    }
+    // Guard Clause 2: Handle negative fetch size
+    else if (possibleFetchSize < 0) {
+      possibleFetchSize = 0;
+    }
+
+    return possibleFetchSize;
+  }
+}
+```

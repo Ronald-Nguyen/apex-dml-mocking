@@ -1,0 +1,67 @@
+Iteration 1
+Timestamp: 2026-02-22T18:04:21.847230
+Success: False
+
+============================================================
+STDOUT:
+───── Deploying Metadata ─────
+Stages:
+1. Preparing
+2. Waiting for the org to respond
+3. Deploying Metadata
+4. Running Tests
+5. Updating Source Tracking
+6. Done
+
+▶ Preparing…
+   Deploying v64.0 metadata to test-qwhqmuzvs90l@example.com using the v66.0 SOAP API.
+   Deploy ID: 0AfAu00000cGiFJKA0
+   Target Org: test-qwhqmuzvs90l@example.com
+✔ Preparing (253ms)
+◯ Waiting for the org to respond - Skipped
+▶ Deploying Metadata…
+   Components: 0/14 (0%)
+✘ Deploying Metadata (2.28s)
+   Components: 7/14 (50%)
+
+Deploying v64.0 metadata to test-qwhqmuzvs90l@example.com using the v66.0 SOAP API.
+Status: Failed
+Deploy ID: 0AfAu00000cGiFJKA0
+Target Org: test-qwhqmuzvs90l@example.com
+
+Elapsed time: 2.54s
+
+[1m[31mComponent Failures [7][39m[22m
+ Type       Name                   Problem                                                                                                   Line:Column 
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+ ApexClass  AggregateRepository    Dependent class is invalid and needs recompilation:                                                       41:5        
+                                   Class RepositorySortOrder : Call to 'this()' must be the first statement in a constructor method (41:5)               
+ ApexClass  Factory                Dependent class is invalid and needs recompilation:                                                       41:5        
+                                   Class RepoFactory : Dependent class is invalid and needs recompilation:                                               
+                                   Class FieldLevelHistoryRepo : Dependent class is invalid and needs recompilation:                                     
+                                   Class AggregateRepository : Dependent class is invalid and needs recompilation:                                       
+                                   Class RepositorySortOrder : Call to 'this()' must be the first statement in a constructor method (41:5)               
+ ApexClass  FieldLevelHistoryRepo  Dependent class is invalid and needs recompilation:                                                       41:5        
+                                   Class AggregateRepository : Dependent class is invalid and needs recompilation:                                       
+                                   Class RepositorySortOrder : Call to 'this()' must be the first statement in a constructor method (41:5)               
+ ApexClass  RepoFactory            Dependent class is invalid and needs recompilation:                                                       41:5        
+                                   Class FieldLevelHistoryRepo : Dependent class is invalid and needs recompilation:                                     
+                                   Class AggregateRepository : Dependent class is invalid and needs recompilation:                                       
+                                   Class RepositorySortOrder : Call to 'this()' must be the first statement in a constructor method (41:5)               
+ ApexClass  RepoFactoryMock        Dependent class is invalid and needs recompilation:                                                       41:5        
+                                   Class RepoFactory : Dependent class is invalid and needs recompilation:                                               
+                                   Class FieldLevelHistoryRepo : Dependent class is invalid and needs recompilation:                                     
+                                   Class AggregateRepository : Dependent class is invalid and needs recompilation:                                       
+                                   Class RepositorySortOrder : Call to 'this()' must be the first statement in a constructor method (41:5)               
+ ApexClass  Repository             Dependent class is invalid and needs recompilation:                                                       41:5        
+                                   Class RepoFactory : Dependent class is invalid and needs recompilation:                                               
+                                   Class FieldLevelHistoryRepo : Dependent class is invalid and needs recompilation:                                     
+                                   Class AggregateRepository : Dependent class is invalid and needs recompilation:                                       
+                                   Class RepositorySortOrder : Call to 'this()' must be the first statement in a constructor method (41:5)               
+ ApexClass  RepositorySortOrder    Call to 'this()' must be the first statement in a constructor method (41:5)                               41:5        
+
+
+
+============================================================
+STDERR:
+DEPLOY FAILED (Level 0):

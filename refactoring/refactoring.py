@@ -11,6 +11,8 @@ import difflib
 import time
 import json
 import xml.etree.ElementTree as ET
+from mistralai import Mistral
+
 '''
 python refactoring/refactoring.py
 python refactoring/refactoring.py --all-refactorings
@@ -29,9 +31,9 @@ REFACTORINGS = [
 REFACTORING_BASE_DIR = "refactoring"
 DEFAULT_REFACTORING = "coc_reduktion" \
 ""
-RESULT_PATH_NAME = '_results2_'
+RESULT_PATH_NAME = '_results_'
 PATH = 'force-app'
-ITERATIONS = 9
+ITERATIONS = 10
 GEMMA = 'gemma-3-27b-it'
 GEMINI3 = 'gemini-3-pro-preview'
 GEMINI2 = 'gemini-2.5-flash'
@@ -41,17 +43,16 @@ CODESTRAL = 'codestral-2501'
 MODEL_OLLAMA = 'devstral-2_123b-cloud'
 MODEL_GROQ = LLAMA
 MODEL_GEMINI = GEMINI3
-MODEL_MISTRAL = MISTRAL
+MODEL_MISTRAL = CODESTRAL
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
-MISTRAL_API_KEY2 = os.environ.get('MISTRAL_API_KEY2')
-LLM_API_KEY = GEMINI_API_KEY
+#MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
+MISTRAL_API_KEY = os.environ["MISTRAL_API_KEY2"]
+LLM_API_KEY = MISTRAL_API_KEY
 client = None
 MODEL = None
 
 if LLM_API_KEY == MISTRAL_API_KEY:
-    from mistralai import Mistral
     MODEL = MODEL_MISTRAL
     try:
         client = Mistral(api_key=LLM_API_KEY)

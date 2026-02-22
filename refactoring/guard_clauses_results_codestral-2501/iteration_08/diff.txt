@@ -1,0 +1,120 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -77,20 +77,58 @@
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
+-){
+-RepoMockmock=newRepoMock(sObjectType,repoFactory);
+-mock.results.addAll(queriedResults);
+-if(aggRecords!=null){
+-mock.aggRecords.addAll(aggRecords);
+-}
+-if(historyRecords!=null){
+-mock.historyRecords.addAll(historyRecords);
+-}
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++//GuardClause1:Checkifweshouldalwaysusemock
++if(alwaysUseMock==true){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(queriedResults);
++if(aggRecords!=null){
++mock.aggRecords.addAll(aggRecords);
++}
++if(historyRecords!=null){
++mock.historyRecords.addAll(historyRecords);
++}
++returnmock;
++}
++//GuardClause2:Checkiftherearequeryresults
++if(queriedResults.size()>0){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(queriedResults);
++if(aggRecords!=null){
++mock.aggRecords.addAll(aggRecords);
++}
++if(historyRecords!=null){
++mock.historyRecords.addAll(historyRecords);
++}
++returnmock;
++}
++//GuardClause3:Checkifthereareaggregaterecords
++if(aggRecords?.size()>0){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(queriedResults);
++mock.aggRecords.addAll(aggRecords);
++if(historyRecords!=null){
++mock.historyRecords.addAll(historyRecords);
++}
++returnmock;
++}
++//GuardClause4:Checkiftherearehistoryrecords
++if(historyRecords?.size()>0){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(queriedResults);
++if(aggRecords!=null){
++mock.aggRecords.addAll(aggRecords);
++}
++mock.historyRecords.addAll(historyRecords);
++returnmock;
++}
++//GuardClause5:Checkiftherearecursorresults
++if(cursorResults?.size()>0){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(queriedResults);
++if(aggRecords!=null){
++mock.aggRecords.addAll(aggRecords);
++}
++if(historyRecords!=null){
++mock.historyRecords.addAll(historyRecords);
++}
++returnmock;
++}
++//Defaultcase:usefallbackrepository
++return(IHistoryRepository)fallback;
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -27,0 +28 @@
++//GuardClause1:Handlezerofetchespertransaction
+@@ -30,0 +32 @@
++//GuardClause2:Handleexceedingmaxfetchespertransaction
+@@ -41,0 +44 @@
++//HappyPath:Setfetchespertransaction
+@@ -48,0 +52 @@
++//GuardClause1:Handlenorecordstofetch
+@@ -56,5 +60,15 @@
+-while(
+-localFetchesMade<this.fetchesPerTransaction&&
+-results.size()<this.getNumRecords()&&
+-localStart<start+advanceBy
+-){
++//Mainloopwithguardclauses
++while(true){
++//GuardClause2:Checkifwe'vereachedthemaximumfetchespertransaction
++if(localFetchesMade>=this.fetchesPerTransaction){
++break;
++}
++//GuardClause3:Checkifwe'vefetchedallrecords
++if(results.size()>=this.getNumRecords()){
++break;
++}
++//GuardClause4:Checkifwe'vereachedtheendoftherequestedrange
++if(localStart>=start+advanceBy){
++break;
++}
++//HappyPath:Performthefetch
+@@ -73,0 +88 @@
++//GuardClause1:Handleexceedingmaxfetchsize
+@@ -84 +99,3 @@
+-}elseif(possibleFetchSize<0){
++}
++//GuardClause2:Handlenegativefetchsize
++if(possibleFetchSize<0){

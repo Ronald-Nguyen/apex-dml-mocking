@@ -1,0 +1,137 @@
+{
+  "iteration": 4,
+  "timestamp": "2026-02-22T18:12:16.610279",
+  "refactoring": "refactoring/coc_reduktion",
+  "changed_files_scope": [
+    "dml\\DML.cls",
+    "factory\\Factory.cls",
+    "factory\\LazyFactory.cls",
+    "factory\\RepoFactory.cls",
+    "repository\\AggregateRepository.cls",
+    "repository\\Cursor.cls",
+    "repository\\FieldLevelHistoryRepo.cls",
+    "repository\\Query.cls",
+    "repository\\Repository.cls"
+  ],
+  "test": {
+    "status": "failed",
+    "success": false,
+    "level": 1
+  },
+  "diff": {
+    "status": "passed",
+    "has_diff": true
+  },
+  "tokens": "Tokens: prompt=19625, completion=13715, total=33340",
+  "pmd_before": {
+    "ok": true,
+    "timestamp": "2026-02-22T18:11:38.007470",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results_codestral-2501\\iteration_04\\pmd_before\\subset_src",
+      "files": [
+        "dml/DML.cls",
+        "factory/Factory.cls",
+        "factory/LazyFactory.cls",
+        "factory/RepoFactory.cls",
+        "repository/AggregateRepository.cls",
+        "repository/Cursor.cls",
+        "repository/FieldLevelHistoryRepo.cls",
+        "repository/Query.cls",
+        "repository/Repository.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results_codestral-2501\\iteration_04\\pmd_before\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results_codestral-2501\\iteration_04\\pmd_before\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 1277,
+        "loc": 1436,
+        "count": 9
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 1277,
+        "loc": 1436,
+        "count": 9
+      }
+    }
+  },
+  "pmd_after": {
+    "ok": true,
+    "timestamp": "2026-02-22T18:11:40.063805",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results_codestral-2501\\iteration_04\\pmd_after\\subset_src",
+      "files": [
+        "dml/DML.cls",
+        "factory/Factory.cls",
+        "factory/LazyFactory.cls",
+        "factory/RepoFactory.cls",
+        "repository/AggregateRepository.cls",
+        "repository/Cursor.cls",
+        "repository/FieldLevelHistoryRepo.cls",
+        "repository/Query.cls",
+        "repository/Repository.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results_codestral-2501\\iteration_04\\pmd_after\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\coc_reduktion_results_codestral-2501\\iteration_04\\pmd_after\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 2311,
+        "loc": 1870,
+        "count": 9
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 2311,
+        "loc": 1870,
+        "count": 9
+      }
+    }
+  },
+  "pmd_delta": {
+    "prod": {
+      "complexity": 1034,
+      "loc": 434,
+      "count": 0
+    },
+    "test": {
+      "complexity": 0,
+      "loc": 0,
+      "count": 0
+    },
+    "total": {
+      "complexity": 1034,
+      "loc": 434,
+      "count": 0
+    }
+  },
+  "refactoring_check": {
+    "type": "coc_reduktion",
+    "targets": {},
+    "ok": false,
+    "checks": {
+      "coc_reduktion": {
+        "passed": false,
+        "pmd_delta_total_complexity": 1034,
+        "rule": "delta<=0"
+      }
+    }
+  }
+}

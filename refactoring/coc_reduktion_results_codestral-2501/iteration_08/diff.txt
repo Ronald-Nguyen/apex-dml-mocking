@@ -1,0 +1,464 @@
+--- backup/dml\DML.cls
++++ refactored/dml\DML.cls
+@@ -26,0 +27,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.SaveResult>();
++}
+@@ -34,0 +38,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.SaveResult>();
++}
+@@ -42,0 +49,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.UpsertResult>();
++}
+@@ -47,0 +57,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.UpsertResult>();
++}
+@@ -55,0 +68,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.UndeleteResult>();
++}
+@@ -62,0 +78,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.DeleteResult>();
++}
+@@ -69,0 +88,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.DeleteResult>();
++}
+@@ -75,0 +97,3 @@
++if(event==null){
++returnnull;
++}
+@@ -79,0 +104,3 @@
++if(events==null||events.isEmpty()){
++returnnewList<Database.SaveResult>();
++}
+@@ -91,0 +119,3 @@
++if(records==null||records.isEmpty()){
++return;
++}
+@@ -96,0 +127,3 @@
++if(recordOrRecords==null){
++return;
++}
+
+--- backup/factory\LazyFactory.cls
++++ refactored/factory\LazyFactory.cls
+@@ -11,0 +12,3 @@
++if(type==null){
++returnnull;
++}
+@@ -19,0 +23,3 @@
++if(String.isBlank(typeName)){
++returnnull;
++}
+
+--- backup/factory\RepoFactory.cls
++++ refactored/factory\RepoFactory.cls
+@@ -39,0 +40,3 @@
++if(repoType==null||queryFields==null||repoFactory==null){
++returnnull;
++}
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -42,0 +43,3 @@
++if(dateFunction==null||fieldToken==null||String.isBlank(alias)){
++returnthis;
++}
+@@ -47,0 +51,3 @@
++if(fieldToken==null){
++returnthis;
++}
+@@ -51,0 +58,3 @@
++if(parentFieldChain==null||parentFieldChain.isEmpty()){
++returnthis;
++}
+@@ -59,0 +69,3 @@
++if(aggregate==null||sortOrder==null){
++returnthis;
++}
+@@ -67,0 +80,3 @@
++if(dateFunction==null||fieldToken==null||sortOrder==null){
++returnthis;
++}
+@@ -71,0 +87,3 @@
++if(aggregation==null||operator==null||value==null){
++returnthis;
++}
+@@ -80,0 +99,3 @@
++if(query==null){
++returnthis.count(newList<Query>());
++}
+@@ -83,0 +105,3 @@
++if(queries==null){
++queries=newList<Query>();
++}
+@@ -93,0 +118,3 @@
++if(aggregation==null){
++returnnewList<AggregateRecord>();
++}
+@@ -96,0 +124,6 @@
++if(aggregation==null){
++returnnewList<AggregateRecord>();
++}
++if(query==null){
++returnthis.aggregate(newList<Aggregation>{aggregation},newList<Query>());
++}
+@@ -99,0 +133,6 @@
++if(aggregation==null){
++returnnewList<AggregateRecord>();
++}
++if(queries==null){
++returnthis.aggregate(newList<Aggregation>{aggregation},newList<Query>());
++}
+@@ -102,0 +142,3 @@
++if(aggregations==null){
++returnnewList<AggregateRecord>();
++}
+@@ -105,0 +148,6 @@
++if(aggregations==null){
++returnnewList<AggregateRecord>();
++}
++if(query==null){
++returnthis.aggregate(aggregations,newList<Query>());
++}
+@@ -108,0 +157,6 @@
++if(aggregations==null){
++returnnewList<AggregateRecord>();
++}
++if(queries==null){
++queries=newList<Query>();
++}
+@@ -136,0 +191,3 @@
++if(queries==null){
++queries=newList<Query>();
++}
+@@ -165,0 +223,3 @@
++if(dateFunction==null||fieldToken==null){
++return'';
++}
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -27,0 +28,3 @@
++if(possibleFetchesPerTransaction==null){
++returnthis;
++}
+@@ -48,0 +52,3 @@
++if(start==null||advanceBy==null){
++returnnewList<SObject>();
++}
+@@ -72,0 +79,3 @@
++if(start==null||advanceBy==null){
++return0;
++}
+
+--- backup/repository\FieldLevelHistoryRepo.cls
++++ refactored/repository\FieldLevelHistoryRepo.cls
+@@ -16,0 +17,3 @@
++if(query==null){
++returnthis.getHistory(newList<Query>());
++}
+@@ -19,0 +23,3 @@
++if(queries==null){
++queries=newList<Query>();
++}
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -31,0 +32,3 @@
++if(parentField==null){
++returnthis;
++}
+@@ -34,0 +38,3 @@
++if(parentFields==null||parentFields.isEmpty()){
++returnthis;
++}
+@@ -38,0 +45,3 @@
++if(field==null||innerMatchingField==null||subcondition==null){
++returnnull;
++}
+@@ -46,0 +56,3 @@
++if(field==null||objectType==null||innerMatchingField==null||subcondition==null){
++returnnull;
++}
+@@ -49,0 +62,3 @@
++if(field==null||predicate==null){
++returnnull;
++}
+@@ -52,0 +68,3 @@
++if(field==null||predicate==null){
++returnnull;
++}
+@@ -55,0 +74,3 @@
++if(field==null||predicate==null){
++returnnull;
++}
+@@ -58,0 +80,3 @@
++if(field==null||predicate==null){
++returnnull;
++}
+@@ -61,0 +86,3 @@
++if(field==null||predicate==null){
++returnnull;
++}
+@@ -64,0 +92,3 @@
++if(field==null||predicate==null){
++returnnull;
++}
+@@ -67,0 +98,3 @@
++if(field==null||predicate==null){
++returnnull;
++}
+@@ -70,0 +104,3 @@
++if(field==null||predicate==null){
++returnnull;
++}
+@@ -73,0 +110,3 @@
++if(innerQuery==null||secondInnerQuery==null){
++returnnull;
++}
+@@ -76,0 +116,3 @@
++if(innerQueries==null||innerQueries.isEmpty()){
++returnnull;
++}
+@@ -79,0 +122,3 @@
++if(innerQuery==null||secondInnerQuery==null){
++returnnull;
++}
+@@ -82,0 +128,3 @@
++if(innerQueries==null||innerQueries.isEmpty()){
++returnnull;
++}
+@@ -85,0 +134,3 @@
++if(parentFields==null||parentFields.isEmpty()){
++return'';
++}
+@@ -111,0 +163,3 @@
++if(this.field==null||this.objectType==null||this.innerMatchingField==null||this.subcondition==null){
++return'';
++}
+@@ -130,0 +185,3 @@
++if(this.queries==null||this.queries.isEmpty()){
++return'';
++}
+@@ -132,0 +190,3 @@
++if(innerQuery==null){
++continue;
++}
+@@ -180,0 +241,3 @@
++if(this.operator==null){
++return'';
++}
+@@ -188,0 +252,3 @@
++if(this.operator==null){
++return'';
++}
+@@ -242,0 +309,3 @@
++if(this.operator==null){
++return'';
++}
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -26,0 +27,3 @@
++if(queries==null){
++queries=newList<Query>();
++}
+@@ -34,0 +38,3 @@
++if(queries==null){
++queries=newList<Query>();
++}
+@@ -37,0 +44,3 @@
++if(queries==null){
++queries=newList<Query>();
++}
+@@ -51,0 +61,3 @@
++if(query==null){
++returnthis.get(newList<Query>());
++}
+@@ -54,0 +67,3 @@
++if(queries==null){
++queries=newList<Query>();
++}
+@@ -65,0 +81,3 @@
++if(fieldToken==null||sortOrder==null){
++returnthis;
++}
+@@ -69,0 +88,3 @@
++if(parentFieldChain==null||parentFieldChain.isEmpty()||sortOrder==null){
++returnthis;
++}
+@@ -73,0 +95,3 @@
++if(fields==null||fields.isEmpty()){
++returnthis;
++}
+@@ -80,0 +105,3 @@
++if(selectFunction==null||field==null){
++returnthis;
++}
+@@ -83,0 +111,3 @@
++if(selectFunction==null||fields==null||fields.isEmpty()){
++returnthis;
++}
+@@ -96,0 +127,3 @@
++if(selectFunction==null||fieldsToAliases==null||fieldsToAliases.isEmpty()){
++returnthis;
++}
+@@ -104,0 +138,3 @@
++if(parentType==null||parentFields==null||parentFields.isEmpty()){
++returnthis;
++}
+@@ -107,0 +144,3 @@
++if(parentTypes==null||parentTypes.isEmpty()||parentFields==null||parentFields.isEmpty()){
++returnthis;
++}
+@@ -111,0 +151,3 @@
++if(childFieldToken==null||childFields==null||childFields.isEmpty()){
++returnthis;
++}
+@@ -120,0 +163,3 @@
++if(childFieldToken==null||childRepo==null){
++returnthis;
++}
+@@ -135,0 +181,3 @@
++if(childFieldToken==null||childFields==null||childFields.isEmpty()){
++returnthis;
++}
+@@ -150,0 +199,3 @@
++if(childFieldToken==null||childRepo==null){
++returnthis;
++}
+@@ -170,0 +222,3 @@
++if(childFieldToken==null||childFields==null||childFields.isEmpty()){
++returnthis;
++}
+@@ -215,0 +270,3 @@
++if(queries==null){
++queries=newList<Query>();
++}
+@@ -226,0 +284,3 @@
++if(selectFunction==null||fieldsToAliases==null||fieldsToAliases.isEmpty()){
++returnnewList<String>();
++}
+@@ -239,0 +300,3 @@
++if(parentTypes==null||parentTypes.isEmpty()||parentFieldTokens==null||parentFieldTokens.isEmpty()){
++returnnewList<String>();
++}
+@@ -252,0 +316,3 @@
++if(repoType==null){
++returnnewMap<Schema.SObjectField,String>();
++}
+@@ -268,0 +335,3 @@
++if(fields==null||fields.isEmpty()){
++returnnewSet<String>{'Id'};
++}
+@@ -275,0 +345,3 @@
++if(queries==null||queries.isEmpty()){
++return'';
++}
+@@ -277,0 +350,3 @@
++if(qry==null){
++continue;
++}
+@@ -295,3 +370,4 @@
+-StringorderByString='';
+-if(sortOrders.isEmpty()==false){
+-orderByString+='\nORDERBY';
++if(sortOrders==null||sortOrders.isEmpty()){
++return'';
++}
++StringorderByString='\nORDERBY';
+@@ -303 +378,0 @@
+-}
+@@ -309,0 +385,6 @@
++if(String.isBlank(searchTerm)){
++returnnewList<List<SObject>>();
++}
++if(queryFilter==null){
++returnthis.getSosl(searchTerm,newList<Query>());
++}
+@@ -312,0 +394,3 @@
++if(String.isBlank(searchTerm)){
++returnnewList<List<SObject>>();
++}
+@@ -319,0 +404,3 @@
++if(String.isBlank(searchTerm)){
++returnnewList<List<SObject>>();
++}
+@@ -339,0 +427,3 @@
++if(searchGroup==null){
++returnthis;
++}
+@@ -343,0 +434,3 @@
++if(soslObjects==null||soslObjects.isEmpty()){
++return'';
++}
+@@ -345,0 +439,3 @@
++if(soslObject==null){
++continue;
++}
+@@ -363,0 +460,3 @@
++if(record==null){
++returnnull;
++}
+@@ -366,0 +466,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.SaveResult>();
++}
+@@ -369,0 +472,3 @@
++if(record==null){
++returnnull;
++}
+@@ -372,0 +478,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.SaveResult>();
++}
+@@ -375,0 +484,3 @@
++if(record==null){
++returnnull;
++}
+@@ -378,0 +490,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.UpsertResult>();
++}
+@@ -381,0 +496,3 @@
++if(records==null||records.isEmpty()||field==null){
++returnnewList<Database.UpsertResult>();
++}
+@@ -384,0 +502,3 @@
++if(record==null){
++returnnull;
++}
+@@ -387,0 +508,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.UndeleteResult>();
++}
+@@ -390,0 +514,3 @@
++if(record==null){
++returnnull;
++}
+@@ -393,0 +520,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.DeleteResult>();
++}
+@@ -396,0 +526,3 @@
++if(record==null){
++returnnull;
++}
+@@ -399,0 +532,3 @@
++if(records==null||records.isEmpty()){
++returnnewList<Database.DeleteResult>();
++}
+@@ -402,0 +538,3 @@
++if(event==null){
++returnnull;
++}
+@@ -405,0 +544,3 @@
++if(events==null||events.isEmpty()){
++returnnewList<Database.SaveResult>();
++}

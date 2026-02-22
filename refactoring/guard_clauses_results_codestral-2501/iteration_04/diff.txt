@@ -1,0 +1,29 @@
+--- backup/dml\DML.cls
++++ refactored/dml\DML.cls
+@@ -91,0 +92 @@
++//GuardClause:SkipifrecordssizeislessthanMAX_DML_CHUNKING
+
+--- backup/factory\RepoFactory.cls
++++ refactored/factory\RepoFactory.cls
+@@ -24,0 +25 @@
++//GuardClause:Onlyallowintestcontext
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -27,0 +28 @@
++//GuardClause1:SkipifpossibleFetchesPerTransactionis0
+@@ -30,0 +32 @@
++//GuardClause2:Adjustifexceedsplatformmax
+@@ -48,0 +51 @@
++//GuardClause1:Skipifnorecordstofetch
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -171 +171,6 @@
+-if(this.childToRelationshipNames.containsKey(childFieldToken)==false||this.shouldAddChildFields==false){
++//GuardClause1:Skipifchildfieldisnotintherelationshipmap
++if(this.childToRelationshipNames.containsKey(childFieldToken)==false){
++returnthis;
++}
++//GuardClause2:Skipifweshouldn'taddchildfields
++if(this.shouldAddChildFields==false){

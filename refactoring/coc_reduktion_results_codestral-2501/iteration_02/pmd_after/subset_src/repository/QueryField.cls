@@ -1,0 +1,73 @@
+public without sharing virtual class QueryField {
+  private final String fieldValue;
+
+  public QueryField(List<Schema.SObjectField> fieldTokens) {
+    if (fieldTokens == null || fieldTokens.isEmpty()) {
+      this.fieldValue = '';
+    } else {
+      this(getFieldNames(fieldTokens));
+    }
+  }
+
+  public QueryField(List<String> fieldNames) {
+    if (fieldNames == null || fieldNames.isEmpty()) {
+      this.fieldValue = '';
+    } else {
+      this.fieldValue = String.join(fieldNames, ',');
+    }
+  }
+
+  public QueryField(Schema.SObjectField token) {
+    if (token == null) {
+      this.fieldValue = '';
+    } else {
+      this.fieldValue = token.toString();
+    }
+  }
+
+  public QueryField(List<Schema.SObjectField> parentFieldChain, List<Schema.SObjectField> parentFields) {
+    if (parentFieldChain == null || parentFields == null || parentFields.isEmpty()) {
+      this.fieldValue = '';
+      return;
+    }
+
+    String base = '';
+    while (parentFieldChain.isEmpty() == false) {
+      Schema.SObjectField parentField = parentFieldChain.remove(0);
+      if (parentField == null) {
+        continue;
+      }
+
+      base += parentField.getDescribe().getRelationshipName() + '.';
+    }
+    List<String> fields = new List<String>();
+    for (Schema.SObjectField field : parentFields) {
+      if (field == null) {
+        continue;
+      }
+
+      fields.add(base + field.toString());
+    }
+    this.fieldValue = String.join(fields, ',');
+  }
+
+  public override String toString() {
+    return this.fieldValue;
+  }
+
+  private static List<String> getFieldNames(List<Schema.SObjectField> fieldTokens) {
+    if (fieldTokens == null || fieldTokens.isEmpty()) {
+      return new List<String>();
+    }
+
+    List<String> fieldNames = new List<String>();
+    for (Schema.SObjectField token : fieldTokens) {
+      if (token == null) {
+        continue;
+      }
+
+      fieldNames.add(token.toString());
+    }
+    return fieldNames;
+  }
+}

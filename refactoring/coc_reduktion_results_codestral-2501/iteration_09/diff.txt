@@ -1,0 +1,66 @@
+--- backup/dml\DML.cls
++++ refactored/dml\DML.cls
+@@ -97,0 +98 @@
++StringrecordText=(size>1)?'records':'record';
+@@ -100 +101 @@
+-loggingValue.name().toLowerCase()+''+size+'record'+(size>1?'s':'')+'...'
++loggingValue.name().toLowerCase()+''+size+recordText+'...'
+
+--- backup/factory\RepoFactory.cls
++++ refactored/factory\RepoFactory.cls
+@@ -25 +25 @@
+-if(Test.isRunningTest()==false){
++if(!Test.isRunningTest()){
+
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++if(!this.groupedByFieldNames.isEmpty()){
+@@ -150 +150 @@
+-if(this.havingFields.isEmpty()==false){
++if(!this.havingFields.isEmpty()){
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -56,2 +56 @@
+-while(
+-localFetchesMade<this.fetchesPerTransaction&&
++while(localFetchesMade<this.fetchesPerTransaction&&
+@@ -59,2 +58 @@
+-localStart<start+advanceBy
+-){
++localStart<start+advanceBy){
+
+--- backup/repository\Query.cls
++++ refactored/repository\Query.cls
+@@ -195 +195 @@
+-if(localPredicate.iterator().hasNext()==false){
++if(!localPredicate.iterator().hasNext()){
+@@ -220 +220 @@
+-if((thatObjectinstanceofQuery)==false){
++if(!(thatObjectinstanceofQuery)){
+@@ -224 +224 @@
+-if(this.hasBeenCompared==false&&that.hasBeenCompared==false){
++if(!this.hasBeenCompared&&!that.hasBeenCompared){
+@@ -234 +234 @@
+-if(areEqual==false){
++if(!areEqual){
+@@ -291 +291 @@
+-if(localPredicates.iterator().hasNext()==false){
++if(!localPredicates.iterator().hasNext()){
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -171 +171 @@
+-if(this.childToRelationshipNames.containsKey(childFieldToken)==false||this.shouldAddChildFields==false){
++if(!this.childToRelationshipNames.containsKey(childFieldToken)||!this.shouldAddChildFields){
+@@ -201 +201 @@
+-if(this.childBindVarKeys.contains(key)==false){
++if(!this.childBindVarKeys.contains(key)){
+@@ -279 +279 @@
+-if(qry.isSoslEmpty()==false&&String.isNotBlank(possibleWhere)){
++if(!qry.isSoslEmpty()&&String.isNotBlank(possibleWhere)){
+@@ -296 +296 @@
+-if(sortOrders.isEmpty()==false){
++if(!sortOrders.isEmpty()){

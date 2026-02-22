@@ -1,0 +1,72 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -72,2 +72,4 @@
+-IHistoryRepositoryrepo;
+-List<SObject>queriedResults=getResults(sObjectType);
++//GuardClause1:Checkifweshouldalwaysusemock
++if(alwaysUseMock){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(getResults(sObjectType));
+@@ -75,11 +76,0 @@
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
+-List<Cursor>cursorResults=CursorResults.get(sObjectType);
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
+-){
+-RepoMockmock=newRepoMock(sObjectType,repoFactory);
+-mock.results.addAll(queriedResults);
+@@ -88,0 +80 @@
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
+@@ -92,5 +84,43 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
++}
++//GuardClause2:Checkiftherearequeryresults
++List<SObject>queriedResults=getResults(sObjectType);
++if(!queriedResults.isEmpty()){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(queriedResults);
++List<AggregateRecord>aggRecords=AggregateResults.get(sObjectType);
++if(aggRecords!=null){
++mock.aggRecords.addAll(aggRecords);
++}
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
++if(historyRecords!=null){
++mock.historyRecords.addAll(historyRecords);
++}
++returnmock;
++}
++//GuardClause3:Checkifthereareaggregaterecords
++List<AggregateRecord>aggRecords=AggregateResults.get(sObjectType);
++if(aggRecords!=null&&!aggRecords.isEmpty()){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.aggRecords.addAll(aggRecords);
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
++if(historyRecords!=null){
++mock.historyRecords.addAll(historyRecords);
++}
++returnmock;
++}
++//GuardClause4:Checkiftherearehistoryrecords
++List<FieldLevelHistory>historyRecords=HistoryResults.get(sObjectType);
++if(historyRecords!=null&&!historyRecords.isEmpty()){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.historyRecords.addAll(historyRecords);
++returnmock;
++}
++//GuardClause5:Checkiftherearecursorresults
++List<Cursor>cursorResults=CursorResults.get(sObjectType);
++if(cursorResults!=null&&!cursorResults.isEmpty()){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++returnmock;
++}
++//HappyPath:Returnfallbackrepository
++return(IHistoryRepository)fallback;

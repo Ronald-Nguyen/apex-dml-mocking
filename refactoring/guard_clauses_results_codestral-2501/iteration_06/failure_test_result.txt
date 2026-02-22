@@ -1,0 +1,51 @@
+Iteration 6
+Timestamp: 2026-02-22T17:58:07.168750
+Success: False
+
+============================================================
+STDOUT:
+───── Deploying Metadata ─────
+Stages:
+1. Preparing
+2. Waiting for the org to respond
+3. Deploying Metadata
+4. Running Tests
+5. Updating Source Tracking
+6. Done
+
+▶ Preparing…
+   Deploying v64.0 metadata to test-qwhqmuzvs90l@example.com using the v66.0 SOAP API.
+   Deploy ID: 0AfAu00000cGhzBKAS
+   Target Org: test-qwhqmuzvs90l@example.com
+✔ Preparing (208ms)
+◯ Waiting for the org to respond - Skipped
+▶ Deploying Metadata…
+   Components: 0/3 (0%)
+✘ Deploying Metadata (1.25s)
+   Components: 1/8 (13%)
+
+Deploying v64.0 metadata to test-qwhqmuzvs90l@example.com using the v66.0 SOAP API.
+Status: Failed
+Deploy ID: 0AfAu00000cGhzBKAS
+Target Org: test-qwhqmuzvs90l@example.com
+
+Elapsed time: 1.46s
+
+[1m[31mComponent Failures [7][39m[22m
+ Type       Name             Problem                                                                           Line:Column 
+---------------------------------------------------------------------------------------------------------------------------
+ ApexClass  RepoFactoryMock  Dependent class is invalid and needs recompilation:                               260:14      
+                             Class AggregateRepository : Dependent class is invalid and needs recompilation:               
+                             Class Repository : Variable does not exist: groupedByFieldNames (260:14)                      
+ ApexClass  Repository       Variable does not exist: groupedByFieldNames (260:14)                             260:14      
+ ApexClass  Repository       Invalid type: GroupBy (271:12)                                                    271:12      
+ ApexClass  Repository       Variable does not exist: groupedByFieldNames (271:35)                             271:35      
+ ApexClass  Repository       Variable does not exist: groupBy (272:23)                                         272:23      
+ ApexClass  Repository       Variable does not exist: havingFields (276:16)                                    276:16      
+ ApexClass  Repository       Variable does not exist: havingFields (277:54)                                    277:54      
+
+
+
+============================================================
+STDERR:
+DEPLOY FAILED (Level 0):

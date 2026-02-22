@@ -1,0 +1,31 @@
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -138 +138,4 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++//Guardclause:Returnearlyifnogroupingisneeded
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -144,0 +148 @@
++//BuildGROUPBYclause
+@@ -149,0 +154 @@
++//AddHAVINGclauseifneeded
+@@ -152,0 +158 @@
++//AddORDERBYclauseifitwaspresent
+@@ -155 +160,0 @@
+-}
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -215,0 +216,11 @@
++//Guardclause:Returnearlyifnoqueriesareprovided
++if(queries==null||queries.isEmpty()){
++returnthis.getSelectAndFrom()+
++this.getOrderBys(this.fieldToSortOrder)+
++this.getLimitAmount(this.limitAmount);
++}
++//Guardclause:Returnearlyifnosortordersorlimit
++if(this.fieldToSortOrder.isEmpty()&&this.limitAmount==null){
++returnthis.getSelectAndFrom()+this.addWheres(queries);
++}
++//Happypath:Buildfullquerywithallcomponents

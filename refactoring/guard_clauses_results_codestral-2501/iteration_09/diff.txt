@@ -1,0 +1,89 @@
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -120,0 +121,6 @@
++//GuardClause:Returncountfieldifit'sanumbercountquery
++if(this.isNumberCountQuery){
++returnnewSet<String>{'COUNT()'};
++}
++//GuardClause:Returnaggregationfieldsifaggregationsarepresent
++if(this.aggregations!=null){
+@@ -122,5 +127,0 @@
+-if(this.isNumberCountQuery){
+-baseFields.add('COUNT()');
+-returnbaseFields;
+-}
+-if(this.aggregations!=null){
+@@ -129,0 +131 @@
++returnbaseFields;
+@@ -130,0 +133,3 @@
++//GuardClause:Returngroupbyfieldsiftheyarepresent
++if(this.groupedByFieldNames.isEmpty()==false){
++Set<String>baseFields=newSet<String>();
+@@ -134 +139,4 @@
+-returnbaseFields.isEmpty()?super.addSelectFields():baseFields;
++returnbaseFields;
++}
++//Defaultcase:Usebaseselectfields
++returnsuper.addSelectFields();
+@@ -136,0 +145,4 @@
++//GuardClause:Returnearlyiftherearenoqueriesandnogroupbyfields
++if((queries==null||queries.isEmpty())&&this.groupedByFieldNames.isEmpty()){
++returnsuper.getFinalQuery(queries);
++}
+@@ -138 +150,5 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++//GuardClause:Returnbasestringiftherearenogroupbyfields
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
++//ProcessGROUPBYfields
+@@ -149,0 +166 @@
++//AddHAVINGclauseifneeded
+@@ -152,0 +170 @@
++//AddORDERBYifitwaspresent
+@@ -155 +172,0 @@
+-}
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -215,0 +216,8 @@
++//GuardClause:Returnearlyiftherearenoqueries
++if(queries==null||queries.isEmpty()){
++returnthis.getSelectAndFrom()+
++this.getOrderBys(this.fieldToSortOrder)+
++this.getLimitAmount(this.limitAmount);
++}
++//GuardClause:HandleSOSLcase
++if(this.isSosl){
+@@ -218 +225,0 @@
+-this.getOrderBys(this.fieldToSortOrder)+
+@@ -219,0 +227,29 @@
++}
++//HappyPath:Processregularqueries
++StringbaseString=this.getSelectAndFrom()+this.addWheres(queries);
++//HandleGROUPBYclausesifpresent
++if(this.groupedByFieldNames.isEmpty()==false){
++StringpotentialOrderBy=null;
++StringorderByKey='\nORDERBY';
++if(baseString.contains(orderByKey)){
++potentialOrderBy=baseString.substringAfter(orderByKey);
++baseString=baseString.replace(orderByKey+potentialOrderBy,'');
++}
++baseString+='\nGROUPBY';
++for(GroupBygroupBy:this.groupedByFieldNames){
++baseString+=groupBy.getGroupByName()+',';
++}
++baseString=baseString.removeEnd(',');
++if(this.havingFields.isEmpty()==false){
++baseString+='\nHAVING'+String.join(this.havingFields,',');
++}
++if(potentialOrderBy!=null){
++baseString+=orderByKey+potentialOrderBy;
++}
++}else{
++//AddORDERBYifnoGROUPBY
++baseString+=this.getOrderBys(this.fieldToSortOrder);
++}
++//AddLIMITclause
++baseString+=this.getLimitAmount(this.limitAmount);
++returnbaseString;

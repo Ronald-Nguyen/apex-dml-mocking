@@ -1,0 +1,208 @@
+Iteration 6
+Timestamp: 2026-02-22T18:17:50.403356
+Success: False
+
+============================================================
+STDOUT:
+=== Test Results
+TEST NAME                                                                OUTCOME  MESSAGE                                                                            RUNTIME (MS)
+───────────────────────────────────────────────────────────────────────  ───────  ─────────────────────────────────────────────────────────────────────────────────  ────────────
+QueryTest.itAllowsEmptyCollectionsForNotEquals                           Pass                                                                                        110         
+QueryTest.itAllowsSubqueries                                             Pass                                                                                        25          
+QueryTest.itDoesNotAddEmptyParenthesisToTheEnd                           Fail     System.NullPointerException: Attempt to de-reference a null object                 
+                                                                                  Class.Query.DelimitedQuery.toString: line 230, column 1                            
+                                                                                  Class.QueryTest.itDoesNotAddEmptyParenthesisToTheEnd: line 253, column 1                       
+QueryTest.itShouldAllowLikeStatements                                    Pass                                                                                        6           
+QueryTest.itShouldAllowNestedAndStatements                               Pass                                                                                        7           
+QueryTest.itShouldAllowNotLikeStatements                                 Pass                                                                                        6           
+QueryTest.itShouldAllowNotLikeWithLists                                  Pass                                                                                        6           
+QueryTest.itShouldAllowOrStatements                                      Fail     System.NullPointerException: Attempt to de-reference a null object                 
+                                                                                  Class.QueryTest.itShouldAllowOrStatements: line 103, column 1                                  
+QueryTest.itShouldAllowParentFieldsForFiltering                          Pass                                                                                        74          
+QueryTest.itShouldEncapsulateSobjectFieldsAndValues                      Pass                                                                                        6           
+QueryTest.itShouldEqualAnotherQueryWithTheSameStringValues               Pass                                                                                        7           
+QueryTest.itShouldEqualAnotherQueryWithTheSameValues                     Pass                                                                                        6           
+QueryTest.itShouldNotEqualAnotherQueryWithDifferentStringValues          Pass                                                                                        6           
+QueryTest.itShouldProperlyFormatComparisonQueries                        Pass                                                                                        7           
+QueryTest.itShouldProperlyHandleNulls                                    Fail     System.NullPointerException: Attempt to de-reference a null object                 
+                                                                                  Class.QueryTest.itShouldProperlyHandleNulls: line 93, column 1                                 
+QueryTest.itShouldProperlyHandleNumbers                                  Pass                                                                                        6           
+QueryTest.itWorksForSingularValueInCollections                           Pass                                                                                        37          
+QueryTest.itWorksWithCollectionsForSoslQueriesIn                         Pass                                                                                        7           
+QueryTest.itWorksWithCollectionsForSoslQueriesNotIn                      Pass                                                                                        7           
+QueryTest.itWorksWithDatetimes                                           Pass                                                                                        7           
+RepoFactoryMockTest.addsChildrenInMemory                                 Pass                                                                                        196         
+RepoFactoryMockTest.addsMockCursor                                       Pass                                                                                        103         
+LazyFactoryTest.properlyCachesLazyLoadedInstances                        Pass                                                                                        36          
+QueryFieldTest.concatenatesFieldsProperly                                Pass                                                                                        35          
+QueryFieldTest.parentFieldChainsConcatenatedProperly                     Pass                                                                                        73          
+AdditionalCoreTests.aggregateRecordEqualsOtherRecord                     Pass                                                                                        36          
+AdditionalCoreTests.aggregateRecordGetReturnsValue                       Pass                                                                                        5           
+AdditionalCoreTests.aggregateRecordHashCodeMatches                       Pass                                                                                        4           
+AdditionalCoreTests.aggregateRecordSetAndGetCount                        Pass                                                                                        4           
+AdditionalCoreTests.aggregationBaseAggregation                           Pass                                                                                        20          
+AdditionalCoreTests.aggregationEqualsSameValues                          Pass                                                                                        4           
+AdditionalCoreTests.aggregationHashCodeSameValues                        Pass                                                                                        4           
+AdditionalCoreTests.dmlMockFirstOrDefaultReturnsNullForEmpty             Pass                                                                                        11          
+AdditionalCoreTests.dmlMockSingleOrDefaultThrowsWithMultiple             Pass                                                                                        17          
+AdditionalCoreTests.lazyFactoryLoadsByTypeCaches                         Pass                                                                                        6           
+AdditionalCoreTests.queryAndEmptyListReturnsBlank                        Fail     System.NullPointerException: Attempt to de-reference a null object                 
+                                                                                  Class.AdditionalCoreTests.queryAndEmptyListReturnsBlank: line 135, column 1                    
+AdditionalCoreTests.queryBuildsParentFieldChain                          Pass                                                                                        13          
+AdditionalCoreTests.queryNotLikeFormatsBindVar                           Pass                                                                                        5           
+AdditionalCoreTests.queryOrEmptyListReturnsBlank                         Fail     System.NullPointerException: Attempt to de-reference a null object                 
+                                                                                  Class.AdditionalCoreTests.queryOrEmptyListReturnsBlank: line 129, column 1                     
+AdditionalCoreTests.querySoslStringListOfStringsIn                       Pass                                                                                        5           
+AdditionalCoreTests.querySoslStringListOfStringsNotIn                    Pass                                                                                        5           
+AdditionalCoreTests.querySubqueryBindVarsPropagate                       Pass                                                                                        5           
+AdditionalCoreTests.queryToSoslEmptyIterableMarksEmpty                   Pass                                                                                        5           
+AdditionalCoreTests.queryToSoslEscapesQuotes                             Pass                                                                                        5           
+AdditionalCoreTests.queryToSoslFormatsDatetime                           Pass                                                                                        5           
+AdditionalCoreTests.queryToStringBooleanFalse                            Pass                                                                                        5           
+AdditionalCoreTests.queryUsingParentListUsesRelationships                Pass                                                                                        13          
+AdditionalCoreTests.repoFactoryCachesReposByType                         Pass                                                                                        33          
+AdditionalCoreTests.repoFactoryMockAddChildrenNoRelationshipReturnsSame  Pass                                                                                        825         
+AdditionalCoreTests.repoFactoryMockCursorMockFetchesSlice                Pass                                                                                        7           
+AdditionalCoreTests.repoFactoryMockSoslAdditionalObjectsAddsQueries      Pass                                                                                        64          
+AdditionalCoreTests.repoFactoryMockTracksSortOrdersOnAggregate           Pass                                                                                        49          
+AdditionalCoreTests.repoFactoryMockUsesMockWhenAlwaysUseMock             Pass                                                                                        10          
+AdditionalCoreTests.repoFactorySetFacadeReturnsSelf                      Pass                                                                                        5           
+AdditionalCoreTests.repoSortOrderAscendingToString                       Pass                                                                                        4           
+AdditionalCoreTests.repoSortOrderDescendingNullsFirstToString            Pass                                                                                        4           
+AdditionalCoreTests.repoSortOrderEqualsSame                              Pass                                                                                        4           
+AdditionalCoreTests.repoSortOrderHashCodeMatchesToString                 Pass                                                                                        4           
+AdditionalCoreTests.repoSortOrderNotEqualsDifferent                      Pass                                                                                        4           
+AdditionalCoreTests.repositorySetSearchGroupChainable                    Pass                                                                                        7           
+AdditionalCoreTests.testingUtilsGenerateIdLength15                       Pass                                                                                        5           
+AdditionalCoreTests.testingUtilsGenerateIdsAssignsId                     Pass                                                                                        5           
+SObjectRepositoryTest.queriesWithGenericRepo                             Pass                                                                                        390         
+ExampleSObjectTest.correctlyReturnsCustomObjectChildren                  Pass                                                                                        179         
+ExampleSObjectTest.correctlyReturnsCustomObjectParents                   Pass                                                                                        90          
+TestingUtils.generatesFakeHistoryIds                                     Pass                                                                                        19          
+TestingUtils.generatesFakeShareRecords                                   Pass                                                                                        4           
+AccountHandlerTests.itShouldInsertNewOppsWhenAccountsAreInserted         Pass                                                                                        258         
+RepositoryTest.itAddsBaseFieldAndFunctionFieldWithAutomaticAlias         Pass                                                                                        163         
+RepositoryTest.itAddsBaseFieldAndFunctionFieldWithManualAlias            Pass                                                                                        26          
+RepositoryTest.itAddsChildFieldsWithFilters                              Pass                                                                                        284         
+RepositoryTest.itAddsChildFieldsWithFiltersFromRepo                      Pass                                                                                        200         
+RepositoryTest.itAddsFunctionFieldWithoutAlias                           Pass                                                                                        54          
+RepositoryTest.itHandlesEmptySoslSearches                                Pass                                                                                        197         
+RepositoryTest.itPerformsSoslQueries                                     Pass                                                                                        42          
+RepositoryTest.itSearchesForAdditionalObjects                            Pass                                                                                        37          
+RepositoryTest.itShouldAddChildFields                                    Pass                                                                                        91          
+RepositoryTest.itShouldAddChildFieldsFromRepo                            Pass                                                                                        196         
+RepositoryTest.itShouldAddParentFields                                   Pass                                                                                        86          
+RepositoryTest.itShouldDecorateDmlMethods                                Pass                                                                                        17          
+RepositoryTest.itShouldHandleListsAndSetsOfIdsOrStrings                  Pass                                                                                        17          
+RepositoryTest.itShouldQueryWithEmptyCollections                         Pass                                                                                        7           
+RepositoryTest.itShouldRespectNotLikeSyntaxForMultipleValues             Pass                                                                                        35          
+RepositoryTest.itShouldRespectOrStatementsInQueries                      Fail     System.NullPointerException: Attempt to de-reference a null object                 
+                                                                                  Class.Repository.addWheres: line 392, column 1                                     
+                                                                                  Class.Repository.getFinalQuery: line 320, column 1                                 
+                                                                                  Class.Repository.get: line 77, column 1                                            
+                                                                                  Class.RepositoryTest.itShouldRespectOrStatementsInQueries: line 77, column 1                   
+RepositoryTest.itShouldReturnACursor                                     Pass                                                                                        71          
+RepositoryTest.itShouldReturnAnEmptyCursor                               Pass                                                                                        48          
+RepositoryTest.itShouldSearchWithEmptyCollections                        Pass                                                                                        14          
+RepositoryTest.itShouldSortAndLimitCorrectly                             Pass                                                                                        54          
+RepositoryTest.itShouldTakeInAQuery                                      Pass                                                                                        7           
+RepositoryTest.itSortsByParentFields                                     Pass                                                                                        95          
+RepositoryTest.itSupportsCallingAddChildFieldsWithSameArgumentsTwice     Pass                                                                                        205         
+CursorTest.fetchesCorrectAmountOfRecords                                 Pass                                                                                        264         
+CursorTest.itCapsAdvanceByArgument                                       Pass                                                                                        56          
+CursorTest.itCapsmaxRecordsPerFetchCall                                  Pass                                                                                        104         
+CursorTest.itFetchesMultipleTimesPerTransaction                          Pass                                                                                        65          
+CursorTest.itFetchesMultipleTimesPerTransactionWhenMoreThanMaxFetch      Pass                                                                                        114         
+DMLTest.publishesEvents                                                  Pass                                                                                        33          
+DMLTest.shouldFakeDMLOperations                                          Pass                                                                                        13          
+DMLTest.shouldNotFailDueToChunkingError                                  Pass                                                                                        332         
+DMLTest.shouldNotFailWhileUpdatingEmptyList                              Pass                                                                                        5           
+DMLTest.shouldPassNonNullValueOnOperatonThatDoesNotUseDmlOptions         Pass                                                                                        55          
+DMLTest.shouldPerformDelete                                              Pass                                                                                        955         
+DMLTest.shouldPerformHardDelete                                          Pass                                                                                        116         
+DMLTest.shouldPerformInsert                                              Pass                                                                                        53          
+DMLTest.shouldPerformUndelete                                            Pass                                                                                        153         
+DMLTest.shouldPerformUpdate                                              Pass                                                                                        36          
+DMLTest.shouldPerformUpsert                                              Pass                                                                                        41          
+DMLTest.shouldRollbackUpsertOnError                                      Pass                                                                                        59          
+DMLTest.upsertWithDefaultSetOptionsWorks                                 Pass                                                                                        63          
+TriggerHandler_Tests.itShouldPerformAfterDelete                          Pass                                                                                        32          
+TriggerHandler_Tests.itShouldPerformAfterInsert                          Pass                                                                                        2           
+TriggerHandler_Tests.itShouldPerformAfterUndelete                        Pass                                                                                        2           
+TriggerHandler_Tests.itShouldPerformAfterUpdate                          Pass                                                                                        1           
+TriggerHandler_Tests.itShouldPerformBeforeDelete                         Pass                                                                                        1           
+TriggerHandler_Tests.itShouldPerformBeforeInsert                         Pass                                                                                        2           
+TriggerHandler_Tests.itShouldPerformBeforeUpdate                         Pass                                                                                        2           
+AggregateRepositoryTest.mocksAggregateResultsSuccessfully                Pass                                                                                        276         
+AggregateRepositoryTest.shouldAggregateSum                               Pass                                                                                        368         
+AggregateRepositoryTest.shouldOrderByDateFunction                        Pass                                                                                        152         
+AggregateRepositoryTest.shouldReturnCountAsInteger                       Pass                                                                                        86          
+AggregateRepositoryTest.shouldReturnCountOnFieldNameCorrectly            Pass                                                                                        113         
+FieldLevelHistoryRepoTest.itShouldAllowMockingOfHistoryRecords           Pass                                                                                        27          
+FieldLevelHistoryRepoTest.itShouldContinueToActAsAggregateRepo           Pass                                                                                        18          
+FieldLevelHistoryRepoTest.itShouldContinueToActAsBaseRepo                Fail     System.NullPointerException: Attempt to de-reference a null object                 
+                                                                                  Class.Repository.addWheres: line 392, column 1                                     
+                                                                                  Class.Repository.getFinalQuery: line 320, column 1                                 
+                                                                                  Class.AggregateRepository.getFinalQuery: line 205, column 1                        
+                                                                                  Class.Repository.get: line 77, column 1                                            
+                                                                                  Class.Repository.get: line 69, column 1                                            
+                                                                                  Class.FieldLevelHistoryRepoTest.itShouldContinueToActAsBaseRepo: line 7, column 1              
+FieldLevelHistoryRepoTest.itShouldQueryHistoryRecords                    Pass                                                                                        12          
+AggregationTest.shouldCorrectlyFormatCountDistinct                       Pass                                                                                        33          
+AggregationTest.shouldCorrectlyFormatSum                                 Pass                                                                                        10          
+
+
+=== Apex Code Coverage by Class
+CLASSES                PERCENT  UNCOVERED LINES   
+─────────────────────  ───────  ──────────────────
+AdditionalSoslObject   100%                       
+RepositorySortOrder    96%      58                
+FieldLevelHistoryRepo  71%      20,21,26,33,38,...
+DML                    82%      34,62,70,71,72,...
+Query                  92%      39,47,56,69,93,...
+Aggregation            65%      23,31,39,45,46,...
+TriggerHandler         5%       4,8,9,10,11,...   
+ExampleFactory         100%                       
+SelectFunction         0%                         
+LazyFactory            47%      7,8,11,12,17,...  
+ExampleRepoFactory     70%      18,19,20          
+Repository             83%      33,44,45,48,49,...
+QueryField             83%      6,14,22,30,31     
+FieldLevelHistory      75%      12,13,27,28,29,...
+DateFunction           0%                         
+AggregateRepository    84%      30,31,32,33,35,...
+Factory                22%      11,12,13,16,20,...
+Cursor                 84%      2,4,5,25,35,...   
+SearchGroup            0%                         
+AccountHandler         100%                       
+AggregateRecord        95%      30                
+SObjectRepository      100%                       
+RepoFactory            83%      16,17,18,31,48    
+
+
+=== Test Setup Time by Test Class for Run 707Au00002XIHiM
+TEST SETUP METHOD NAME    SETUP TIME
+────────────────────────  ──────────
+ExampleSObjectTest.setup  130       
+DMLTest.setup             255       
+
+
+=== Test Summary
+NAME                 VALUE                        
+───────────────────  ─────────────────────────────
+Outcome              Failed                       
+Tests Ran            129                          
+Pass Rate            95%                          
+Fail Rate            5%                           
+Skip Rate            0%                           
+Test Run Id          707Au00002XIHiM              
+Test Setup Time      385 ms                       
+Test Execution Time  8580 ms                      
+Test Total Time      8965 ms                      
+Org Id               00DAu00000EzL97MAF           
+Username             test-qwhqmuzvs90l@example.com
+Org Wide Coverage    81%                          
+
+
+============================================================
+STDERR:

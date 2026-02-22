@@ -1,0 +1,50 @@
+Iteration 3
+Timestamp: 2026-02-22T18:09:16.938577
+Success: False
+
+============================================================
+STDOUT:
+───── Deploying Metadata ─────
+Stages:
+1. Preparing
+2. Waiting for the org to respond
+3. Deploying Metadata
+4. Running Tests
+5. Updating Source Tracking
+6. Done
+
+▶ Preparing…
+   Deploying v64.0 metadata to test-qwhqmuzvs90l@example.com using the v66.0 SOAP API.
+   Deploy ID: 0AfAu00000cGiLlKAK
+   Target Org: test-qwhqmuzvs90l@example.com
+✔ Preparing (181ms)
+◯ Waiting for the org to respond - Skipped
+▶ Deploying Metadata…
+   Components: 0/7 (0%)
+✘ Deploying Metadata (1.79s)
+   Components: 4/8 (50%)
+
+Deploying v64.0 metadata to test-qwhqmuzvs90l@example.com using the v66.0 SOAP API.
+Status: Failed
+Deploy ID: 0AfAu00000cGiLlKAK
+Target Org: test-qwhqmuzvs90l@example.com
+
+Elapsed time: 1.97s
+
+[1m[31mComponent Failures [4][39m[22m
+ Type       Name                   Problem                                                                             Line:Column 
+-----------------------------------------------------------------------------------------------------------------------------------
+ ApexClass  AggregateRepository    Illegal assignment from List<Query> to Query (157:7)                                157:7       
+ ApexClass  AggregateRepository    Illegal assignment from List<Query> to Query (189:7)                                189:7       
+ ApexClass  FieldLevelHistoryRepo  Dependent class is invalid and needs recompilation:                                 157:7       
+                                   Class AggregateRepository : Illegal assignment from List<Query> to Query (157:7)                
+ ApexClass  Repository             Dependent class is invalid and needs recompilation:                                 157:7       
+                                   Class RepoFactory : Dependent class is invalid and needs recompilation:                         
+                                   Class FieldLevelHistoryRepo : Dependent class is invalid and needs recompilation:               
+                                   Class AggregateRepository : Illegal assignment from List<Query> to Query (157:7)                
+
+
+
+============================================================
+STDERR:
+DEPLOY FAILED (Level 0):

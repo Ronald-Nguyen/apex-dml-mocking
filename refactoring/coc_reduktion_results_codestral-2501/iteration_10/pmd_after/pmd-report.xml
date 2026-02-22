@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.21.0" timestamp="2026-02-22T18:28:27.160">
+<file name="C:\Users\ronald\apex-dml-mocking\refactoring\coc_reduktion_results_codestral-2501\iteration_10\pmd_after\subset_src\dml\DML.cls">
+<violation beginline="1" endline="170" begincolumn="32" endcolumn="2" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The class 'DML' has a total cognitive complexity of 151 (highest 3), current threshold is 50
+</violation>
+<violation beginline="9" endline="15" begincolumn="5" endcolumn="6" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method '__sfdc_options()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="28" endline="30" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doInsert(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="32" endline="40" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doInsert(List&lt;SObject&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="42" endline="44" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpdate(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="46" endline="54" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpdate(List&lt;SObject&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="56" endline="58" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpsert(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="60" endline="68" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpsert(List&lt;SObject&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="70" endline="78" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpsert(List&lt;SObject&gt;, Schema.SObjectField)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="80" endline="82" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUndelete(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="84" endline="91" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUndelete(List&lt;SObject&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="93" endline="95" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doDelete(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="97" endline="104" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doDelete(List&lt;SObject&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="106" endline="108" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doHardDelete(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="110" endline="119" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doHardDelete(List&lt;SObject&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="121" endline="128" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'publish(SObject)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="130" endline="137" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'publish(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="139" endline="141" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'setOptions(Database.DMLOptions)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="149" endline="157" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'sortToPreventChunkingErrors(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="159" endline="169" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'log(OperationLoggingValue, Object)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+</file>
+<file name="C:\Users\ronald\apex-dml-mocking\refactoring\coc_reduktion_results_codestral-2501\iteration_10\pmd_after\subset_src\factory\Factory.cls">
+<violation beginline="11" endline="17" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getFactory()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+</file>
+<file name="C:\Users\ronald\apex-dml-mocking\refactoring\coc_reduktion_results_codestral-2501\iteration_10\pmd_after\subset_src\factory\RepoFactory.cls">
+<violation beginline="6" endline="11" begincolumn="5" endcolumn="6" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method '__sfdc_facade()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="25" endline="27" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getDML()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="29" endline="35" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'setFacade(Facade)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="42" endline="61" begincolumn="20" endcolumn="6" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getRepo(Schema.SObjectType, List&lt;Schema.SObjectField&gt;, RepoFactory)' has a cognitive complexity of 4, current threshold is 1
+</violation>
+</file>
+<file name="C:\Users\ronald\apex-dml-mocking\refactoring\coc_reduktion_results_codestral-2501\iteration_10\pmd_after\subset_src\repository\Cursor.cls">
+<violation beginline="22" endline="31" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The constructor 'Cursor(String, Map&lt;String, Object&gt;, System.AccessLevel)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="33" endline="51" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'setFetchesPerTransaction(Integer)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="57" endline="78" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'fetch(Integer, Integer)' has a cognitive complexity of 5, current threshold is 1
+</violation>
+<violation beginline="80" endline="83" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getNumRecords()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="85" endline="103" begincolumn="13" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getAdvanceBy(Integer, Integer)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+</file>
+<file name="C:\Users\ronald\apex-dml-mocking\refactoring\coc_reduktion_results_codestral-2501\iteration_10\pmd_after\subset_src\repository\Query.cls">
+<violation beginline="4" endline="458" begincolumn="16" endcolumn="2" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The class 'Query' has a total cognitive complexity of 319 (highest 11), current threshold is 50
+</violation>
+<violation beginline="37" endline="39" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'usingParent(Schema.SObjectField)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="41" endline="48" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'usingParent(List&lt;SObjectField&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="50" endline="52" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'subquery(Schema.SObjectField, Schema.SObjectField, Query)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="54" endline="65" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'subquery(Schema.SObjectField, Schema.SObjectType, Schema.SObjectField, Query)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="67" endline="73" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'equals(SObjectField, Object)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="75" endline="81" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'notEquals(SObjectField, Object)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="83" endline="89" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'lessThan(SObjectField, Object)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="91" endline="97" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'lessThanOrEqual(SObjectField, Object)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="99" endline="105" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'greaterThan(SObjectField, Object)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="107" endline="113" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'greaterThanOrEqual(SObjectField, Object)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="115" endline="121" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'likeQuery(SObjectField, Object)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="123" endline="129" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'notLike(SObjectField, Object)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="131" endline="137" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'orQuery(Query, Query)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="139" endline="145" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'orQuery(List&lt;Query&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="147" endline="153" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'andQuery(Query, Query)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="155" endline="161" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'andQuery(List&lt;Query&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="163" endline="176" begincolumn="17" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getBuiltUpParentFieldName(List&lt;Schema.SObjectField&gt;)' has a cognitive complexity of 5, current threshold is 1
+</violation>
+<violation beginline="196" endline="210" begincolumn="21" endcolumn="6" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'toString()' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="223" endline="243" begincolumn="21" endcolumn="6" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'toString()' has a cognitive complexity of 13, current threshold is 1
+</violation>
+<violation beginline="294" endline="307" begincolumn="27" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'toString()' has a cognitive complexity of 4, current threshold is 1
+</violation>
+<violation beginline="309" endline="348" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'toSoslString()' has a cognitive complexity of 11, current threshold is 1
+</violation>
+<violation beginline="350" endline="374" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'equals(Object)' has a cognitive complexity of 5, current threshold is 1
+</violation>
+<violation beginline="376" endline="378" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'hashCode()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="380" endline="414" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getOperator()' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="416" endline="428" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getPredicate(Object)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="430" endline="457" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getSoslPredicate(Object)' has a cognitive complexity of 11, current threshold is 1
+</violation>
+</file>
+<file name="C:\Users\ronald\apex-dml-mocking\refactoring\coc_reduktion_results_codestral-2501\iteration_10\pmd_after\subset_src\repository\Repository.cls">
+<violation beginline="2" endline="671" begincolumn="32" endcolumn="2" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The class 'Repository' has a total cognitive complexity of 1135 (highest 12), current threshold is 50
+</violation>
+<violation beginline="24" endline="33" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The constructor 'Repository(Schema.SObjectType, List&lt;Schema.SObjectField&gt;, RepoFactory)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="35" endline="46" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getCursor(List&lt;Query&gt;)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="48" endline="50" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getQueryLocator(List&lt;Query&gt;)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="52" endline="70" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getQueryLocator(List&lt;Query&gt;, Boolean)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="72" endline="78" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'get(Query)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="80" endline="87" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'get(List&lt;Query&gt;)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="98" endline="105" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addSortOrder(Schema.SObjectField, RepositorySortOrder)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="107" endline="114" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addSortOrder(List&lt;Schema.SObjectField&gt;, RepositorySortOrder)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="116" endline="126" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addBaseFields(List&lt;Schema.SObjectField&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="128" endline="134" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addFunctionBaseField(SelectFunction, Schema.SObjectField)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="136" endline="149" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addFunctionBaseFields(SelectFunction, List&lt;Schema.SObjectField&gt;)' has a cognitive complexity of 6, current threshold is 1
+</violation>
+<violation beginline="151" endline="165" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addFunctionBaseFields(SelectFunction, Map&lt;Schema.SObjectField, String&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="167" endline="173" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addParentFields(Schema.SObjectField, List&lt;Schema.SObjectField&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="175" endline="182" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addParentFields(List&lt;Schema.SObjectField&gt;, List&lt;Schema.SObjectField&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="184" endline="196" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addChildFields(Schema.SObjectField, List&lt;Schema.SObjectField&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="198" endline="210" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addChildFields(Schema.SObjectField, IRepository)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="212" endline="230" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addChildFields(Schema.SObjectField, List&lt;Schema.SObjectField&gt;, List&lt;Query&gt;, Map&lt;String, RepositorySortOrder&gt;, Integer)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="232" endline="256" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addChildFields(Schema.SObjectField, IRepository, List&lt;Query&gt;, Map&lt;String, RepositorySortOrder&gt;, Integer)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="258" endline="296" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addChildFields(Schema.SObjectField, List&lt;QueryField&gt;, List&lt;Query&gt;, Map&lt;String, RepositorySortOrder&gt;, Integer)' has a cognitive complexity of 6, current threshold is 1
+</violation>
+<violation beginline="303" endline="310" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'clearBindVars()' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="317" endline="320" begincolumn="21" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addSelectFields()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="322" endline="331" begincolumn="21" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getFinalQuery(List&lt;Query&gt;)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="339" endline="352" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getFunctionBaseFields(SelectFunction, Map&lt;String, String&gt;)' has a cognitive complexity of 5, current threshold is 1
+</violation>
+<violation beginline="354" endline="373" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getParentFields(List&lt;Schema.SObjectField&gt;, List&lt;Schema.SObjectField&gt;)' has a cognitive complexity of 4, current threshold is 1
+</violation>
+<violation beginline="375" endline="385" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getChildRelationshipNames(Schema.SObjectType)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="387" endline="395" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getSelectAndFrom()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="397" endline="407" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addSelectFields(List&lt;Schema.SObjectField&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="409" endline="429" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'addWheres(List&lt;Query&gt;)' has a cognitive complexity of 12, current threshold is 1
+</violation>
+<violation beginline="431" endline="441" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'performQuery(String)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="443" endline="454" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getOrderBys(Map&lt;String, RepositorySortOrder&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="456" endline="458" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getLimitAmount(Integer)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="460" endline="466" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getSosl(String, Query)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="468" endline="474" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getSosl(String, List&lt;Query&gt;)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="476" endline="504" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'getSosl(String, List&lt;Query&gt;, List&lt;AdditionalSoslObject&gt;)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="506" endline="511" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'setSearchGroup(SearchGroup)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="513" endline="534" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'formatAdditionalSoslObjects(List&lt;AdditionalSoslObject&gt;)' has a cognitive complexity of 5, current threshold is 1
+</violation>
+<violation beginline="536" endline="541" begincolumn="13" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'logQuery(String)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="543" endline="549" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doInsert(SObject)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="551" endline="557" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doInsert(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="559" endline="565" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpdate(SObject)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="567" endline="573" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpdate(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="575" endline="581" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpsert(SObject)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="583" endline="589" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpsert(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="591" endline="597" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpsert(List&lt;SObject&gt;, Schema.SObjectField)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="599" endline="605" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUndelete(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="607" endline="613" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUndelete(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="615" endline="621" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doDelete(SObject)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="623" endline="629" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doDelete(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="631" endline="637" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doHardDelete(SObject)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="639" endline="645" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doHardDelete(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="647" endline="653" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'publish(SObject)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+<violation beginline="655" endline="661" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'publish(List&lt;SObject&gt;)' has a cognitive complexity of 3, current threshold is 1
+</violation>
+<violation beginline="663" endline="665" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'setOptions(Database.DMLOptions)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="667" endline="670" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'setOptions(Database.DMLOptions, System.AccessLevel)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+</file>
+</pmd>

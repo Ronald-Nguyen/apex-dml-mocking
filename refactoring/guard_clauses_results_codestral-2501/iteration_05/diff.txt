@@ -1,0 +1,74 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -77,7 +77,2 @@
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
+-){
++//GuardClause1:Checkifweshouldalwaysusemock
++if(alwaysUseMock){
+@@ -92,5 +87,36 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
++}
++//GuardClause2:Checkiftherearequeriedresults
++if(!queriedResults.isEmpty()){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.results.addAll(queriedResults);
++if(aggRecords!=null){
++mock.aggRecords.addAll(aggRecords);
++}
++if(historyRecords!=null){
++mock.historyRecords.addAll(historyRecords);
++}
++returnmock;
++}
++//GuardClause3:Checkifthereareaggregaterecords
++if(aggRecords!=null&&!aggRecords.isEmpty()){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.aggRecords.addAll(aggRecords);
++if(historyRecords!=null){
++mock.historyRecords.addAll(historyRecords);
++}
++returnmock;
++}
++//GuardClause4:Checkiftherearehistoryrecords
++if(historyRecords!=null&&!historyRecords.isEmpty()){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++mock.historyRecords.addAll(historyRecords);
++returnmock;
++}
++//GuardClause5:Checkiftherearecursorresults
++if(cursorResults!=null&&!cursorResults.isEmpty()){
++RepoMockmock=newRepoMock(sObjectType,repoFactory);
++returnmock;
++}
++//Defaultcase:Usefallbackrepository
++return(IHistoryRepository)fallback;
+
+--- backup/repository\Cursor.cls
++++ refactored/repository\Cursor.cls
+@@ -27,0 +28 @@
++//GuardClause1:Handlezerofetchespertransaction
+@@ -30,0 +32 @@
++//GuardClause2:Handleexceedingmaximumfetchespertransaction
+@@ -41,0 +44 @@
++//HappyPath:Setthefetchespertransaction
+@@ -48,0 +52 @@
++//GuardClause1:Handlenorecordstofetch
+@@ -55,0 +60 @@
++//HappyPath:Performthefetchoperations
+@@ -73,0 +79 @@
++//GuardClause1:Handleexceedingmaximumfetchsize
+@@ -84 +90,3 @@
+-}elseif(possibleFetchSize<0){
++}
++//GuardClause2:Handlenegativefetchsize
++elseif(possibleFetchSize<0){

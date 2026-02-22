@@ -1,0 +1,71 @@
+--- backup/repository\AggregateRepository.cls
++++ refactored/repository\AggregateRepository.cls
+@@ -108,0 +109,4 @@
++//GuardClause1:Handleemptyaggregations
++if(aggregations.isEmpty()){
++returnnewList<AggregateRecord>();
++}
+@@ -109,0 +114 @@
++//GuardClause2:Handleemptyqueryresults
+@@ -110,0 +116,3 @@
++if(results.isEmpty()){
++returnnewList<AggregateRecord>();
++}
+@@ -120,0 +129,6 @@
++//GuardClause1:Handlenumbercountquery
++if(this.isNumberCountQuery){
++returnnewSet<String>{'COUNT()'};
++}
++//GuardClause2:Handleaggregations
++if(this.aggregations!=null){
+@@ -122,5 +135,0 @@
+-if(this.isNumberCountQuery){
+-baseFields.add('COUNT()');
+-returnbaseFields;
+-}
+-if(this.aggregations!=null){
+@@ -129,0 +139 @@
++returnbaseFields;
+@@ -130,0 +141,3 @@
++//GuardClause3:Handlegroupedbyfields
++if(this.groupedByFieldNames.isEmpty()==false){
++Set<String>baseFields=newSet<String>();
+@@ -134 +147,4 @@
+-returnbaseFields.isEmpty()?super.addSelectFields():baseFields;
++returnbaseFields;
++}
++//Defaultcase
++returnsuper.addSelectFields();
+@@ -138 +154,4 @@
+-if(this.groupedByFieldNames.isEmpty()==false){
++//GuardClause1:Handlenogroupedbyfields
++if(this.groupedByFieldNames.isEmpty()){
++returnbaseString;
++}
+@@ -149,0 +169 @@
++//GuardClause2:Handlehavingfields
+@@ -152,0 +173 @@
++//GuardClause3:Handlepotentialorderby
+@@ -155 +175,0 @@
+-}
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -216,4 +216,13 @@
+-returnthis.getSelectAndFrom()+
+-this.addWheres(queries)+
+-this.getOrderBys(this.fieldToSortOrder)+
+-this.getLimitAmount(this.limitAmount);
++//GuardClause1:HandleSOSLcaseimmediately
++if(this.isSosl){
++returnthis.formatAdditionalSoslObjects(newList<AdditionalSoslObject>{
++newAdditionalSoslObject(this.repoType,this.queryFields,queries,this.limitAmount)
++});
++}
++StringbaseString=this.getSelectAndFrom()+this.addWheres(queries);
++//GuardClause2:HandlefieldToSortOrderbeingempty
++if(this.fieldToSortOrder.isEmpty()){
++returnbaseString+this.getLimitAmount(this.limitAmount);
++}
++//HappyPath:Addorderbyandlimit
++returnbaseString+this.getOrderBys(this.fieldToSortOrder)+this.getLimitAmount(this.limitAmount);

@@ -1,0 +1,128 @@
+{
+  "iteration": 10,
+  "timestamp": "2026-02-22T18:01:40.415420",
+  "refactoring": "refactoring/guard_clauses",
+  "changed_files_scope": [
+    "factory\\RepoFactoryMock.cls"
+  ],
+  "test": {
+    "status": "passed",
+    "success": true,
+    "level": 2
+  },
+  "diff": {
+    "status": "passed",
+    "has_diff": true
+  },
+  "tokens": "Tokens: prompt=19912, completion=2579, total=22491",
+  "pmd_before": {
+    "ok": true,
+    "timestamp": "2026-02-22T18:01:04.113349",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\guard_clauses_results_codestral-2501\\iteration_10\\pmd_before\\subset_src",
+      "files": [
+        "factory/RepoFactoryMock.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\guard_clauses_results_codestral-2501\\iteration_10\\pmd_before\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\guard_clauses_results_codestral-2501\\iteration_10\\pmd_before\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 99,
+        "loc": 228,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 99,
+        "loc": 228,
+        "count": 1
+      }
+    }
+  },
+  "pmd_after": {
+    "ok": true,
+    "timestamp": "2026-02-22T18:01:05.895503",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\guard_clauses_results_codestral-2501\\iteration_10\\pmd_after\\subset_src",
+      "files": [
+        "factory/RepoFactoryMock.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\guard_clauses_results_codestral-2501\\iteration_10\\pmd_after\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\guard_clauses_results_codestral-2501\\iteration_10\\pmd_after\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 142,
+        "loc": 262,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 142,
+        "loc": 262,
+        "count": 1
+      }
+    }
+  },
+  "pmd_delta": {
+    "prod": {
+      "complexity": 43,
+      "loc": 34,
+      "count": 0
+    },
+    "test": {
+      "complexity": 0,
+      "loc": 0,
+      "count": 0
+    },
+    "total": {
+      "complexity": 43,
+      "loc": 34,
+      "count": 0
+    }
+  },
+  "refactoring_check": {
+    "type": "guard_clauses",
+    "targets": {},
+    "ok": false,
+    "checks": {
+      "guard_clauses": {
+        "passed": false,
+        "improved_files": [],
+        "comparisons": [
+          {
+            "file": "factory\\RepoFactoryMock.cls",
+            "before_max_if_nesting": 3,
+            "after_max_if_nesting": 5,
+            "before_guard_clauses": 2,
+            "after_guard_clauses": 2,
+            "delta_max_if_nesting": 2,
+            "delta_guard_clauses": 0
+          }
+        ],
+        "totals": {
+          "delta_guard_clauses": 0,
+          "delta_max_if_nesting": 2
+        },
+        "note": "heuristic_early_exit_and_nesting"
+      }
+    }
+  }
+}

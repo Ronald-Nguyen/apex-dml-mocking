@@ -1,0 +1,57 @@
+Iteration 7
+Timestamp: 2026-02-22T18:20:06.015127
+Success: False
+
+============================================================
+STDOUT:
+───── Deploying Metadata ─────
+Stages:
+1. Preparing
+2. Waiting for the org to respond
+3. Deploying Metadata
+4. Running Tests
+5. Updating Source Tracking
+6. Done
+
+▶ Preparing…
+   Deploying v64.0 metadata to test-qwhqmuzvs90l@example.com using the v66.0 SOAP API.
+   Deploy ID: 0AfAu00000cGiX3KAK
+   Target Org: test-qwhqmuzvs90l@example.com
+✔ Preparing (175ms)
+◯ Waiting for the org to respond - Skipped
+▶ Deploying Metadata…
+   Components: 0/12 (0%)
+✘ Deploying Metadata (1.90s)
+   Components: 7/12 (58%)
+
+Deploying v64.0 metadata to test-qwhqmuzvs90l@example.com using the v66.0 SOAP API.
+Status: Failed
+Deploy ID: 0AfAu00000cGiX3KAK
+Target Org: test-qwhqmuzvs90l@example.com
+
+Elapsed time: 2.07s
+
+[1m[31mComponent Failures [5][39m[22m
+ Type       Name                   Problem                                                                             Line:Column 
+-----------------------------------------------------------------------------------------------------------------------------------
+ ApexClass  AggregateRepository    Dependent class is invalid and needs recompilation:                                 33:14       
+                                   Class Repository : Method is not visible: void Cursor.<init>() (33:14)                          
+ ApexClass  FieldLevelHistoryRepo  Dependent class is invalid and needs recompilation:                                 33:14       
+                                   Class AggregateRepository : Dependent class is invalid and needs recompilation:                 
+                                   Class Repository : Method is not visible: void Cursor.<init>() (33:14)                          
+ ApexClass  RepoFactory            Dependent class is invalid and needs recompilation:                                 33:14       
+                                   Class FieldLevelHistoryRepo : Dependent class is invalid and needs recompilation:               
+                                   Class AggregateRepository : Dependent class is invalid and needs recompilation:                 
+                                   Class Repository : Method is not visible: void Cursor.<init>() (33:14)                          
+ ApexClass  RepoFactoryMock        Dependent class is invalid and needs recompilation:                                 33:14       
+                                   Class RepoFactory : Dependent class is invalid and needs recompilation:                         
+                                   Class FieldLevelHistoryRepo : Dependent class is invalid and needs recompilation:               
+                                   Class AggregateRepository : Dependent class is invalid and needs recompilation:                 
+                                   Class Repository : Method is not visible: void Cursor.<init>() (33:14)                          
+ ApexClass  Repository             Method is not visible: void Cursor.<init>() (33:14)                                 33:14       
+
+
+
+============================================================
+STDERR:
+DEPLOY FAILED (Level 0):
