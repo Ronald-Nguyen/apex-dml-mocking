@@ -11,8 +11,6 @@ import difflib
 import time
 import json
 import xml.etree.ElementTree as ET
-from mistralai import Mistral
-
 '''
 python refactoring/refactoring.py
 python refactoring/refactoring.py --all-refactorings
@@ -29,16 +27,16 @@ REFACTORINGS = [
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
-DEFAULT_REFACTORING = "strategy_pattern" \
+DEFAULT_REFACTORING = "rename" \
 ""
-RESULT_PATH_NAME = '_results_'
+
+RESULT_PATH = "_result_"
 PATH = 'force-app'
 ITERATIONS = 10
 GEMMA = 'gemma-3-27b-it'
 GEMINI3 = 'gemini-3-pro-preview'
 GEMINI2 = 'gemini-2.5-flash'
 LLAMA = 'llama-3.3-70b-versatile'
-
 MISTRAL = 'mistral-large-2512'
 CODESTRAL = 'codestral-2501'
 MODEL_OLLAMA = 'devstral-2_123b-cloud'
@@ -47,13 +45,13 @@ MODEL_GEMINI = GEMINI3
 MODEL_MISTRAL = CODESTRAL
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-#MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
-MISTRAL_API_KEY = os.environ["MISTRAL_API_KEY2"]
-LLM_API_KEY = GEMINI_API_KEY
+MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
+LLM_API_KEY = GEMINI_API_KEY    
 client = None
 MODEL = None
 
 if LLM_API_KEY == MISTRAL_API_KEY:
+    from mistralai import Mistral
     MODEL = MODEL_MISTRAL
     try:
         client = Mistral(api_key=LLM_API_KEY)
@@ -122,28 +120,6 @@ def _resolve_file_hint(project_root: Path, file_hint: str, changed_rel_paths: li
 
     return None
 
-def _scan_files_for_regex(project_root: Path, rel_paths: list[str], pattern: str) -> list[str]:
-    """
-    Scans ONLY the given rel_paths for pattern (comments stripped).
-    Returns list of rel paths where pattern matches.
-    """
-    rx = re.compile(pattern)
-    hits: list[str] = []
-    pr = project_root.resolve()
-
-    for rel in rel_paths:
-        p = (pr / Path(rel)).resolve()
-        try:
-            p.relative_to(pr)
-        except Exception:
-            continue
-        if not p.exists() or p.is_dir():
-            continue
-
-        content = _strip_apex_comments(_read_text_best_effort(p))
-        if rx.search(content):
-            hits.append(str(Path(rel)).replace("\\", "/"))
-    return hits
 
 def format_pmd_metrics_summary(pmd_before: dict, pmd_after: dict) -> str:
     """
@@ -894,7 +870,6 @@ def build_refactoring_check(
             overall_ok = False
 
     # ---- rename ----
-    # Only works when there is no method with the same name in another file or class
     if ref_type == "rename":
         old_m = targets.get("old_method")
         new_m = targets.get("new_method")
@@ -904,54 +879,51 @@ def build_refactoring_check(
             _record("rename", False, {"reason": "targets_not_parsed", "targets": targets})
         else:
             # 1) Resolve file hint to an actual relative path in the repo
-            resolved_file = _resolve_file_hint(project_dir, file_hint, changed_rel_paths) if file_hint else None
+            resolved_file = None
+            if file_hint:
+                resolved_file = _resolve_file_hint(project_dir, file_hint, changed_rel_paths)
 
-            # 2) Scan project usage (calls + possible decl). comments already stripped in helper.
-            old_hits = _scan_files_for_regex(project_dir, changed_rel_paths, r"\b" + re.escape(old_m) + r"\s*\(")
-            new_hits = _scan_files_for_regex(project_dir, changed_rel_paths, r"\b" + re.escape(new_m) + r"\s*\(")
+            # 2) Scan project usage (calls)
+            old_hits = _scan_project_for_regex(project_dir, r"\b" + re.escape(old_m) + r"\s*\(")
+            new_hits = _scan_project_for_regex(project_dir, r"\b" + re.escape(new_m) + r"\s*\(")
 
-            # if I want to scan the project, this suits only if there is no other method with the same name but in another class 
-            # old_hits = _scan_project_for_regex(project_dir, r"\b" + re.escape(old_m) + r"\s*\(")
-            # new_hits = _scan_project_for_regex(project_dir, r"\b" + re.escape(new_m) + r"\s*\(")
-
-
-            # 3) Verify declaration in resolved file (most important)
+            # 3) Verify declaration in resolved file (stronger than "somewhere in repo")
             decl_old = None
             decl_new = None
-            hinted_text = ""
+            decl_file_used = None
+
             if resolved_file:
+                decl_file_used = resolved_file
                 hinted_text = _strip_apex_comments(_read_project_file_text(project_dir, resolved_file))
+                if hinted_text:
+                    # Allow common Apex modifiers
+                    sig_old = re.compile(
+                        r"\b(?:public|private|protected|global)\s+"
+                        r"(?:static\s+)?"
+                        r"[\w<>\[\]]+\s+"
+                        + re.escape(old_m) + r"\s*\(",
+                        flags=re.IGNORECASE
+                    )
+                    sig_new = re.compile(
+                        r"\b(?:public|private|protected|global)\s+"
+                        r"(?:static\s+)?"
+                        r"[\w<>\[\]]+\s+"
+                        + re.escape(new_m) + r"\s*\(",
+                        flags=re.IGNORECASE
+                    )
+                    decl_old = sig_old.search(hinted_text) is not None
+                    decl_new = sig_new.search(hinted_text) is not None
 
-                # Apex return types can contain dots (ApexPages.Component) + generics + arrays etc.
-                type_rx = r"[\w.<>\[\],\s]+"
-
-                sig_old = re.compile(
-                    r"\b(?:public|private|protected|global)\s+"
-                    r"(?:static\s+)?"
-                    + type_rx + r"\s+"
-                    + re.escape(old_m) + r"\s*\(",
-                    flags=re.IGNORECASE
-                )
-                sig_new = re.compile(
-                    r"\b(?:public|private|protected|global)\s+"
-                    r"(?:static\s+)?"
-                    + type_rx + r"\s+"
-                    + re.escape(new_m) + r"\s*\(",
-                    flags=re.IGNORECASE
-                )
-
-                decl_old = sig_old.search(hinted_text) is not None
-                decl_new = sig_new.search(hinted_text) is not None
-
-            # 4) Decide pass/fail (strict but correct)
+            # 4) Decide pass/fail
             reasons: list[str] = []
             passed = True
 
-            if not resolved_file:
+            # Basic expectations
+            if len(old_hits) != 0:
                 passed = False
-                reasons.append("file_hint_not_resolved")
+                reasons.append("old_method_still_referenced")
 
-            # Declaration must be renamed in the target file
+            # Strong requirement: declaration in the target file must be renamed
             if resolved_file:
                 if decl_old is True:
                     passed = False
@@ -959,11 +931,15 @@ def build_refactoring_check(
                 if decl_new is not True:
                     passed = False
                     reasons.append("new_method_declaration_not_found_in_file")
-
-            # Old name must not be referenced anywhere anymore (project-wide)
-            if len(old_hits) != 0:
+            else:
+                # If we cannot locate the file, don't guess -> fail
                 passed = False
-                reasons.append("old_method_still_referenced")
+                reasons.append("file_hint_not_resolved")
+
+            # Optional sanity: new method appears at least once somewhere
+            if len(new_hits) == 0:
+                passed = False
+                reasons.append("new_method_never_referenced")
 
             _record(
                 "rename",
@@ -972,7 +948,7 @@ def build_refactoring_check(
                     "old_method": old_m,
                     "new_method": new_m,
                     "file_hint": file_hint,
-                    "resolved_file": resolved_file,
+                    "resolved_file": decl_file_used,
                     "decl_old_in_file": decl_old,
                     "decl_new_in_file": decl_new,
                     "old_method_hits": old_hits[:25],
@@ -982,9 +958,7 @@ def build_refactoring_check(
             )
 
 
-
-   # ---- inline_variable ----
-   # not working because sometimes the variable name cannot be found if the Type is something the regex cannot find
+    # ---- inline_variable ----
     if ref_type == "inline_variable":
         var_name = targets.get("var")
         method_name = targets.get("method")
@@ -1006,88 +980,43 @@ def build_refactoring_check(
                 after_body = _extract_method_body_apex(after_nc, method_name)
                 before_body = _extract_method_body_apex(before_nc, method_name)
 
+                decl_rx = re.compile(r"\b\w+\s+" + re.escape(var_name) + r"\s*=")
+                return_rx = re.compile(r"\breturn\s+" + re.escape(var_name) + r"\s*;")
+
                 passed = True
                 reasons: list[str] = []
 
-                # Wenn Methode nicht extrahiert werden kann -> fail
                 if before_body is None or after_body is None:
                     passed = False
                     reasons.append("method_not_found")
 
-                    _record(
-                        "inline_variable",
-                        passed,
-                        {
-                            "file": resolved,
-                            "file_hint": file_hint,
-                            "method": method_name,
-                            "var": var_name,
-                            "had_declaration_before": False,
-                            "reasons": reasons,
-                            "debug": {
-                                "before_body_found": before_body is not None,
-                                "after_body_found": after_body is not None,
-                            },
-                        },
-                    )
-                else:
-                    # ---- robust: Apex/Java-type patterns incl. namespaces + generics + arrays ----
-                    # Matches e.g.:
-                    #   Datetime dt =
-                    #   System.Datetime dt =
-                    #   List<String> dt =
-                    #   Map<String, Object> dt =
-                    #   Set<Id> dt =
-                    #   MyType[] dt =
-                    # Allows optional modifiers like final.
-                    type_pattern = r"(?:final\s+)?(?:[\w\.]+(?:\s*<[^>]+>)?(?:\[\])?)"
-                    decl_pattern = r"\b" + type_pattern + r"\s+" + re.escape(var_name) + r"\s*="
-
-                    decl_rx = re.compile(decl_pattern, flags=re.IGNORECASE)
-
-                    # return dt;
-                    return_rx = re.compile(r"\breturn\s+" + re.escape(var_name) + r"\s*;", flags=re.IGNORECASE)
-
-                    # any usage of dt as identifier (not part of another name)
-                    use_rx = re.compile(r"(?<![A-Za-z0-9_])" + re.escape(var_name) + r"(?![A-Za-z0-9_])")
-
-                    # 1) MUSS vorher deklariert gewesen sein, sonst ist "inline" nicht nachweisbar
-                    had_decl_before = bool(decl_rx.search(before_body))
-                    if not had_decl_before:
-                        passed = False
-                        reasons.append("var_declaration_not_found_before")
-
-                    # 2) Nachher darf Deklaration nicht mehr existieren
+                if after_body is not None:
                     if decl_rx.search(after_body):
                         passed = False
                         reasons.append("var_declaration_still_present")
-
-                    # 3) Nachher darf Variable nicht mehr vorkommen
-                    if use_rx.search(after_body):
-                        passed = False
-                        reasons.append("var_usage_still_present")
-
-                    # 4) Optionales Signal (nicht zwingend, aber nützlich)
                     if return_rx.search(after_body):
+                        passed = False
                         reasons.append("return_var_still_present")
 
-                    _record(
-                        "inline_variable",
-                        passed,
-                        {
-                            "file": resolved,
-                            "file_hint": file_hint,
-                            "method": method_name,
-                            "var": var_name,
-                            "had_declaration_before": had_decl_before,
-                            "reasons": reasons,
-                            "debug": {
-                                "decl_regex": decl_pattern,
-                                # hilft dir sofort zu sehen, was im Body wirklich drin war
-                                "before_body_snippet": before_body[:400],
-                            },
-                        },
-                    )
+                had_decl_before = bool(before_body and decl_rx.search(before_body))
+                use_rx = re.compile(r"\b" + re.escape(var_name) + r"\b")
+                if after_body is not None and use_rx.search(after_body):
+                    passed = False
+                    reasons.append("var_usage_still_present")
+
+
+                _record(
+                    "inline_variable",
+                    passed,
+                    {
+                        "file": resolved,  # <-- wichtig
+                        "file_hint": file_hint,
+                        "method": method_name,
+                        "var": var_name,
+                        "had_declaration_before": had_decl_before,
+                        "reasons": reasons,
+                    },
+                )
 
 
     # ---- getter_setter ----
@@ -1193,7 +1122,6 @@ def build_refactoring_check(
 
 
     # ---- guard_clauses ----
-    # only works for nested if's and early exits
     if ref_type == "guard_clauses":
         # Guard clauses are about EARLY EXITS (return/continue/break/throw) to reduce nesting.
         # Nesting reduction is helpful but not required in all valid refactors (e.g., single-level `if` -> `if(!cond) return;`).
@@ -1260,7 +1188,6 @@ def build_refactoring_check(
         )
 
     # ---- strategy_pattern ----
-    # isn't fully working, can only be used for one type of strategy pattern
     if ref_type == "strategy_pattern":
         method_name = targets.get("method")
         file_hint = targets.get("file")
@@ -1440,7 +1367,7 @@ def main():
         REFACTORING = f"{REFACTORING_BASE_DIR}/{ref_name}"
 
         PROMPT_TEMPLATE = Path(f"{REFACTORING}.txt").read_text(encoding="utf-8")
-        RESULTS_DIR = Path(REFACTORING + RESULT_PATH_NAME + MODEL)
+        RESULTS_DIR = Path(REFACTORING + RESULT_PATH + MODEL)
         RESULTS_DIR.mkdir(exist_ok=True)
 
         YOUR_PROMPT = PROMPT_TEMPLATE
