@@ -1,0 +1,19 @@
+--- backup/repository\AdditionalSoslObject.cls
++++ refactored/repository\AdditionalSoslObject.cls
+@@ -3 +3 @@
+-publicfinalIntegerqueryLimit;
++privateIntegerqueryLimit;
+@@ -17,0 +18,2 @@
++publicIntegergetQueryLimit(){
++returnthis.queryLimit;
+@@ -18,0 +21,4 @@
++publicvoidsetQueryLimit(Integervalue){
++this.queryLimit=value;
++}
++}
+
+--- backup/repository\Repository.cls
++++ refactored/repository\Repository.cls
+@@ -351 +351 @@
+-this.getLimitAmount(soslObject.queryLimit)+
++this.getLimitAmount(soslObject.getQueryLimit())+

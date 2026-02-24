@@ -1,0 +1,44 @@
+Iteration 8
+Timestamp: 2026-02-24T21:33:05.255399
+Success: False
+
+============================================================
+STDOUT:
+───── Deploying Metadata ─────
+Stages:
+1. Preparing
+2. Waiting for the org to respond
+3. Deploying Metadata
+4. Running Tests
+5. Updating Source Tracking
+6. Done
+
+▶ Preparing…
+   Deploying v64.0 metadata to test-u8ccg6esmimf@example.com using the v66.0 SOAP API.
+   Deploy ID: 0AfAq00000g0WxOKAU
+   Target Org: test-u8ccg6esmimf@example.com
+✔ Preparing (214ms)
+◯ Waiting for the org to respond - Skipped
+▶ Deploying Metadata…
+   Components: 0/2 (0%)
+✘ Deploying Metadata (1.26s)
+   Components: 1/2 (50%)
+
+Deploying v64.0 metadata to test-u8ccg6esmimf@example.com using the v66.0 SOAP API.
+Status: Failed
+Deploy ID: 0AfAq00000g0WxOKAU
+Target Org: test-u8ccg6esmimf@example.com
+
+Elapsed time: 1.47s
+
+[1m[31mComponent Failures [1][39m[22m
+ Type       Name        Problem                                                            Line:Column 
+-------------------------------------------------------------------------------------------------------
+ ApexClass  Repository  Variable is not visible: AdditionalSoslObject.queryLimit (406:42)  406:42      
+
+
+
+============================================================
+STDERR:
+DEPLOY FAILED (Level 0):
+ »   Warning: @salesforce/cli update available from [92m2.122.6[39m to [92m2.123.1[39m.

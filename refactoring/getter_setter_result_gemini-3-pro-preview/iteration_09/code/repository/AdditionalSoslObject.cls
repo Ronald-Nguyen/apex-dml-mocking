@@ -1,0 +1,27 @@
+public class AdditionalSoslObject {
+  public final Schema.SObjectType objectType;
+  private Integer queryLimit;
+  public final List<Query> queryFilters;
+  public final List<Schema.SObjectField> selectFields;
+
+  @SuppressWarnings('PMD.ExcessiveParameterList')
+  public AdditionalSoslObject(
+    Schema.SObjectType objectType,
+    List<Schema.SObjectField> selectFields,
+    List<Query> queryFilters,
+    Integer queryLimit
+  ) {
+    this.objectType = objectType;
+    this.queryFilters = queryFilters;
+    this.queryLimit = queryLimit;
+    this.selectFields = selectFields;
+  }
+
+  public Integer getQueryLimit() {
+    return queryLimit;
+  }
+
+  public void setQueryLimit(Integer value) {
+    queryLimit = value;
+  }
+}

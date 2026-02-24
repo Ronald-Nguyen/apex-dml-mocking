@@ -103,7 +103,7 @@ public class BankAccount {
 ```
 
 Your Task:
-1. Encapsulate the attribute `queryLimit` within the class `AdditionalSoslObject` in the file `AdditionalSoslObject.cls`.
+1. Encapsulate only the attribute `queryLimit` within the class `AdditionalSoslObject` in the file `AdditionalSoslObject.cls`.
 2. Replace all direct attribute accesses with getter and setter methods.
 3. Update all references both inside the class and from external calls.
 4. For EACH modified file, respond exactly in the following format:

@@ -27,7 +27,7 @@ REFACTORINGS = [
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
-DEFAULT_REFACTORING = "rename" \
+DEFAULT_REFACTORING = "getter_setter" \
 ""
 RESULT_PATH = "_result_"
 PATH = 'force-app'
@@ -48,7 +48,7 @@ GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY2')
 NVIDIA_API_KEY = os.environ.get('NVIDIA_API_KEY')
-LLM_API_KEY = MISTRAL_API_KEY    
+LLM_API_KEY = GEMINI_API_KEY    
 client = None
 MODEL = None
 
