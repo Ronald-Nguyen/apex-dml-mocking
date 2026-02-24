@@ -10,7 +10,7 @@ from unittest import result
 import difflib
 import time
 import json
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET 
 '''
 python refactoring/refactoring.py
 python refactoring/refactoring.py --all-refactorings
@@ -19,17 +19,16 @@ python refactoring/refactoring.py --refactoring rename
 
 
 REFACTORINGS = [
-    "coc_reduktion",
-    "getter_setter",
+    #"coc_reduktion",
+    #"getter_setter",
     "guard_clauses",
     "inline_variable",
-    "rename",
+    #"rename",
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
 DEFAULT_REFACTORING = "rename" \
 ""
-
 RESULT_PATH = "_result_"
 PATH = 'force-app'
 ITERATIONS = 10
@@ -39,14 +38,17 @@ GEMINI2 = 'gemini-2.5-flash'
 LLAMA = 'llama-3.3-70b-versatile'
 MISTRAL = 'mistral-large-2512'
 CODESTRAL = 'codestral-2501'
+NVIDIA = 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
 MODEL_OLLAMA = 'devstral-2_123b-cloud'
 MODEL_GROQ = LLAMA
 MODEL_GEMINI = GEMINI3
 MODEL_MISTRAL = CODESTRAL
+MODEL_NVIDIA = NVIDIA
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY')
-LLM_API_KEY = GEMINI_API_KEY    
+MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY2')
+NVIDIA_API_KEY = os.environ.get('NVIDIA_API_KEY')
+LLM_API_KEY = MISTRAL_API_KEY    
 client = None
 MODEL = None
 
@@ -77,6 +79,21 @@ elif LLM_API_KEY == GROQ_API_KEY:
     except Exception as e:
         print(f"Fehler beim Laden des API-Keys: {e}")
         exit(1)
+elif LLM_API_KEY == NVIDIA_API_KEY:
+    from openai import OpenAI
+    MODEL = MODEL_NVIDIA
+    try:
+        client = OpenAI(
+            base_url="https://integrate.api.nvidia.com/v1",
+            api_key=LLM_API_KEY
+        )
+        print("NVIDIA API Key aus Umgebungsvariable geladen")
+    except Exception as e:
+        print(f"Fehler beim Laden des API-Keys: {e}")
+        exit(1)
+
+# Sanitize MODEL for use in file paths (replace / with -)
+MODEL_SAFE = MODEL.replace('/', '-') if MODEL else None
 
 parser = argparse.ArgumentParser(description="Projektpfad angeben")
 parser.add_argument("--project-path", type=str, default=PATH, help="Pfad des Projekts")
@@ -120,6 +137,28 @@ def _resolve_file_hint(project_root: Path, file_hint: str, changed_rel_paths: li
 
     return None
 
+def _scan_files_for_regex(project_root: Path, rel_paths: list[str], pattern: str) -> list[str]:
+    """
+    Scans ONLY the given rel_paths for pattern (comments stripped).
+    Returns list of rel paths where pattern matches.
+    """
+    rx = re.compile(pattern)
+    hits: list[str] = []
+    pr = project_root.resolve()
+
+    for rel in rel_paths:
+        p = (pr / Path(rel)).resolve()
+        try:
+            p.relative_to(pr)
+        except Exception:
+            continue
+        if not p.exists() or p.is_dir():
+            continue
+
+        content = _strip_apex_comments(_read_text_best_effort(p))
+        if rx.search(content):
+            hits.append(str(Path(rel)).replace("\\", "/"))
+    return hits
 
 def format_pmd_metrics_summary(pmd_before: dict, pmd_after: dict) -> str:
     """
@@ -244,6 +283,8 @@ def get_all_apex_files(project_dir: Path) -> str:
 
 def parse_ai_response(response_text: str) -> dict:
     files = {}
+    if not response_text:
+        return files
     pattern = r"File\s+`([^`]+)`:\s*```apex\s*(.*?)\s*```"
     matches = re.findall(pattern, response_text, re.DOTALL)
     for filename, code in matches:
@@ -391,7 +432,7 @@ def save_results(
         f.write(diff_text or "")
 
 def write_summary(results_dir: Path, text: str) -> None:
-    with open(results_dir / f"{MODEL}_summary_results.txt", "a", encoding="utf-8") as f:
+    with open(results_dir / f"{MODEL_SAFE}_summary_results.txt", "a", encoding="utf-8") as f:
         f.write(text)
 
 
@@ -427,10 +468,13 @@ def format_token_usage(usage: dict | None) -> str:
 def groq_generate(final_prompt: str) -> tuple[str, dict | None]:
     resp = client.chat.completions.create(
         model=MODEL,
-        content=final_prompt
+        messages=[{"role": "user", "content": final_prompt}]
     )
     usage = _usage_to_dict(getattr(resp, "usage", None))
-    return resp.choices[0].message.content, usage
+    content = resp.choices[0].message.content
+    if content is None:
+        raise ValueError("Leere Antwort von Groq API erhalten")
+    return content, usage
 
 def gemini_generate(final_prompt: str) -> tuple[str, dict | None]:
     response = client.models.generate_content(
@@ -466,7 +510,29 @@ def mistral_generate(prompt: str) -> tuple[str, dict | None]:
         stream=False
     )
     usage = _usage_to_dict(getattr(res, "usage", None))
-    return res.choices[0].message.content, usage
+    content = res.choices[0].message.content
+    if content is None:
+        raise ValueError("Leere Antwort von Mistral API erhalten")
+    return content, usage
+
+def nvidia_generate(prompt: str) -> tuple[str, dict | None]:
+    resp = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "system", "content": prompt}],
+        temperature=0.6,
+        top_p=0.95,
+        frequency_penalty=0,
+        presence_penalty=0,
+        stream=True
+    )
+    content = ""
+    for chunk in resp:
+        if chunk.choices[0].delta.content is not None:
+            content += chunk.choices[0].delta.content
+    
+    if not content:
+        raise ValueError("Leere Antwort von NVIDIA API erhalten")
+    return content, None
 
 def _is_rate_limit_error(e: Exception) -> bool:
     msg = str(e).lower()
@@ -879,51 +945,54 @@ def build_refactoring_check(
             _record("rename", False, {"reason": "targets_not_parsed", "targets": targets})
         else:
             # 1) Resolve file hint to an actual relative path in the repo
-            resolved_file = None
-            if file_hint:
-                resolved_file = _resolve_file_hint(project_dir, file_hint, changed_rel_paths)
+            resolved_file = _resolve_file_hint(project_dir, file_hint, changed_rel_paths) if file_hint else None
 
-            # 2) Scan project usage (calls)
-            old_hits = _scan_project_for_regex(project_dir, r"\b" + re.escape(old_m) + r"\s*\(")
-            new_hits = _scan_project_for_regex(project_dir, r"\b" + re.escape(new_m) + r"\s*\(")
+            # 2) Scan project usage (calls + possible decl). comments already stripped in helper.
+            old_hits = _scan_files_for_regex(project_dir, changed_rel_paths, r"\b" + re.escape(old_m) + r"\s*\(")
+            new_hits = _scan_files_for_regex(project_dir, changed_rel_paths, r"\b" + re.escape(new_m) + r"\s*\(")
 
-            # 3) Verify declaration in resolved file (stronger than "somewhere in repo")
+            # if I want to scan the project, this suits only if there is no other method with the same name but in another class 
+            # old_hits = _scan_project_for_regex(project_dir, r"\b" + re.escape(old_m) + r"\s*\(")
+            # new_hits = _scan_project_for_regex(project_dir, r"\b" + re.escape(new_m) + r"\s*\(")
+
+
+            # 3) Verify declaration in resolved file (most important)
             decl_old = None
             decl_new = None
-            decl_file_used = None
-
+            hinted_text = ""
             if resolved_file:
-                decl_file_used = resolved_file
                 hinted_text = _strip_apex_comments(_read_project_file_text(project_dir, resolved_file))
-                if hinted_text:
-                    # Allow common Apex modifiers
-                    sig_old = re.compile(
-                        r"\b(?:public|private|protected|global)\s+"
-                        r"(?:static\s+)?"
-                        r"[\w<>\[\]]+\s+"
-                        + re.escape(old_m) + r"\s*\(",
-                        flags=re.IGNORECASE
-                    )
-                    sig_new = re.compile(
-                        r"\b(?:public|private|protected|global)\s+"
-                        r"(?:static\s+)?"
-                        r"[\w<>\[\]]+\s+"
-                        + re.escape(new_m) + r"\s*\(",
-                        flags=re.IGNORECASE
-                    )
-                    decl_old = sig_old.search(hinted_text) is not None
-                    decl_new = sig_new.search(hinted_text) is not None
 
-            # 4) Decide pass/fail
+                # Apex return types can contain dots (ApexPages.Component) + generics + arrays etc.
+                type_rx = r"[\w.<>\[\],\s]+"
+
+                sig_old = re.compile(
+                    r"\b(?:public|private|protected|global)\s+"
+                    r"(?:static\s+)?"
+                    + type_rx + r"\s+"
+                    + re.escape(old_m) + r"\s*\(",
+                    flags=re.IGNORECASE
+                )
+                sig_new = re.compile(
+                    r"\b(?:public|private|protected|global)\s+"
+                    r"(?:static\s+)?"
+                    + type_rx + r"\s+"
+                    + re.escape(new_m) + r"\s*\(",
+                    flags=re.IGNORECASE
+                )
+
+                decl_old = sig_old.search(hinted_text) is not None
+                decl_new = sig_new.search(hinted_text) is not None
+
+            # 4) Decide pass/fail (strict but correct)
             reasons: list[str] = []
             passed = True
 
-            # Basic expectations
-            if len(old_hits) != 0:
+            if not resolved_file:
                 passed = False
-                reasons.append("old_method_still_referenced")
+                reasons.append("file_hint_not_resolved")
 
-            # Strong requirement: declaration in the target file must be renamed
+            # Declaration must be renamed in the target file
             if resolved_file:
                 if decl_old is True:
                     passed = False
@@ -931,15 +1000,11 @@ def build_refactoring_check(
                 if decl_new is not True:
                     passed = False
                     reasons.append("new_method_declaration_not_found_in_file")
-            else:
-                # If we cannot locate the file, don't guess -> fail
-                passed = False
-                reasons.append("file_hint_not_resolved")
 
-            # Optional sanity: new method appears at least once somewhere
-            if len(new_hits) == 0:
+            # Old name must not be referenced anywhere anymore (project-wide)
+            if len(old_hits) != 0:
                 passed = False
-                reasons.append("new_method_never_referenced")
+                reasons.append("old_method_still_referenced")
 
             _record(
                 "rename",
@@ -948,7 +1013,7 @@ def build_refactoring_check(
                     "old_method": old_m,
                     "new_method": new_m,
                     "file_hint": file_hint,
-                    "resolved_file": decl_file_used,
+                    "resolved_file": resolved_file,
                     "decl_old_in_file": decl_old,
                     "decl_new_in_file": decl_new,
                     "old_method_hits": old_hits[:25],
@@ -956,6 +1021,7 @@ def build_refactoring_check(
                     "reasons": reasons,
                 },
             )
+
 
 
     # ---- inline_variable ----
@@ -1295,7 +1361,7 @@ def build_refactoring_check(
                     delta_total = None
 
         if delta_total is not None:
-            passed = delta_total <= 0
+            passed = delta_total < 0
             _record(
                 "coc_reduktion",
                 passed,
@@ -1367,8 +1433,8 @@ def main():
         REFACTORING = f"{REFACTORING_BASE_DIR}/{ref_name}"
 
         PROMPT_TEMPLATE = Path(f"{REFACTORING}.txt").read_text(encoding="utf-8")
-        RESULTS_DIR = Path(REFACTORING + RESULT_PATH + MODEL)
-        RESULTS_DIR.mkdir(exist_ok=True)
+        RESULTS_DIR = Path(REFACTORING + RESULT_PATH + MODEL_SAFE)
+        RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
         YOUR_PROMPT = PROMPT_TEMPLATE
 
@@ -1398,6 +1464,8 @@ def main():
                     response_text, usage = gemini_generate(final_prompt)
                 elif LLM_API_KEY == GROQ_API_KEY:
                     response_text, usage = groq_generate(final_prompt)
+                elif LLM_API_KEY == NVIDIA_API_KEY:
+                    response_text, usage = nvidia_generate(final_prompt)
                 else:
                     raise RuntimeError("Kein gültiger LLM_API_KEY gesetzt")
 

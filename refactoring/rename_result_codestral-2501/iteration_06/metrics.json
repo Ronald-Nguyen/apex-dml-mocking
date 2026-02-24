@@ -1,0 +1,126 @@
+{
+  "iteration": 6,
+  "timestamp": "2026-02-24T21:07:30.389527",
+  "refactoring": "refactoring/rename",
+  "changed_files_scope": [
+    "repository\\Repository.cls"
+  ],
+  "test": {
+    "status": "passed",
+    "success": true,
+    "level": 2
+  },
+  "diff": {
+    "status": "passed",
+    "has_diff": true
+  },
+  "tokens": "Tokens: prompt=19458, completion=4109, total=23567",
+  "pmd_before": {
+    "ok": true,
+    "timestamp": "2026-02-24T21:07:05.505666",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\rename_result_codestral-2501\\iteration_06\\pmd_before\\subset_src",
+      "files": [
+        "repository/Repository.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\rename_result_codestral-2501\\iteration_06\\pmd_before\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\rename_result_codestral-2501\\iteration_06\\pmd_before\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 666,
+        "loc": 481,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 666,
+        "loc": 481,
+        "count": 1
+      }
+    }
+  },
+  "pmd_after": {
+    "ok": true,
+    "timestamp": "2026-02-24T21:07:07.519007",
+    "scope": {
+      "mode": "subset_changed_files_only",
+      "source_root": "C:\\Users\\ronald\\apex-dml-mocking\\force-app",
+      "subset_root": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\rename_result_codestral-2501\\iteration_06\\pmd_after\\subset_src",
+      "files": [
+        "repository/Repository.cls"
+      ]
+    },
+    "pmd": {
+      "ruleset_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\rename_result_codestral-2501\\iteration_06\\pmd_after\\pmd-ruleset.xml",
+      "report_file": "C:\\Users\\ronald\\apex-dml-mocking\\refactoring\\rename_result_codestral-2501\\iteration_06\\pmd_after\\pmd-report.xml"
+    },
+    "summary": {
+      "prod": {
+        "complexity": 666,
+        "loc": 477,
+        "count": 1
+      },
+      "test": {
+        "complexity": 0,
+        "loc": 0,
+        "count": 0
+      },
+      "total": {
+        "complexity": 666,
+        "loc": 477,
+        "count": 1
+      }
+    }
+  },
+  "pmd_delta": {
+    "prod": {
+      "complexity": 0,
+      "loc": -4,
+      "count": 0
+    },
+    "test": {
+      "complexity": 0,
+      "loc": 0,
+      "count": 0
+    },
+    "total": {
+      "complexity": 0,
+      "loc": -4,
+      "count": 0
+    }
+  },
+  "refactoring_check": {
+    "type": "rename",
+    "targets": {
+      "old_method": "addWheres",
+      "file": "Repository.cls",
+      "new_method": "buildWhereClause"
+    },
+    "ok": true,
+    "checks": {
+      "rename": {
+        "passed": true,
+        "old_method": "addWheres",
+        "new_method": "buildWhereClause",
+        "file_hint": "Repository.cls",
+        "resolved_file": "repository/Repository.cls",
+        "decl_old_in_file": false,
+        "decl_new_in_file": true,
+        "old_method_hits": [],
+        "new_method_hits": [
+          "repository/Repository.cls"
+        ],
+        "reasons": []
+      }
+    }
+  }
+}
