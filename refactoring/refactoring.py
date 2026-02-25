@@ -27,7 +27,7 @@ REFACTORINGS = [
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
-DEFAULT_REFACTORING = "getter_setter" \
+DEFAULT_REFACTORING = "rename" \
 ""
 RESULT_PATH = "_result_"
 PATH = 'force-app'
