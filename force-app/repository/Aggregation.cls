@@ -3,7 +3,7 @@ public class Aggregation {
     COUNT,
     COUNT_DISTINCT,
     SUM,
-    AVERAGE,
+    AVG,
     MAX,
     MIN
   }
@@ -31,7 +31,7 @@ public class Aggregation {
   }
 
   public static Aggregation average(Schema.SObjectfield fieldToken, String alias) {
-    return new Aggregation(Operation.AVERAGE, fieldToken, alias);
+    return new Aggregation(Operation.AVG, fieldToken, alias);
   }
 
   public static Aggregation max(Schema.SObjectfield fieldToken, String alias) {

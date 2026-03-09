@@ -94,4 +94,49 @@ private class CursorTest {
     Assert.areEqual(2, results.size(), '' + results);
     Assert.areEqual(1, Cursor.localFetchesMade);
   }
+
+  @IsTest
+  static void itHandlesEmptyCursor() {
+    Cursor instance = new Cursor('SELECT Id FROM Account WHERE Name = :bindVar0', new Map<String, Object>{ 'bindVar0' => 'NonExistent' }, System.AccessLevel.SYSTEM_MODE);
+    
+    Assert.areEqual(0, instance.getNumRecords());
+    Assert.areEqual(0, instance.fetch(0, 10).size());
+  }
+
+  @IsTest
+  static void itHandlesNegativeOffsets() {
+    insert new Account(Name = 'Test');
+    Cursor instance = new Cursor('SELECT Id FROM Account', new Map<String, Object>(), System.AccessLevel.SYSTEM_MODE);
+    
+    List<SObject> results = instance.fetch(-1, 1);
+    
+    Assert.areEqual(0, results.size());
+  }
+
+  @IsTest
+  static void itHandlesSingleRecordFetch() {
+    insert new Account(Name = 'Single');
+    Cursor instance = new Cursor('SELECT Name FROM Account', new Map<String, Object>(), System.AccessLevel.SYSTEM_MODE);
+    
+    List<SObject> results = instance.fetch(0, 1);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual('Single', results[0].get('Name'));
+  }
+
+  @IsTest
+  static void itHandlesMultipleBindVariables() {
+    insert new List<Account>{
+      new Account(Name = 'Test1', AnnualRevenue = 1000),
+      new Account(Name = 'Test2', AnnualRevenue = 2000)
+    };
+    
+    Map<String, Object> bindVars = new Map<String, Object>{
+      'bindVar0' => 'Test1',
+      'bindVar1' => 1000
+    };
+    Cursor instance = new Cursor('SELECT Id FROM Account WHERE Name = :bindVar0 AND AnnualRevenue = :bindVar1', bindVars, System.AccessLevel.SYSTEM_MODE);
+    
+    Assert.areEqual(1, instance.getNumRecords());
+  }
 }

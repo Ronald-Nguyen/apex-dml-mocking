@@ -183,4 +183,40 @@ private class DMLTest {
 
     Assert.isNotNull(con.Id);
   }
+
+  @IsTest
+  static void shouldHandleInsertWithAccessLevel() {
+    Contact contact = new Contact(LastName = 'TestAccessLevel');
+    new DML().setOptions(new Database.DMLOptions(), System.AccessLevel.USER_MODE).doInsert(contact);
+    
+    Assert.isNotNull(contact.Id);
+  }
+
+  @IsTest
+  static void shouldHandleEmptyInsertList() {
+    List<Contact> emptyList = new List<Contact>();
+    
+    List<Database.SaveResult> results = new DML().doInsert(emptyList);
+    
+    Assert.areEqual(0, results.size());
+  }
+
+  @IsTest
+  static void shouldHandleEmptyUpsertList() {
+    List<Account> emptyList = new List<Account>();
+    
+    List<Database.UpsertResult> results = new DML().doUpsert(emptyList);
+    
+    Assert.areEqual(0, results.size());
+  }
+
+  @IsTest
+  static void shouldSetOptionsAndReturnSelf() {
+    Database.DMLOptions opts = new Database.DMLOptions();
+    opts.AllowFieldTruncation = true;
+    
+    DML dml = new DML().setOptions(opts);
+    
+    Assert.isNotNull(dml);
+  }
 }

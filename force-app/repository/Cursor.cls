@@ -55,6 +55,9 @@ public virtual without sharing class Cursor {
   }
 
   public virtual List<SObject> fetch(Integer start, Integer advanceBy) {
+    if (start < 0 || advanceBy <= 0) {
+      return new List<SObject>();
+    }
     if (this.getNumRecords() == 0) {
       System.debug(System.LoggingLevel.DEBUG, 'Bypassing fetch call, no records to fetch');
       return new List<SObject>();

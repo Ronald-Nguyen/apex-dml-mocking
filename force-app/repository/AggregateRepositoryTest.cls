@@ -177,4 +177,91 @@ private class AggregateRepositoryTest {
       return oppRepo;
     }
   }
+
+  @IsTest
+  static void shouldHandleAverageAggregation() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount },
+      new RepoFactory()
+    );
+    
+    Aggregation avg = Aggregation.average(Opportunity.Amount, 'avgAmount');
+    List<AggregateRecord> results = repo.aggregate(avg);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(150, results[0].get('avgAmount'));
+  }
+
+  @IsTest
+  static void shouldHandleMinAggregation() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount },
+      new RepoFactory()
+    );
+    
+    Aggregation min = Aggregation.min(Opportunity.Amount, 'minAmount');
+    List<AggregateRecord> results = repo.aggregate(min);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(100, results[0].get('minAmount'));
+  }
+
+  @IsTest
+  static void shouldHandleMaxAggregation() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount },
+      new RepoFactory()
+    );
+    
+    Aggregation max = Aggregation.max(Opportunity.Amount, 'maxAmount');
+    List<AggregateRecord> results = repo.aggregate(max);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(200, results[0].get('maxAmount'));
+  }
+
+  @IsTest
+  static void shouldHandleMultipleAggregations() {
+    insert new List<Opportunity>{
+      new Opportunity(Name = 'opp1', Amount = 100, StageName = 'Won', CloseDate = System.today()),
+      new Opportunity(Name = 'opp2', Amount = 200, StageName = 'Won', CloseDate = System.today())
+    };
+    
+    IAggregateRepository repo = new AggregateRepository(
+      Opportunity.SObjectType,
+      new List<SObjectField>{ Opportunity.Amount },
+      new RepoFactory()
+    );
+    
+    List<Aggregation> aggregations = new List<Aggregation>{
+      Aggregation.sum(Opportunity.Amount, 'total'),
+      Aggregation.count(Opportunity.Id, 'count'),
+      Aggregation.average(Opportunity.Amount, 'avg')
+    };
+    
+    List<AggregateRecord> results = repo.aggregate(aggregations);
+    
+    Assert.areEqual(1, results.size());
+    Assert.areEqual(300, results[0].get('total'));
+    Assert.areEqual(2, results[0].get('count'));
+    Assert.areEqual(150, results[0].get('avg'));
+  }
 }
