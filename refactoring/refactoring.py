@@ -19,11 +19,11 @@ python refactoring/refactoring.py --refactoring rename
 
 
 REFACTORINGS = [
-    #"coc_reduktion",
-    #"getter_setter",
+    "coc_reduktion",
+    "getter_setter",
     "guard_clauses",
     "inline_variable",
-    #"rename",
+    "rename",
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
