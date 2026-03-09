@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.21.0" timestamp="2026-03-08T03:53:48.781">
+<file name="C:\Users\ronald\apex-dml-mocking\refactoring\coc_reduktion_result_stepfun-step-3.5-flash-free\iteration_02\pmd_after\subset_src\dml\DML.cls">
+<violation beginline="1" endline="121" begincolumn="32" endcolumn="2" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The class 'DML' has a total cognitive complexity of 76 (highest 2), current threshold is 50
+</violation>
+<violation beginline="9" endline="15" begincolumn="5" endcolumn="6" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method '__sfdc_options()' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="28" endline="30" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doInsert(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="36" endline="38" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpdate(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="44" endline="46" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUpsert(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="58" endline="60" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doUndelete(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="66" endline="68" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doDelete(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="74" endline="76" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'doHardDelete(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="84" endline="87" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'publish(SObject)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="88" endline="91" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'publish(List&lt;SObject&gt;)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="93" endline="95" begincolumn="10" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'setOptions(Database.DMLOptions)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="108" endline="112" begincolumn="11" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'sortToPreventChunkingErrors(List&lt;SObject&gt;)' has a cognitive complexity of 1, current threshold is 1
+</violation>
+<violation beginline="114" endline="120" begincolumn="18" endcolumn="4" rule="CognitiveComplexity" ruleset="Design" externalInfoUrl="https://docs.pmd-code.org/snapshot/pmd_rules_apex_design.html#cognitivecomplexity" priority="3">
+The method 'log(OperationLoggingValue, Object)' has a cognitive complexity of 2, current threshold is 1
+</violation>
+</file>
+</pmd>

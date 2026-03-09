@@ -1,0 +1,29 @@
+--- backup/dml\DML.cls
++++ refactored/dml\DML.cls
+@@ -27,2 +27 @@
+-this.sortToPreventChunkingErrors(records);
+-log(OperationLoggingValue.INSERTING,records);
++this.beforeDML(OperationLoggingValue.INSERTING,records);
+@@ -35,2 +34 @@
+-this.sortToPreventChunkingErrors(records);
+-log(OperationLoggingValue.UPDATING,records);
++this.beforeDML(OperationLoggingValue.UPDATING,records);
+@@ -43,2 +41 @@
+-this.sortToPreventChunkingErrors(records);
+-log(OperationLoggingValue.UPSERTING,records);
++this.beforeDML(OperationLoggingValue.UPSERTING,records);
+@@ -48,2 +45 @@
+-this.sortToPreventChunkingErrors(records);
+-log(OperationLoggingValue.UPSERTING,records);
++this.beforeDML(OperationLoggingValue.UPSERTING,records);
+@@ -56 +52 @@
+-log(OperationLoggingValue.UNDELETING,records);
++this.beforeDML(OperationLoggingValue.UNDELETING,records);
+@@ -63 +59 @@
+-log(OperationLoggingValue.DELETING,records);
++this.beforeDML(OperationLoggingValue.DELETING,records);
+@@ -90,0 +87,4 @@
++privatevoidbeforeDML(OperationLoggingValueloggingValue,List<SObject>records){
++this.sortToPreventChunkingErrors(records);
++log(loggingValue,records);
++}

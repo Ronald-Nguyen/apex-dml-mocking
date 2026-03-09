@@ -27,7 +27,7 @@ REFACTORINGS = [
     "strategy_pattern",
 ]
 REFACTORING_BASE_DIR = "refactoring"
-DEFAULT_REFACTORING = "rename" \
+DEFAULT_REFACTORING = "coc_reduktion" \
 ""
 RESULT_PATH = "_result_"
 PATH = 'force-app'
@@ -39,16 +39,19 @@ LLAMA = 'llama-3.3-70b-versatile'
 MISTRAL = 'mistral-large-2512'
 CODESTRAL = 'codestral-2501'
 NVIDIA = 'nvidia/llama-3.1-nemotron-ultra-253b-v1'
+OPENROUTER = 'stepfun/step-3.5-flash:free'
 MODEL_OLLAMA = 'devstral-2_123b-cloud'
 MODEL_GROQ = LLAMA
 MODEL_GEMINI = GEMINI3
 MODEL_MISTRAL = CODESTRAL
 MODEL_NVIDIA = NVIDIA
+MODEL_OPENROUTER = OPENROUTER
 GROQ_API_KEY = os.environ.get('GROQ_API_KEY')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 MISTRAL_API_KEY = os.environ.get('MISTRAL_API_KEY2')
 NVIDIA_API_KEY = os.environ.get('NVIDIA_API_KEY')
-LLM_API_KEY = GEMINI_API_KEY    
+OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY')
+LLM_API_KEY = OPENROUTER_API_KEY    
 client = None
 MODEL = None
 
@@ -91,9 +94,21 @@ elif LLM_API_KEY == NVIDIA_API_KEY:
     except Exception as e:
         print(f"Fehler beim Laden des API-Keys: {e}")
         exit(1)
+elif LLM_API_KEY == OPENROUTER_API_KEY:
+    from openai import OpenAI
+    MODEL = MODEL_OPENROUTER
+    try:
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=LLM_API_KEY
+        )
+        print("OpenRouter API Key aus Umgebungsvariable geladen")
+    except Exception as e:
+        print(f"Fehler beim Laden des API-Keys: {e}")
+        exit(1)
 
-# Sanitize MODEL for use in file paths (replace / with -)
-MODEL_SAFE = MODEL.replace('/', '-') if MODEL else None
+# Sanitize MODEL for use in file paths (replace invalid Windows chars)
+MODEL_SAFE = MODEL.replace('/', '-').replace(':', '-').replace('\\', '-') if MODEL else None
 
 parser = argparse.ArgumentParser(description="Projektpfad angeben")
 parser.add_argument("--project-path", type=str, default=PATH, help="Pfad des Projekts")
@@ -533,6 +548,18 @@ def nvidia_generate(prompt: str) -> tuple[str, dict | None]:
     if not content:
         raise ValueError("Leere Antwort von NVIDIA API erhalten")
     return content, None
+
+def openrouter_generate(prompt: str) -> tuple[str, dict | None]:
+    resp = client.chat.completions.create(
+        model=MODEL,
+        messages=[{"role": "user", "content": prompt}],
+        extra_body={"reasoning": {"enabled": True}}
+    )
+    usage = _usage_to_dict(getattr(resp, "usage", None))
+    content = resp.choices[0].message.content
+    if content is None:
+        raise ValueError("Leere Antwort von OpenRouter API erhalten")
+    return content, usage
 
 def _is_rate_limit_error(e: Exception) -> bool:
     msg = str(e).lower()
@@ -1466,6 +1493,8 @@ def main():
                     response_text, usage = groq_generate(final_prompt)
                 elif LLM_API_KEY == NVIDIA_API_KEY:
                     response_text, usage = nvidia_generate(final_prompt)
+                elif LLM_API_KEY == OPENROUTER_API_KEY:
+                    response_text, usage = openrouter_generate(final_prompt)
                 else:
                     raise RuntimeError("Kein gültiger LLM_API_KEY gesetzt")
 

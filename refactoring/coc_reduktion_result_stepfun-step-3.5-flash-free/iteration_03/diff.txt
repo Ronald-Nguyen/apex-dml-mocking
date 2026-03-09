@@ -1,0 +1,57 @@
+--- backup/dml\DML.cls
++++ refactored/dml\DML.cls
+@@ -27,2 +27 @@
+-this.sortToPreventChunkingErrors(records);
+-log(OperationLoggingValue.INSERTING,records);
++logAndSort(OperationLoggingValue.INSERTING,records);
+@@ -35,2 +34 @@
+-this.sortToPreventChunkingErrors(records);
+-log(OperationLoggingValue.UPDATING,records);
++logAndSort(OperationLoggingValue.UPDATING,records);
+@@ -43,2 +41 @@
+-this.sortToPreventChunkingErrors(records);
+-log(OperationLoggingValue.UPSERTING,records);
++logAndSort(OperationLoggingValue.UPSERTING,records);
+@@ -48,2 +45 @@
+-this.sortToPreventChunkingErrors(records);
+-log(OperationLoggingValue.UPSERTING,records);
++logAndSort(OperationLoggingValue.UPSERTING,records);
+@@ -56 +52 @@
+-log(OperationLoggingValue.UNDELETING,records);
++logAndSort(OperationLoggingValue.UNDELETING,records);
+@@ -63 +59 @@
+-log(OperationLoggingValue.DELETING,records);
++logAndSort(OperationLoggingValue.DELETING,records);
+@@ -95,0 +92,4 @@
++privatevoidlogAndSort(OperationLoggingValueloggingValue,List<SObject>records){
++this.sortToPreventChunkingErrors(records);
++log(loggingValue,records);
++}
+
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -66,0 +67,12 @@
++privatestaticBooleanshouldUseMock(
++List<SObject>queriedResults,
++List<AggregateRecord>aggRecords,
++List<FieldLevelHistory>historyRecords,
++List<Cursor>cursorResults
++){
++returnqueriedResults.size()>0||
++(aggRecords!=null&&aggRecords.size()>0)||
++(historyRecords!=null&&historyRecords.size()>0)||
++(cursorResults!=null&&cursorResults.size()>0)||
++alwaysUseMock;
++}
+@@ -75 +87 @@
+-List<FieldLevelHistory>historyRecords=HistoryResults.get(SObjectType);
++List<FieldLevelHistory>historyRecords=HistoryResults.get(SobjectType);
+@@ -77,7 +89 @@
+-if(
+-queriedResults.size()>0||
+-aggRecords?.size()>0||
+-historyRecords?.size()>0||
+-cursorResults?.size()>0||
+-alwaysUseMock==true
+-){
++if(shouldUseMock(queriedResults,aggRecords,historyRecords,cursorResults)){

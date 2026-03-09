@@ -1,0 +1,36 @@
+--- backup/factory\RepoFactoryMock.cls
++++ refactored/factory\RepoFactoryMock.cls
+@@ -72 +71,0 @@
+-IHistoryRepositoryrepo;
+@@ -77,2 +76,12 @@
+-if(
+-queriedResults.size()>0||
++if(shouldUseMock(queriedResults,aggRecords,historyRecords,cursorResults)){
++returncreateMockRepo(sObjectType,repoFactory,queriedResults,aggRecords,historyRecords);
++}
++return(IHistoryRepository)fallback;
++}
++privatestaticBooleanshouldUseMock(
++List<SObject>queriedResults,
++List<AggregateRecord>aggRecords,
++List<FieldLevelHistory>historyRecords,
++List<Cursor>cursorResults
++){
++returnqueriedResults.size()>0||
+@@ -82 +91,8 @@
+-alwaysUseMock==true
++alwaysUseMock;
++}
++privatestaticIHistoryRepositorycreateMockRepo(
++SObjectTypesObjectType,
++RepoFactoryrepoFactory,
++List<SObject>queriedResults,
++List<AggregateRecord>aggRecords,
++List<FieldLevelHistory>historyRecords
+@@ -92,5 +108 @@
+-repo=mock;
+-}else{
+-repo=(IHistoryRepository)fallback;
+-}
+-returnrepo;
++returnmock;
